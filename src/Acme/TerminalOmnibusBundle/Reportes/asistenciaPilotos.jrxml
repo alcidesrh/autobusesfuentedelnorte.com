@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="asistenciaPilotos" language="groovy" pageWidth="1500" pageHeight="572" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1500" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="0.6209213230591575"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<parameter name="USUARIO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_NOMBRE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FECHA_DIA" class="java.lang.String"/>
+	<parameter name="DATA_FECHA_INICIAL" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_FECHA_FINAL" class="java.lang.String"/>
+	<parameter name="DATA_EMPRESA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[declare @usuario_id bigint
+declare @usuario_estacion_id bigint
+declare @usuario_empresas_id TABLE (id bigint)
+declare @data_fecha_init datetime2
+declare @data_fecha_end datetime2
+declare @empresa_id bigint
+declare @tableAsistenciaPilotos TABLE (
+idPiloto bigint,
+idBus nvarchar(6),
+fechaSalida datetime2,
+idEmpresa bigint
+)
+
+-- PARAMETROS DE SEGURIDAD INIT
+set @usuario_id = $P{USUARIO_ID}
+SELECT @usuario_estacion_id = estacion_id FROM custom_user WHERE id = @usuario_id
+INSERT INTO @usuario_empresas_id
+SELECT cue.empresa_id FROM custom_user AS cu LEFT JOIN custom_user_empresa AS cue ON cu.id=cue.user_id
+WHERE cu.id = @usuario_id
+-- PARAMETROS DE SEGURIDAD INIT
+
+set @empresa_id = $P{DATA_EMPRESA_ID}
+set @data_fecha_init = CAST( $P{DATA_FECHA_INICIAL} + ' 00:00:00' AS datetime2(7))
+set @data_fecha_end = CAST( $P{DATA_FECHA_FINAL} + ' 23:59:59' AS datetime2(7))
+
+---------------------------------------------
+-- ADICIONANDO SALIDAS PILOTOS PRINCIPALES
+---------------------------------------------
+INSERT INTO @tableAsistenciaPilotos
+SELECT
+salida.piloto_id,
+salida.bus_codigo,
+salida.fecha,
+salida.empresa_id
+FROM
+salida AS salida
+INNER JOIN itineario AS itinerario ON itinerario.id = salida.itinerario_id
+INNER JOIN ruta AS ruta ON ruta.codigo = itinerario.ruta_codigo
+WHERE
+salida.piloto_id is not null
+and salida.bus_codigo is not null
+and salida.fecha is not null
+and salida.fecha BETWEEN @data_fecha_init and @data_fecha_end
+and ((salida.estado_id=3) or (salida.estado_id=1 and ruta.estacion_origen_id IN (6,13,18,21,22)))
+and salida.empresa_id IN (SELECT id FROM @usuario_empresas_id)
+and salida.empresa_id = @empresa_id
+---------------------------------------------
+-- ADICIONANDO SALIDAS PILOTOS SECUNDARIOS
+---------------------------------------------
+INSERT INTO @tableAsistenciaPilotos
+SELECT
+salida.piloto_aux_id,
+salida.bus_codigo,
+salida.fecha,
+salida.empresa_id
+FROM
+salida AS salida
+INNER JOIN itineario AS itinerario ON itinerario.id = salida.itinerario_id
+INNER JOIN ruta AS ruta ON ruta.codigo = itinerario.ruta_codigo
+WHERE
+salida.piloto_aux_id is not null
+and salida.bus_codigo is not null
+and salida.fecha is not null
+and salida.fecha BETWEEN @data_fecha_init and @data_fecha_end
+and ((salida.estado_id=3) or (salida.estado_id=1 and ruta.estacion_origen_id IN (6,13,18,21,22)))
+and salida.empresa_id IN (SELECT id FROM @usuario_empresas_id)
+and salida.empresa_id = @empresa_id
+---------------------------------------------
+-- ADICIONANDO ALQUILERES PILOTOS PRINCIPALES
+---------------------------------------------
+INSERT INTO @tableAsistenciaPilotos
+SELECT
+alquiler.piloto_id,
+alquiler.bus_codigo,
+alquilerFecha.fecha,
+alquiler.empresa_id
+FROM
+alquiler AS alquiler
+INNER JOIN alquiler_fecha AS alquilerFecha ON alquilerFecha.alquiler_id=alquiler.id
+WHERE
+alquiler.piloto_id is not null
+and alquiler.bus_codigo is not null
+and alquilerFecha.fecha is not null
+and alquilerFecha.fecha  BETWEEN @data_fecha_init and @data_fecha_end
+and alquiler.estado_id=2
+and alquiler.empresa_id IN (SELECT id FROM @usuario_empresas_id)
+and alquiler.empresa_id = @empresa_id
+---------------------------------------------
+-- ADICIONANDO ALQUILERES PILOTOS SECUNDARIOS
+---------------------------------------------
+INSERT INTO @tableAsistenciaPilotos
+SELECT
+alquiler.piloto_aux_id,
+alquiler.bus_codigo,
+alquilerFecha.fecha,
+alquiler.empresa_id
+FROM
+alquiler AS alquiler
+INNER JOIN alquiler_fecha AS alquilerFecha ON alquilerFecha.alquiler_id=alquiler.id
+WHERE
+alquiler.piloto_aux_id is not null
+and alquiler.bus_codigo is not null
+and alquilerFecha.fecha is not null
+and alquilerFecha.fecha  BETWEEN @data_fecha_init and @data_fecha_end
+and alquiler.estado_id=2
+and alquiler.empresa_id IN (SELECT id FROM @usuario_empresas_id)
+and alquiler.empresa_id = @empresa_id
+----------------------------------------
+-- LISTANDO RESULTADOS
+----------------------------------------
+select
+empresa.alias as aliasEmpresa,
+(piloto.codigo + '-' + piloto.nombre + ' ' + piloto.apellidos) as piloto,
+tap.idBus as bus,
+(CASE
+WHEN DATEPART(dw,tap.fechaSalida) = 1
+then 'L'
+WHEN DATEPART(dw,tap.fechaSalida) = 2
+then 'M'
+when DATEPART(dw,tap.fechaSalida) = 3
+then 'M'
+WHEN DATEPART(dw,tap.fechaSalida) = 4
+then 'J'
+WHEN DATEPART(dw,tap.fechaSalida) = 5
+then 'V'
+WHEN DATEPART(dw,tap.fechaSalida) = 6
+then 'S'
+WHEN DATEPART(dw,tap.fechaSalida) = 7
+then 'D'
+END
+) as diaSemanaSigla,
+-- DATEPART(WeekDay, tap.fechaSalida) as diaSemanaNumeric1,
+-- DATENAME(dw, tap.fechaSalida) as diaSemanaNumeric2,
+(FORMAT(tap.fechaSalida, 'yyyy-MM-dd')) as fechaSalida,
+(FORMAT(tap.fechaSalida, 'dd')) as diaFechaSalida
+FROM
+@tableAsistenciaPilotos as tap
+INNER JOIN piloto piloto ON tap.idPiloto=piloto.id
+INNER JOIN empresa empresa ON tap.idEmpresa=empresa.id
+GROUP BY
+empresa.alias,
+piloto.codigo + '-' + piloto.nombre + ' ' + piloto.apellidos,
+tap.idBus,
+(CASE
+WHEN DATEPART(dw,tap.fechaSalida) = 1
+then 'L'
+WHEN DATEPART(dw,tap.fechaSalida) = 2
+then 'M'
+when DATEPART(dw,tap.fechaSalida) = 3
+then 'M'
+WHEN DATEPART(dw,tap.fechaSalida) = 4
+then 'J'
+WHEN DATEPART(dw,tap.fechaSalida) = 5
+then 'V'
+WHEN DATEPART(dw,tap.fechaSalida) = 6
+then 'S'
+WHEN DATEPART(dw,tap.fechaSalida) = 7
+then 'D'
+END
+),
+(FORMAT(tap.fechaSalida, 'yyyy-MM-dd')),
+(FORMAT(tap.fechaSalida, 'dd'))]]>
+	</queryString>
+	<field name="aliasEmpresa" class="java.lang.String"/>
+	<field name="piloto" class="java.lang.String"/>
+	<field name="bus" class="java.lang.String"/>
+	<field name="diaSemanaSigla" class="java.lang.String"/>
+	<field name="fechaSalida" class="java.lang.String"/>
+	<field name="diaFechaSalida" class="java.lang.String"/>
+	<group name="datos">
+		<groupExpression><![CDATA[$F{aliasEmpresa}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="87" splitType="Stretch">
+			<textField>
+				<reportElement x="645" y="20" width="855" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{USUARIO_NOMBRE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="20" width="597" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ASISTENCIA DE PILOTOS]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="645" y="0" width="855" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{FECHA_DIA}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="597" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRANSPORTE FUENTE DEL NORTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="597" y="0" width="48" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="597" y="20" width="48" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="40" width="117" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[EMPRESA:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="117" y="40" width="1383" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{aliasEmpresa}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="117" y="60" width="1383" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{DATA_FECHA_INICIAL} + " a " + $P{DATA_FECHA_FINAL}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="60" width="117" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[RANGO DE FECHA:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<summary>
+		<band height="135" splitType="Stretch">
+			<elementGroup/>
+			<crosstab isRepeatColumnHeaders="false" isRepeatRowHeaders="false">
+				<reportElement x="0" y="0" width="1500" height="134"/>
+				<crosstabHeaderCell>
+					<cellContents>
+						<rectangle>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="117" height="15"/>
+						</rectangle>
+						<staticText>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="117" height="15"/>
+							<textElement textAlignment="Left" verticalAlignment="Middle"/>
+							<text><![CDATA[ NOMBRE PILOTO]]></text>
+						</staticText>
+						<rectangle>
+							<reportElement style="Crosstab Data Text" x="117" y="0" width="30" height="15"/>
+						</rectangle>
+						<staticText>
+							<reportElement style="Crosstab Data Text" x="117" y="0" width="30" height="15"/>
+							<textElement verticalAlignment="Middle"/>
+							<text><![CDATA[BUS]]></text>
+						</staticText>
+					</cellContents>
+				</crosstabHeaderCell>
+				<rowGroup name="piloto" width="117">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{piloto}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="117" height="15"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[" " + $V{piloto}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="bus" width="31">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{bus}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="30" height="15"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{bus}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="fechaSalida" height="15" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{fechaSalida}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="18" height="15"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{fechaSalida}.substring( 8, 10 )]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement x="0" y="0" width="34" height="15"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="busMeasure" class="java.lang.Integer" calculation="Count">
+					<measureExpression><![CDATA[$F{bus}]]></measureExpression>
+				</measure>
+				<crosstabCell width="18" height="15">
+					<cellContents>
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="18" height="15"/>
+							<textElement verticalAlignment="Middle"/>
+							<textFieldExpression><![CDATA[$V{busMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell height="25" rowTotalGroup="piloto">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" forecolor="#FFFFFF"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{busMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="34" height="15" columnTotalGroup="fechaSalida">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="34" height="15"/>
+							<textElement verticalAlignment="Middle"/>
+							<textFieldExpression><![CDATA[$V{busMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="piloto" columnTotalGroup="fechaSalida">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" forecolor="#FFFFFF"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{busMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell height="25" rowTotalGroup="bus">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{busMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="bus" columnTotalGroup="fechaSalida">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression><![CDATA[$V{busMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</summary>
+</jasperReport>

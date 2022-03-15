@@ -1,0 +1,34 @@
+parameters:
+#     acme_terminal_omnibus_image.class: Acme\TerminalOmnibusBundle\Services\ImageService
+#     acme_terminal_omnibus_images_path: uploads/images
+#     acme_terminal_omnibus_images_temp_path: uploads/images/temp
+#     acme_terminal_omnibus_thumbs_path: uploads/thumbs
+#     acme_terminal_omnibus_thumbs_temp_path: uploads/thumbs/temp
+
+services:
+            
+    acme_terminal_omnibus_print:
+        class: Acme\TerminalOmnibusBundle\Controller\PrintController
+        calls:
+            - [setContainer, ["@service_container"]]
+            
+    acme_terminal_omnibus_reporte:
+        class: Acme\TerminalOmnibusBundle\Controller\ReporteController
+        calls:
+            - [setContainer, ["@service_container"]]
+        
+    acme_terminal_omnibus_menu:
+        class: Acme\TerminalOmnibusBundle\Services\MenuService
+        arguments: ["@service_container", "@?logger"]
+    
+    twig.extension.terminal:
+        class: Acme\TerminalOmnibusBundle\Twig\Extension\TwigExtension
+        arguments: ["@service_container"]
+        tags:
+            - { name: twig.extension }
+            
+    acme_custom_callback_validator:
+        class: Acme\TerminalOmnibusBundle\Validator\Constraints\CustomCallbackValidator
+        arguments: ["@service_container"]
+        tags:
+            - { name: validator.constraint_validator, alias: validator.custom.callback.validator }

@@ -1,0 +1,50 @@
+imports:
+    - { resource: config.yml }
+
+# In production environment you should know that the parameters for URL generation
+# always pass the requirements. Otherwise it would break your link (or even site with
+# strict_requirements = true). So we can disable the requirements check completely for
+# enhanced performance with strict_requirements = null.
+framework:
+    router:
+        strict_requirements: null
+    #validation:
+    #    cache: apc
+
+#doctrine:
+#    orm:
+#        metadata_cache_driver: apc
+#        result_cache_driver: apc
+#        query_cache_driver: apc
+
+#monolog:
+#    handlers:
+#        main:
+#            type:         fingers_crossed
+#            action_level: error
+#            handler:      nested      
+#        nested:
+#            type:  stream
+#            path:  %kernel.logs_dir%/%kernel.environment%.log
+#            level: debug
+#
+##  envía un email con todos los mensajes de log solamente cuando se produce un error          
+#        mail:
+#            type: fingers_crossed
+#            action_level: error
+#            handler: buffered
+#        buffered:
+#            type: buffer
+#            handler: swift
+#        swift:
+#            type: swift_mailer
+#            from_email: robot@cupon.com
+#            to_email: errores@cupon.com
+#            subject: Se ha producido un error
+#            level: debug
+#            
+# #  Se guardan los log en db            
+#        doctrine:
+#            type: service
+#            id: kunstmaan_admin.handler.log
+#            level: info

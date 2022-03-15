@@ -1,0 +1,36 @@
+image:
+    logo:
+      title: logo
+      alt: logo
+      src: bundles/acmerehabilitacion/images/logo.png
+      description: ''
+      
+    IMGP3660:
+      title: IMGP3660
+      alt: IMGP3660
+      src: IMGP3660.JPG
+      description: ''
+      
+    IMGP3661:
+      title: IMGP3661
+      alt: IMGP3661
+      src: IMGP3661.JPG
+      description: ''
+      
+    IMGP3662:
+      title: IMGP3662
+      alt: IMGP3662
+      src: IMGP3662.JPG
+      description: ''
+    
+    IMGP3703:
+      title: Rehabilitación infantil (ingles)
+      alt: Rehabilitación infantil (ingles)
+      src: IMGP3703.JPG
+      description: ''
+        
+    IMGP3697:
+      title: Rehabilitación de adultos (ingles)
+      alt: Rehabilitación de adultos (ingles)
+      src: IMGP3697.JPG
+      description: ''

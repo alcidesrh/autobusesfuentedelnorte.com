@@ -1,0 +1,66 @@
+{% extends "::print."~format~".twig" %}
+{% block container %}
+{% for encomienda in encomiendas %}
+{% for item in 1..encomienda.cantidad %}
+{% set pluginJavaActivo = app.user.estacion is not null and app.user.estacion.tipo.id is not sameas(4) and app.user.estacion.pluginJavaActivo %}
+{% set id = 'ENCOMIENDA_' ~ encomienda.id ~ '_item_' ~ item %}     
+<div id="{{ id }}" class="itemEncomiendaDatosPrint" style="display: table; position:relative; left: 8mm; height: 70mm; margin-bottom: 9.5mm; width: 200mm; border-bottom:0.5mm solid #000000; border-top:0.5mm solid #000000;">
+<div style="display: table-cell; vertical-align: middle; margin: 0px; padding: 0px;">
+
+{% if pluginJavaActivo is sameas(false) %}<b>{% endif %}
+    
+<label style="position:absolute; top: 3mm; left: 100mm; font-size: 60px; line-height: 60px; letter-spacing: -0.5px; font-family: 'monospace'"><b>{{ encomienda.estacionDestino.alias ~ '-' ~ encomienda.id }}</b></label>
+{% set text = 'ENCOMIENDA_' ~ encomienda.id %}                                                     
+<div style="position:absolute; top: 21mm; left: 130mm;">{{ customQRcodeImg(text, null, 100, "125px", "125px") }}</div>
+
+<label style="position:absolute; top: 3mm; left: 5mm; font-size: 18px;">{{ 'DOCUMENTO GUIA' }}</label>
+<label style="position:absolute; top: 10mm; left: 5mm; font-size: 14px;">{{ 'ID Encomienda: ' ~ encomienda.id ~ '. Nro: ' ~ item  ~ ' de ' ~ encomienda.cantidad }}</label>
+{% set factura = encomienda.facturaGenerada is empty ? '' : ' (' ~ encomienda.facturaGenerada.factura.serieResolucionFactura ~ ' ' ~  encomienda.facturaGenerada.consecutivo ~ ')' %} 
+<label style="position:absolute; top: 15mm; left: 5mm; font-size: 14px;">{{ 'Tipo Documento: ' ~ encomienda.tipoDocumento.nombre ~ factura }}</label>
+<label style="position:absolute; top: 20mm; left: 5mm; font-size: 14px;">{{ 'Fecha Registro: ' ~ encomienda.fechaCreacion | date('d/m/Y h:i A') }}</label>
+<label style="position:absolute; top: 25mm; left: 5mm; font-size: 14px;">{{ 'Usuario: ' ~ encomienda.usuarioCreacion.fullName }}</label>
+{% if encomienda.tipoDocumento.id is sameas('2') %}
+<label style="position:absolute; top: 30mm; left: 5mm; font-size: 14px;">{{ 'Empresa: ' }} <b> {{ 'Chequear el manifiesto de encomiendas.' }} </b></label>
+{% else %}
+<label style="position:absolute; top: 30mm; left: 5mm; font-size: 14px;">{{ 'Empresa: ' ~ empresa.nombreComercial }}</label>
+{% endif %}
+{% set tipoEncomienda = encomienda.tipoEncomienda.nombre %}
+{% if encomienda.tipoEncomienda.id is sameas('2') %}
+{% set tipoEncomienda = tipoEncomienda ~ ', ' ~ encomienda.tipoEncomiendaEspecial.nombre  %}
+{% elseif encomienda.tipoEncomienda.id is sameas('3') %}
+{% set tipoEncomienda = tipoEncomienda ~ ', Peso(lb): ' ~ encomienda.peso ~ ', Dimensiones(cm): ' ~ encomienda.alto ~ 'x' ~ encomienda.ancho ~ 'x' ~ encomienda.profundidad ~ '.'%}
+{% endif %}
+<label style="position:absolute; top: 35mm; left: 5mm; font-size: 14px;">{{ 'Tipo Encomienda: ' ~  tipoEncomienda }}</label>
+<label style="position:absolute; top: 40mm; left: 5mm; font-size: 14px;">{{ 'Cliente Remitente: ' ~ encomienda.clienteRemitente }}</label>
+<label style="position:absolute; top: 45mm; left: 5mm; font-size: 14px;">{{ 'Cliente Destinatario: ' ~ encomienda.clienteDestinatario }}</label>
+{% set rutas = '' %}
+{% for encomiendaRuta in encomienda.rutas %}
+{% if not loop.first %}
+{% set rutas = rutas ~ ' / ' %}
+{% endif %}
+{% set rutas = rutas ~ encomiendaRuta.ruta.codigo %}
+{% endfor %}
+<label style="position:absolute; top: 50mm; left: 5mm; font-size: 14px;">{{ 'Rutas: ' ~  rutas }}</label>
+{% set estaciones = encomienda.estacionOrigen %}
+{% for encomiendaRuta in encomienda.rutas %}
+{% set estaciones = estaciones ~ ' / ' ~ encomiendaRuta.estacionDestino %}
+{% endfor %}
+<label style="position:absolute; top: 55mm; left: 5mm; font-size: 14px;">{{ 'Estaciones: ' ~  estaciones }}</label>
+{% if encomienda.boleto is not empty %}
+<label style="position:absolute; top: 60mm; left: 5mm; font-size: 14px;">{{ 'Encomienda Acompañada. Identificador del Boleto: ' ~ encomienda.boleto.id ~ ',   Número de Asiento: ' ~ encomienda.boleto.asientoBus.numero }}</label>
+{% else  %}
+<label style="position:absolute; top: 60mm; left: 5mm; font-size: 14px;">{{ 'Encomienda No Acompañada.' }}</label>
+{% endif %}
+
+{% if pluginJavaActivo is sameas(false) %}</b>{% endif %}  
+</div>
+</div>
+{% endfor %}
+{% endfor %}
+{% endblock %}
+
+
+{#<img style="position:absolute; top: 25mm; left: 110mm; width: 40mm; height: 15mm;" src="{{ customRenderImg('bundles\\acmeterminalomnibus\\images\\logo.gif') }}" />  #}
+{#<img style="position:absolute; top: 2mm; left: 85mm; width: 40mm; height: 15mm;" src="{{ customRenderImg('bundles\\acmeterminalomnibus\\images\\logo_pionera_express.png') }}" /> #}
+                                        
+{#<div style="position:absolute; top: 22mm; left: 145mm;">{{ custom1DcodeDIV(encomienda.id) }}</div>#}

@@ -1,0 +1,69 @@
+{% extends "::print.html.twig" %}
+{% block container %}
+{% for boleto in boletos %}
+{#Este formato requiere un tamaño de hoja de 14cm de altura por 10 cm de ancho.#}
+{% set id = 'IMPRESION_BOL_' ~ boleto.id %}
+<div id="{{ id }}" class="itemBoletoPrint" style="position:relative; height: 129.4mm; width: 141.5mm; border-bottom:1mm solid #CBD0C2; border-top:1mm solid #CBD0C2;">
+
+{#{% set text = 'Gracias por usar los servicios de Fuente del Norte, le deseamos un feliz viaje.' %}    #}
+{#<div style="position:absolute; top: 5.2mm; left: 111.2mm;">{{ customQRcodeImg(text, null, 55, "16mm", "16mm", 2, false) }}</div>    #}
+
+{% set text = 'BOL_' ~ boleto.id %}   
+    
+<div style="position:absolute; top: 5.2mm; left: 111.2mm;">{{ customDataMatrixCodeDIV(text) }}</div>   
+<div style="position:absolute; top: 110mm; left: 118mm;">{{ customDataMatrixCodeDIV(text) }}</div>
+
+{#<div style="position:absolute; top: 62mm; left: 15mm;">{{ custom1DcodeImg(id, null, 60, "26mm", "16mm", null, false) }}</div>                                                         #}
+{#<div style="position:absolute; top: 65mm; left: 25mm;">{{ custom1DcodeDIV(id) }}</div> #}
+
+<label style="position:absolute; top: 13mm; left: 49.8mm; font-size: 18px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-3px;' }} ">{{ 'ID: ' ~ boleto.id  }}</label>
+
+<label style="position:absolute; top: 23.04mm; left: 5mm; font-size: 18px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-3px;' }} ">{{ horaSalida | date('h:i A')  }}</label>
+<label style="position:absolute; top: 23.04mm; left: 49.8mm; font-size: 18px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-3px;' }} ">{{ boleto.salida.fecha | date('d/m/Y')  }}</label>
+
+{% set asientoBus = 'N/D' %} 
+{% if boleto.asientoBus is not null %}
+{% set asientoBus = boleto.asientoBus.numero %} 
+{% endif %}
+
+<label style="position:absolute; top: 23.04mm; left: 107.9mm; font-size: 18px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-3px;' }} ">{{ asientoBus }}</label>
+
+<label style="position:absolute; top: 31.68mm; left: 5mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-1px;' }} ">{{ boleto.estacionOrigen.nombre }}</label>
+<label style="position:absolute; top: 31.68mm; left: 71.38mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-1px;' }} ">{{ boleto.estacionDestino.nombre }}</label>
+
+<label style="position:absolute; top: 39.36mm; left: 5mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 0px; ' : '-1px;' }} ">{{ boleto.clienteDocumento.nit is empty ? 'CF' : boleto.clienteDocumento.nit }}</label>
+
+<label style="position:absolute; top: 47.04mm; left: 5mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-1px;' }} ">{{ boleto.clienteDocumento.nombre }}</label>
+<label style="position:absolute; top: 54.72mm; left: 5mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-1px;' }} ">{{ boleto.clienteBoleto.nombre }}</label>
+
+<label style="position:absolute; top: 62.92mm; left: 87mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-2px;' }} ">{{ boleto.facturaGenerada.moneda.sigla }}</label>
+<label style="position:absolute; top: 62.92mm; left: 105mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-2px;' }} ">{{ boleto.reasignado is null ? boleto.facturaGenerada.importeTotal | number_format(2) : '0.00' }}</label>
+
+<label style="position:absolute; top: 67.05mm; left: 87mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-2px;' }} ">{{ boleto.facturaGenerada.moneda.sigla }}</label>
+<label style="position:absolute; top: 67.05mm; left: 105mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-2px;' }} ">{{ boleto.reasignado is not null ? boleto.facturaGenerada.importeTotal | number_format(2) : '0.00' }}</label>
+
+<label style="position:absolute; top: 71.58mm; left: 87mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-2px;' }} ">{{ boleto.facturaGenerada.moneda.sigla }}</label>
+<label style="position:absolute; top: 71.58mm; left: 105mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-2px;' }} ">{{ boleto.facturaGenerada.importeTotal | number_format(2) }}</label>
+
+{% set descripcion1 = boleto.estacionCreacion ~ '. ' ~ boleto.fechaCreacion | date('d/m/Y h:i A') %} 
+<label style="position:absolute; top: 75.85mm; left: 29mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-1px;' }} ">{{ descripcion1 }}</label>
+
+{% set descripcion2 = boleto.facturaGenerada.factura.serieResolucionFactura ~ ' ' ~  boleto.facturaGenerada.consecutivo ~ '. ' ~ boleto.facturaGenerada.factura.empresa.alias ~ '. TP: ' ~ boleto.tipoPago.nombre ~ '.'%} 
+<label style="position:absolute; top: 79.70mm; left: 29mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-1px;' }} ">{{ descripcion2 }}</label>
+
+{% if boleto.facturaGenerada.moneda.sigla is not sameas("GTQ") %}
+<label style="position:absolute; top: 117.5mm; left: 2mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-2px;' }} ">{{ "TC: " ~ boleto.facturaGenerada.tipoCambio.tasa }}</label>		
+{% endif %}
+
+<label style="position:absolute; top: 118.08mm; left: 78.02mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-2px;' }} ">{{ boleto.facturaGenerada.moneda.sigla }}</label>
+<label style="position:absolute; top: 118.08mm; left: 96mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-2px;' }} ">{{ boleto.facturaGenerada.importeTotal | number_format(2) }}</label>
+
+<label style="position:absolute; top: 122.04mm; left: 96.28mm; font-size: 14px; {{ espacioLetras ? ' letter-spacing: 2px; ' : '-2px;' }} ">{{ asientoBus }}</label>
+
+</div>
+{% endfor %}
+{% endblock %}
+
+    
+    
+    

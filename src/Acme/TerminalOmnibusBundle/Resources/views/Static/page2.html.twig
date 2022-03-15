@@ -1,0 +1,75 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Tutorial para instalar el plugin de impresión jsPrintSetup.
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            page.funcionesAddOnload();	
+            
+            $(".linkDescargar").click(function (e){
+                e.preventDefault();
+                e.stopPropagation();
+                var item = $(this);
+                var href = item.attr('href');
+                console.debug(href);
+                core.installjsPrintSetup(href);
+            });
+        });  
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+        <BR><BR>
+        
+        <p>El plugin de impresión jsPrintSetup permite realizar las tareas de impresión del sistema. 
+            Es obligatorio para todas las estaciones de venta.</p>
+        <p><i>Nota: En el caso de las oficinas administrativas y las agencias de turismo el plugin no es obligatorio, 
+                de no estar instalado el sistema mostrará un documento en formato pdf que puede ser descargado.</i></p>
+        <br>
+        <p>1. En el menú del navegador se busca la opción <b>Herramiestas</b>, luego <b>Complementos</b>.</p>
+        <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto2/imag1.png') }}"/> 
+        <br><br>
+        <p>2. Para chequear que no está instalado se debe buscar en listado de las extensiones que no 
+            existe un plugin llamado <b>jsprintsetup</b>.</p>
+        <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto2/imag2.png') }}"/>
+        <br><br>
+        <p>3. En el buscador de plugin se escribe el nombre <b>jsprintsetup</b> y se presiona la tecla Enter. 
+            Luego se mostrará un listado y se presiona el botón de instalar de la primera opción.</p>
+        <p><i>Nota: En caso de que no aparezca en los resultados de la búsqueda, hacer
+                <a href="ftp://userftp:userftp123**@201.216.189.98/jsPrintSetup/jsprintsetup092fx.xpi" class="linkDescargar">aqui</a> 
+                para descargar.</i></p>
+        <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto2/imag3.png') }}"/>
+        <br><br>
+        <p>4. Luego de la instalación se debe presionar el botón <b>reiniciar ahora</b>.</p>
+        <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto2/imag4.png') }}"/>
+        <br><br>
+        <p>5. Luego se debe hacer clic en el botón <b>Opciones</b>.</p>
+        <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto2/imag5.png') }}"/>
+        <br><br>
+        <p>6. La configuración debe quedar como se muestra en la siguiente imagen y se presiona el botón <b>Aceptar</b>.</p>
+        <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto2/imag6.png') }}"/>
+        <br><br>
+        <p>7. Listo!!!. Ya está configurado el plugin.</p>
+        
+        <BR><BR> 
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+    </div> 
+    </div> 
+
+    </div> 
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+{% endblock %}

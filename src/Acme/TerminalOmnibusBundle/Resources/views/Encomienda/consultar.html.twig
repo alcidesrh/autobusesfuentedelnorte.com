@@ -1,0 +1,167 @@
+<div class="container-fluid">
+<div class="row-fluid">
+<div class="span12">
+      
+     <div class="row-fluid">
+         <div class="span4">
+            <label class="control-label">Identificador:</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.id }}"/>       
+         </div>
+         <div class="span4">
+            <label class="control-label">Empresa:</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.empresa.alias }}"/>       
+         </div>  
+         <div class="span4">
+            <label class="control-label">Cantidad:</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.cantidad }}"/>       
+         </div>
+     </div>    
+     <div class="row-fluid">
+         <div class="span4">
+            <label class="control-label">Tipo Encomienda:</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.tipoEncomienda.nombre }}"/>         
+         </div>
+         <div class="span4">
+            <label class="control-label">Tipo Encomienda Especial:</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.tipoEncomiendaEspecial }}"/> 
+         </div>
+         <div class="span4">
+            <label class="control-label">Bus:</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ (encomienda.estuboTransito and encomienda.primeraSalida is not null) ? encomienda.primeraSalida.bus.codigo : "N/D" }}"/> 
+         </div>
+     </div>
+    <div class="row-fluid">
+         <div class="span12">
+            <label class="control-label">Descripción:</label>
+            <textarea class="span12" type="text" placeholder="N/D" disabled>{{ encomienda.descripcion }}</textarea>       
+         </div>
+     </div> 
+     <div class="row-fluid">
+         <div class="span4">
+            <label class="control-label">Ruta Factura:</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.ruta }}"/>       
+         </div>
+          <div class="span4">
+            <label class="control-label">Estación Origen</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.estacionOrigen }}"/>       
+         </div>
+         <div class="span4">
+            <label class="control-label">Estación Destino</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.estacionDestino }}"/>       
+         </div>
+     </div> 
+     <div class="row-fluid">
+         <div class="span12">
+             <label class="control-label">Rutas:</label>
+             <table class="table table-striped table-bordered table-hover table-condensed">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">Nro</th>
+                        <th style="width: 50%;">Ruta</th>
+                        <th style="width: 40%;">Estación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ruta in encomienda.rutas %}
+                        <tr>
+                            <td>{{ ruta.posicion }}</td>
+                            <td>{{ ruta.ruta }}</td>
+                            <td>{{ ruta.estacionDestino }}</td>
+                        </tr>		
+                    {% else %}
+                        <tr><td colspan="3" >No existen datos</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+         </div>
+     </div> 
+     <div class="row-fluid">
+         <div class="span4">
+            <label class="control-label">Cliente Remitente</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.clienteRemitente }}"/>       
+         </div>
+         <div class="span4">
+            <label class="control-label">Cliente Destinatario</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.clienteDestinatario }}"/>       
+         </div>
+         <div class="span4">
+            <label class="control-label">Cliente Documento</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.clienteDocumento }}"/> 
+         </div>
+     </div>
+     <div class="row-fluid">
+         <div class="span4">
+            <label class="control-label">Tipo de Documento</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.tipoDocumento.nombre }}"/>        
+         </div>
+         <div class="span4">
+            <label class="control-label">Valor Asegurado:</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.valorDeclarado }}"/> 
+         </div>
+         <div class="span4">
+            <label class="control-label">Precio Calculado</label>
+            <input class="span12" type="text" disabled value="{{ encomienda.precioCalculadoMonedaBase is not null ? ("GTQ " ~ encomienda.precioCalculadoMonedaBase) : "N/D" }}"/>       
+         </div>
+     </div>
+    
+    {% if encomienda.tipoDocumento.id is sameas("1") or  encomienda.tipoDocumento.id is sameas("2") %}
+    <div class="row-fluid">
+         <div class="span4">
+            <label class="control-label">Factura Generada</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.facturaGenerada }}"/>       
+         </div>
+         <div class="span8">       
+         </div>
+     </div>
+    {% elseif encomienda.tipoDocumento.id is sameas("4") %}
+    <div class="row-fluid">
+         <div class="span4">
+            <label class="control-label">Guia Interna (G.I.)</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.autorizacionInterna is not null ? encomienda.autorizacionInterna.info1 : "N/D" }}"/>       
+         </div>
+         <div class="span4">
+            <label class="control-label">Autorizó G.I.</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.autorizacionInterna is not null ? encomienda.autorizacionInterna.autorizo : "N/D" }}"/>       
+         </div>
+        <div class="span4">
+            <label class="control-label">Motivo G.I.</label>
+            <input class="span12" type="text" placeholder="N/D" disabled value="{{ encomienda.autorizacionInterna is not null ? encomienda.autorizacionInterna.motivo : "N/D" }}"/>       
+         </div>
+     </div>
+    {% endif %}
+
+    <div class="row-fluid margin-top-2">
+    <div class="span12">
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Estación</th>
+                <th>Usuario</th>
+                <th>Salida</th>
+                <th>Cliente</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for encomiendaBitacora in encomienda.eventos %}
+                    <tr>
+                        <td>{{ encomiendaBitacora.fecha | date('d/m/Y H:i:s') }}</td>
+                        <td>{{ encomiendaBitacora.estado.nombre }}</td>
+                        <td>{{ encomiendaBitacora.estacion }}</td>
+                        <td>{{ encomiendaBitacora.usuario }}</td>
+                        <td>{{ encomiendaBitacora.salida is null ? '' : encomiendaBitacora.salida.info2 }}</td>
+                        <td>{{ encomiendaBitacora.cliente is null ? '' : encomiendaBitacora.cliente.info2 }}</td>
+                    </tr>		
+                {% else %}
+                    <tr><td colspan="5" >No existen estados</td></tr>
+                {% endfor %}
+            </tbody>
+         </table>
+     </div>
+     </div>
+    
+     <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+</div>  
+</div>
+</div>

@@ -1,0 +1,47 @@
+parameters:
+    database_driver: pdo_sqlsrv
+    database_type: sqlserver
+#    database_ip: FUENTEDELNORTE
+#    database_host: FUENTEDELNORTE
+    database_host: DESKTOP-5LPJVFT
+    database_port: 1433
+    database_name: TerminalOmnibus
+#    database_user: admin
+#    database_password: admin123**
+    database_user: custom_user_terminal_bus
+    database_password: custom_user_terminal_bus123
+    database_host_slave1: FUENTEDELNORTE
+    database_port_slave1: ~
+    database_name_slave1: TerminalOmnibus
+    database_user_slave1: custom_user_terminal_bus
+    database_password_slave1: custom_user_terminal_bus123
+    encrypt_password: admin123**--ok
+    encomienda_porciento_valor_declarado: 0.1
+    days_credentials_expire: 120
+    
+    mailer_transport: gmail
+    mailer_host: ~
+    mailer_user: fuentedelnorte2.gt@gmail.com
+#    mailer_password: 'jjidgulqzkxoajqc'
+    mailer_password: system2050**
+    
+    locale: es
+    secret: 376d145e2d88f3ee4d6adcd29ffc5875
+    database_path: null
+    
+    tarifa_efectivo_por_distancia: false
+    tarifa_especial_por_distancia: false
+    tarifa_paquete_por_distancia: true
+    aplicar_tarifa_volumen: false
+    notificacion:   
+    email_autorizacion_cortesia_asunto: Notificación de autorización de cortesía
+    version: 53
+    version_app_android : 5
+
+#    send_facturado_boleto : true
+#    send_facturado_encomienda : true
+#    send_facturado_url: http://empfuentedelnorte.tk/internal/ingrations/test/venta.json
+#    send_facturado_producto_boleto : 16
+#    send_facturado_producto_encomienda : 17
+#    send_facturado_usuario : 10
+#    send_facturado_cliente : 1

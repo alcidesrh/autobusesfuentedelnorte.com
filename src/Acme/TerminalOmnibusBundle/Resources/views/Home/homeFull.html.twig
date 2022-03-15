@@ -1,0 +1,9 @@
+{% extends "::frontend.html.twig" %}
+
+{% block containerSection %}
+   
+    {{ parent() }}
+
+    {{ include("AcmeTerminalOmnibusBundle:Home:homeInternal.html.twig") }}
+
+{% endblock %}

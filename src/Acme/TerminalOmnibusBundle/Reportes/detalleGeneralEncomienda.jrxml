@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.7715610000000113"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="customStyles">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($F{idEstado} == 6 || $F{idEstado} == 7)]]></conditionExpression>
+			<style forecolor="#FF0033" isStrikeThrough="true"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="DATA_EMPRESA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_ESTACION_ORIGEN_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_ESTACION_DESTINO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_NOMBRE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FECHA_DIA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FECHA_INICIAL" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FECHA_FINAL" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_MOSTRAR_SOLO_FACTURADO" class="java.lang.String"/>
+	<parameter name="DATA_MOSTRAR_SOLO_POR_COBRAR" class="java.lang.String"/>
+	<parameter name="FORMAT" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[declare @usuario_id bigint
+declare @usuario_estacion_id bigint
+declare @usuario_empresas_id TABLE (id bigint)
+
+declare @data_empresa_id bigint
+declare @data_estacion_origen_id bigint
+declare @data_estacion_destino_id bigint
+declare @data_fecha_init datetime2
+declare @data_fecha_end datetime2
+declare @data_motrar_solo_factura bit
+declare @data_motrar_solo_por_cobrar bit
+
+-- PARAMETROS DE SEGURIDAD INIT
+set @usuario_id = $P{USUARIO_ID}
+SELECT @usuario_estacion_id = estacion_id FROM custom_user WHERE id = @usuario_id
+INSERT INTO @usuario_empresas_id
+SELECT cue.empresa_id FROM custom_user AS cu LEFT JOIN custom_user_empresa AS cue ON cu.id=cue.user_id
+WHERE cu.id = @usuario_id
+-- PARAMETROS DE SEGURIDAD INIT
+
+set @data_estacion_origen_id = $P{DATA_ESTACION_ORIGEN_ID}
+set @data_estacion_destino_id = $P{DATA_ESTACION_DESTINO_ID}
+set @data_empresa_id = $P{DATA_EMPRESA_ID}
+set @data_motrar_solo_factura = $P{DATA_MOSTRAR_SOLO_FACTURADO}
+set @data_motrar_solo_por_cobrar = $P{DATA_MOSTRAR_SOLO_POR_COBRAR}
+set @data_fecha_init = CAST($P{FECHA_INICIAL}+ ' 00:00:00' AS datetime2(7))
+set @data_fecha_end = CAST($P{FECHA_FINAL}+' 23:59:59' AS datetime2(7))
+
+SELECT
+     estacionOrigen."nombre" AS nombreEstacionOrigen,
+     estacionDestino."nombre" AS nombreEstacionDestino,
+     empresa."alias" AS aliasEmpresa,
+     FORMAT(encomienda."fecha_creacion", 'dd/MM/yyyy') as diaOperacion,
+     FORMAT(encomienda."fecha_creacion", 'yyyy/MM/dd') as diaOperacionOrder,
+
+     encomienda.id as idEncomienda,
+     RIGHT(CONVERT(CHAR(20), encomienda."fecha_creacion", 22), 11) AS horaOperacion,
+     tipoDocumentoEncomienda.id as idTipoDocumentoEncomienda,
+     tipoDocumentoEncomienda.nombre as nombreTipoDocumentoEncomienda,
+     factura."serieResolucionFactura" as serieFactura,
+     facturaGenerada."consecutivo" as consecutivoFactura,
+     estadoEncomienda."id" AS idEstado,
+     estadoEncomienda."nombre" AS nombreEstado,
+     encomienda."cantidad" as cantidad,
+     tipoEncomienda."id" as idTipoEncomienda,
+     tipoEncomienda."nombre" as nombreTipoEncomienda,
+     salida.bus_codigo as codigoBus,
+     clienteDestinatario."nombre" AS nombreClienteDestinatario,
+     CAST(encomienda."descripcion" AS varchar(255)) AS contenido,
+     encomienda."precioCalculadoMonedaBase" AS importeTotalMonedaBase
+FROM
+     "dbo"."encomienda" encomienda
+     INNER JOIN "dbo"."estacion" estacionOrigen ON  estacionOrigen."id" = encomienda."estacion_origen_id"
+     INNER JOIN "dbo"."estacion" estacionDestino ON  estacionDestino."id" = encomienda."estacion_destino_id"
+     INNER JOIN "dbo"."empresa" empresa ON empresa."id" = encomienda."empresa_id"
+     INNER JOIN "dbo"."encomienda_documento_tipo" tipoDocumentoEncomienda ON tipoDocumentoEncomienda."id" = encomienda."tipo_documento_id"
+     INNER JOIN "dbo"."cliente" clienteDestinatario ON  clienteDestinatario."id" = encomienda."cliente_destinatario"
+     INNER JOIN "dbo"."encomienda_tipo" tipoEncomienda ON tipoEncomienda."id" = encomienda."tipo_encomienda_id"
+     INNER JOIN "dbo"."encomienda_bitacora" ultimaBitacora ON ultimaBitacora."id" = encomienda."ultima_bitacora_id"
+     INNER JOIN "dbo"."encomienda_estado" estadoEncomienda ON estadoEncomienda."id" = ultimaBitacora."estado_id"
+     LEFT JOIN "dbo"."factura_generada" facturaGenerada ON facturaGenerada.id = encomienda.factura_generada_id
+     LEFT JOIN "dbo"."factura" factura ON factura.id = facturaGenerada.factura_id
+     LEFT JOIN "dbo"."salida" salida ON salida.id = encomienda.primera_salida_id and encomienda.transito=1
+ WHERE
+    ( empresa."id" IN (SELECT id FROM @usuario_empresas_id) )
+    and ((@data_estacion_origen_id is not null and @data_estacion_origen_id=estacionOrigen."id") or @data_estacion_origen_id is NULL)
+    and ((@data_estacion_destino_id is not null and @data_estacion_destino_id=estacionDestino."id") or @data_estacion_destino_id is NULL)
+    and ((@data_empresa_id is not null and @data_empresa_id=empresa."id") or @data_empresa_id is NULL)
+    and ((@data_motrar_solo_factura='true' and tipoDocumentoEncomienda."id"=1) or (@data_motrar_solo_factura='false'))
+    and ((@data_motrar_solo_por_cobrar='true' and tipoDocumentoEncomienda."id"=2) or (@data_motrar_solo_por_cobrar='false'))
+    and (((@data_fecha_init is not null and @data_fecha_end is not null) and (encomienda."fecha_creacion" between @data_fecha_init and @data_fecha_end)) or (@data_fecha_init is NULL or @data_fecha_end is NULL))
+
+ORDER BY
+empresa.id,
+diaOperacionOrder,
+estacionOrigen."id",
+estacionDestino."id",
+encomienda.id]]>
+	</queryString>
+	<field name="nombreEstacionOrigen" class="java.lang.String"/>
+	<field name="nombreEstacionDestino" class="java.lang.String"/>
+	<field name="aliasEmpresa" class="java.lang.String"/>
+	<field name="diaOperacion" class="java.lang.String"/>
+	<field name="diaOperacionOrder" class="java.lang.String"/>
+	<field name="idEncomienda" class="java.lang.Long"/>
+	<field name="horaOperacion" class="java.lang.String"/>
+	<field name="idTipoDocumentoEncomienda" class="java.lang.Long"/>
+	<field name="nombreTipoDocumentoEncomienda" class="java.lang.String"/>
+	<field name="serieFactura" class="java.lang.String"/>
+	<field name="consecutivoFactura" class="java.lang.Long"/>
+	<field name="idEstado" class="java.lang.Long"/>
+	<field name="nombreEstado" class="java.lang.String"/>
+	<field name="cantidad" class="java.lang.Integer"/>
+	<field name="idTipoEncomienda" class="java.lang.Long"/>
+	<field name="nombreTipoEncomienda" class="java.lang.String"/>
+	<field name="codigoBus" class="java.lang.String"/>
+	<field name="nombreClienteDestinatario" class="java.lang.String"/>
+	<field name="contenido" class="java.lang.String"/>
+	<field name="importeTotalMonedaBase" class="java.math.BigDecimal"/>
+	<variable name="subTotalPagado" class="java.math.BigDecimal" resetType="Group" resetGroup="group02" calculation="Sum">
+		<variableExpression><![CDATA[( ($F{idTipoDocumentoEncomienda} == 1 && $F{idEstado} != 6) ? $F{importeTotalMonedaBase} : java.math.BigDecimal.ZERO )]]></variableExpression>
+		<initialValueExpression><![CDATA[java.math.BigDecimal.ZERO]]></initialValueExpression>
+	</variable>
+	<variable name="subTotalPorCobrar" class="java.math.BigDecimal" resetType="Group" resetGroup="group02" calculation="Sum">
+		<variableExpression><![CDATA[( ($F{idTipoDocumentoEncomienda} == 2 && $F{idEstado} != 7) ? $F{importeTotalMonedaBase} : java.math.BigDecimal.ZERO )]]></variableExpression>
+		<initialValueExpression><![CDATA[java.math.BigDecimal.ZERO]]></initialValueExpression>
+	</variable>
+	<variable name="totalPagado" class="java.math.BigDecimal" resetType="Group" resetGroup="group01" calculation="Sum">
+		<variableExpression><![CDATA[( ($F{idTipoDocumentoEncomienda} == 1 && $F{idEstado} != 6) ? $F{importeTotalMonedaBase} : java.math.BigDecimal.ZERO )]]></variableExpression>
+		<initialValueExpression><![CDATA[java.math.BigDecimal.ZERO]]></initialValueExpression>
+	</variable>
+	<variable name="totalPorCobrar" class="java.math.BigDecimal" resetType="Group" resetGroup="group01" calculation="Sum">
+		<variableExpression><![CDATA[( ($F{idTipoDocumentoEncomienda} == 2 && $F{idEstado} != 7) ? $F{importeTotalMonedaBase} : java.math.BigDecimal.ZERO )]]></variableExpression>
+		<initialValueExpression><![CDATA[java.math.BigDecimal.ZERO]]></initialValueExpression>
+	</variable>
+	<group name="group01" minHeightToStartNewPage="20">
+		<groupFooter>
+			<band height="60">
+				<staticText>
+					<reportElement x="347" y="26" width="115" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Total:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="462" y="26" width="55" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $V{totalPorCobrar} !=  null ? $V{totalPorCobrar}.setScale(2, java.math.RoundingMode.HALF_EVEN) : java.math.BigDecimal.ZERO )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="517" y="26" width="55" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $V{totalPagado} != null ? $V{totalPagado}.setScale(2, java.math.RoundingMode.HALF_EVEN) : java.math.BigDecimal.ZERO )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="26" width="347" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Cantidad Total: " + $V{group01_COUNT}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="13" width="572" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true" isItalic="true" isUnderline="false"/>
+					</textElement>
+					<text><![CDATA[Resumen]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="25" width="572" height="1"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="group02" minHeightToStartNewPage="30">
+		<groupExpression><![CDATA[$F{nombreEstacionOrigen}+
+$F{nombreEstacionDestino}+
+$F{aliasEmpresa}+
+$F{diaOperacion}]]></groupExpression>
+		<groupHeader>
+			<band height="57">
+				<line>
+					<reportElement x="0" y="52" width="572" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="54" width="572" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="0" y="16" width="50" height="16"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Empresa: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="0" width="50" height="16"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fecha:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="50" y="0" width="182" height="16"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{diaOperacion} == null ? " -" : " " + $F{diaOperacion} )
+]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="50" y="16" width="182" height="16"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{aliasEmpresa} == null ? " -" : " " + $F{aliasEmpresa} )
+]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="39" width="50" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ID]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="50" y="39" width="85" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Documento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="39" width="60" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Estado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="232" y="39" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Destinatario]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="327" y="39" width="135" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Contenido]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="462" y="39" width="55" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Por Cobrar]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="517" y="39" width="55" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Pagado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="195" y="39" width="37" height="12"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Bus]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="232" y="0" width="95" height="16"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Estación Origen: ]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="327" y="0" width="245" height="16" forecolor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isStrikeThrough="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{nombreEstacionOrigen} == null ? " -" : " " + $F{nombreEstacionOrigen} )
+
+]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="232" y="16" width="95" height="16"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Estación Destino: ]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="327" y="16" width="245" height="16"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{nombreEstacionDestino} == null ? " -" : " " + $F{nombreEstacionDestino} )
+]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="30">
+				<printWhenExpression><![CDATA[$F{nombreEstacionOrigen} != null]]></printWhenExpression>
+				<line>
+					<reportElement x="0" y="0" width="572" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="347" y="1" width="115" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[SubTotal:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="0" y="1" width="347" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Cantidad: " + $V{group02_COUNT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="462" y="1" width="55" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $V{subTotalPorCobrar} !=  null ? $V{subTotalPorCobrar}.setScale(2, java.math.RoundingMode.HALF_EVEN) : java.math.BigDecimal.ZERO )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="517" y="1" width="55" height="12"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $V{subTotalPagado} != null ? $V{subTotalPagado}.setScale(2, java.math.RoundingMode.HALF_EVEN) : java.math.BigDecimal.ZERO )]]></textFieldExpression>
+				</textField>
+			</band>
+			<band height="12">
+				<printWhenExpression><![CDATA[$F{nombreEstacionOrigen} == null]]></printWhenExpression>
+				<staticText>
+					<reportElement x="0" y="0" width="572" height="12">
+						<printWhenExpression><![CDATA[$F{nombreEstacionOrigen} == null]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[No existen resultados]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="46">
+			<textField>
+				<reportElement x="462" y="14" width="110" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{USUARIO_NOMBRE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="28" width="572" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Detalle de General de Encomiendas]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="462" y="0" width="110" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{FECHA_DIA}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="327" height="28"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRANSPORTE FUENTE DEL NORTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="327" y="0" width="135" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Fecha: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="327" y="14" width="135" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Usuario: ]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="50" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idEncomienda}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="50" y="0" width="85" height="12"/>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreTipoDocumentoEncomienda} +
+( $F{serieFactura} == null ? "" : " (" + $F{serieFactura} + "-" + $F{consecutivoFactura} + ") " )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="135" y="0" width="60" height="12"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreEstado}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="232" y="0" width="95" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreClienteDestinatario}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="327" y="0" width="135" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{contenido}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="customStyles" x="462" y="0" width="55" height="12"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( $F{idTipoDocumentoEncomienda} == 2 ? $F{importeTotalMonedaBase} : java.math.BigDecimal.ZERO )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement style="customStyles" x="517" y="0" width="55" height="12"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( $F{idTipoDocumentoEncomienda} == 1 ? $F{importeTotalMonedaBase} : java.math.BigDecimal.ZERO )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="195" y="0" width="37" height="12"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( $F{codigoBus} == null ? "-" : $F{codigoBus} )]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="24" splitType="Stretch">
+			<printWhenExpression><![CDATA[$P{FORMAT} == "pdf" || $P{FORMAT} == "docx"]]></printWhenExpression>
+			<textField>
+				<reportElement x="462" y="6" width="55" height="12"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="517" y="6" width="55" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

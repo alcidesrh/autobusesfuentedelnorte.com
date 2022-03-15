@@ -1,0 +1,13 @@
+<form class="form-horizontal serieFacturaForm" id="serieFacturaForm" name="serieFacturaForm" action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+        <label> <strong> ¿Está seguro que desea desactivar la serie? </strong> </label>
+    </div>  
+    
+    <input type="hidden" id="pathHomeSerieFactura" value="{{ url('facturas-home') }}"></input>
+    {{ form_rest(form) }}
+    
+</form>

@@ -1,0 +1,114 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Procesar Encomienda Por Salida
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+           procesarEncomiendaPorSalida.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+
+<form class="form-horizontal procesarEncomiendaPorSalida" id="procesarEncomiendaPorSalida" name="procesarEncomiendaPorSalida" action="{{ path(route) }}" >
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    
+    <div class="container-fluid">
+   
+    <div class="row-fluid">     
+        <div class="span12">  
+            {{ form_label(form.salida) }}
+            {{ form_errors(form.salida) }}
+            {{ form_widget(form.salida) }}
+        </div>
+    </div>
+    <BR>       
+    <div class="row-fluid"> 
+        <div class="span12"> 
+            <a id="manifiesto" href="{{ url('reporte-manifiesto_encomienda_full') }}" class="btn">Manif. Encomienda</a>
+        </div>
+    </div>
+    <BR>   
+    
+    <div class="row-fluid">     
+    <div class="span12"> 
+        
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#tab1" data-toggle="tab">Abordadas</a>
+            </li>
+            <li>
+                <a href="#tab2" data-toggle="tab">Pendientes</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab1">
+                <table id="encomiendasAbordadasTable" class="table table-striped table-bordered table-hover">
+                <thead>      
+                    <tr>
+                        <th style="width: 10%; text-align:center; vertical-align:middle;" class="idEncomiendaTH">ID</th>
+                        <th style="width: 10%; text-align:center; vertical-align:middle;" class="desembarcarTH">Desembarcar</th>
+                        <th style="width: 10%; text-align:center; vertical-align:middle;" class="fechaTH">Fecha</th>
+                        <th style="width: 10%; text-align:center; vertical-align:middle;" class="documentoTH">Documento</th>
+                        <th style="width: 15%; text-align:center; vertical-align:middle;" class="origenTH">Origen</th>
+                        <th style="width: 15%; text-align:center; vertical-align:middle;" class="destinoTH">Destino</th>
+{#                        <th style="width: 10%; text-align:center; vertical-align:middle;" class="clienteTH">Cliente</th>#}
+                        <th style="width: 30%; text-align:center; vertical-align:middle;" class="descripcionTH">Descripción</th>
+                    </tr>
+                </thead>
+                <tbody id="encomiendasAbordadasBody" style="vertical-align:middle;">
+                    <tr id="encomiendasAbordadasVacioTR">
+                        <td colspan="7"> No existen elementos.</td> 
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+            <div class="tab-pane" id="tab2">
+                <table id="encomiendasPendientesTable" class="table table-striped table-bordered table-hover">
+                <thead>      
+                    <tr>
+                        <th style="width: 10%; text-align:center; vertical-align:middle;" class="idEncomiendaTH">ID</th>
+                        <th style="width: 10%; text-align:center; vertical-align:middle;" class="desembarcarTH">Embarcar</th>
+                        <th style="width: 10%; text-align:center; vertical-align:middle;" class="fechaTH">Fecha</th>
+                        <th style="width: 10%; text-align:center; vertical-align:middle;" class="documentoTH">Documento</th>
+                        <th style="width: 15%; text-align:center; vertical-align:middle;" class="origenTH">Origen</th>
+                        <th style="width: 15%; text-align:center; vertical-align:middle;" class="destinoTH">Destino</th>
+{#                        <th style="width: 10%; text-align:center; vertical-align:middle;" class="clienteTH">Cliente</th>#}
+                        <th style="width: 30%; text-align:center; vertical-align:middle;" class="descripcionTH">Descripción</th>
+                    </tr>
+                </thead>
+                <tbody id="encomiendasPendientesBody" style="vertical-align:middle;">
+                    <tr id="encomiendasPendientesVacioTR">
+                        <td colspan="7"> No existen elementos.</td> 
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    </div>
+    </div>
+
+    </div>
+    
+    <input type="hidden" id="pathConsultarEncomienda" value="{{ url('consultarEncomienda-case1') }}"></input>
+    <input type="hidden" id="pathListarEncomiendasAProcesar" value="{{ url('ajaxListarEncomiendasAProcesar') }}"></input>
+    
+</form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="aceptar" href="#" class="btn btn-primary">Aceptar</a>
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}

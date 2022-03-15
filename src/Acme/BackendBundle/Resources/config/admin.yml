@@ -1,0 +1,905 @@
+services:
+    
+    sonata.admin.conexiones:
+        class: Acme\BackendBundle\Admin\ConexionesAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Administración", label: "Conexiones" }
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Conexiones
+            - ~
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+            
+    sonata.admin.notificacion:
+        class: Acme\BackendBundle\Admin\NotificacionAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Administración", label: "Notificación" }
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Notificacion
+            - ~
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+            
+    sonata.admin.galerias:
+        class: Acme\BackendBundle\Admin\GaleriaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Administración", label: "Galerias" }
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Galeria
+            - ~
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+            
+    sonata.admin.galeria.imagenes:
+        class: Acme\BackendBundle\Admin\ImagenAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Administración", label: "Imágenes" }
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Imagen
+            - 'AcmeBackendBundle:ImagenCRUD'
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+    
+    sonata.admin.cliente.nacionalidad:
+        class: Acme\BackendBundle\Admin\NacionalidadAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Administración", label: "Nacionalidades"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Nacionalidad
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+    
+    sonata.admin.pais:
+        class: Acme\BackendBundle\Admin\PaisAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Administración", label: "Paises"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Pais
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+    sonata.admin.clase.asiento:
+        class: Acme\BackendBundle\Admin\ClaseAsientoAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Bus", label: "Clases de asientos" }
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\ClaseAsiento
+            - ~
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+
+    sonata.admin.departamentos:
+        class: Acme\BackendBundle\Admin\DepartamentoAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Administración", label: "Departamentos" }
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Departamento
+            - 'AcmeBackendBundle:GenericCRUD'
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+            
+    sonata.admin.estacion:
+        class: Acme\BackendBundle\Admin\EstacionAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Estaciones", label: "Estaciones" }
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Estacion
+            - 'AcmeBackendBundle:EstacionCRUD'
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+
+    sonata.admin.estacion.tipo:
+        class: Acme\BackendBundle\Admin\TipoEstacionAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Estación", label: "Tipos de estación" }
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}            
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoEstacion
+            - ~
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+    
+    sonata.admin.estacion.tipo.pago:
+        class: Acme\BackendBundle\Admin\TipoPagoEstacionAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Estación", label: "Tipos de estación" }
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}            
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoPagoEstacion
+            - ~
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+            
+    sonata.admin.estacion.servicio:
+        class: Acme\BackendBundle\Admin\ServicioEstacionAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Estación", label: "Servicios de estación"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\ServicioEstacion
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.estacion.telefono:
+        class: Acme\BackendBundle\Admin\TelefonoEstacionAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: "Telefono de estación" , show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TelefonoEstacion
+            - 'SonataAdminBundle:CRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+    sonata.admin.estacion.correo:
+        class: Acme\BackendBundle\Admin\CorreoEstacionAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: "Correo de estación" , show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\CorreoEstacion
+            - 'SonataAdminBundle:CRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+                   
+    sonata.admin.dia.semana:
+        class: Acme\BackendBundle\Admin\DiaSemanaAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "General", label: "Días de la semana"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\DiaSemana
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+    sonata.admin.horarios.ciclico:
+        class: Acme\BackendBundle\Admin\HorarioCiclicoAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Itinerarios", label: "Horarios"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\HorarioCiclico
+            - 'AcmeBackendBundle:GenericCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+    
+    sonata.admin.itinerario.ciclico:
+        class: Acme\BackendBundle\Admin\ItinerarioCiclicoAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Itinerarios", label: "Cíclicos"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\ItinerarioCiclico
+            - 'AcmeBackendBundle:ItinerarioCiclicoCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+    sonata.admin.itinerario.especial:
+        class: Acme\BackendBundle\Admin\ItinerarioEspecialAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Itinerarios", label: "Especial"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\ItinerarioEspecial
+            - 'AcmeBackendBundle:ItinerarioEspecialCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+    sonata.admin.clase.bus:
+        class: Acme\BackendBundle\Admin\ClaseBusAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Bus", label: "Clases de bus"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\ClaseBus
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.estado.bus:
+        class: Acme\BackendBundle\Admin\EstadoBusAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Bus", label: "Estados de bus"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\EstadoBus
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.marca.bus:
+        class: Acme\BackendBundle\Admin\MarcaBusAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Bus", label: "Marcas de bus"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\MarcaBus
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.servicio.bus:
+        class: Acme\BackendBundle\Admin\ServicioBusAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Bus", label: "Servicios en bus"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\ServicioBus
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.empresa:
+        class: Acme\BackendBundle\Admin\EmpresaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Empresa", label: "Empresas"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Empresa
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            - [ setTemplate, [edit, AcmeBackendBundle:EmpresaAdmin:edit.html.twig]]
+            
+    sonata.admin.piloto:
+        class: Acme\BackendBundle\Admin\PilotoAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Piloto", label: "Pilotos"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Piloto
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.bus:
+        class: Acme\BackendBundle\Admin\BusAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Bus", label: "Buses"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Bus
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.estado.asiento:
+        class: Acme\BackendBundle\Admin\EstadoAsientoAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Bus", label: "Estados de asientos"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}            
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\EstadoAsiento
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.tipo.bus:
+        class: Acme\BackendBundle\Admin\TipoBusAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Bus", label: "Tipos de bus"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoBus
+            - 'AcmeBackendBundle:TipoBusCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            - [ setTemplate, [edit, AcmeBackendBundle:TipoBusAdmin:edit.html.twig]]
+
+    sonata.admin.tipo.senal:
+        class: Acme\BackendBundle\Admin\TipoSenalAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Bus", label: "Tipos de señales"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoSenal
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.ruta:
+        class: Acme\BackendBundle\Admin\RutaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Ruta", label: "Rutas"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Ruta
+            - 'AcmeBackendBundle:RutaCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            - [ setTemplate, [edit, AcmeBackendBundle:Ruta:edit.html.twig]]       
+            
+    sonata.admin.tiempo:
+        class: Acme\BackendBundle\Admin\TiempoAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Ruta", label: "Tiempos"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Tiempo
+            - 'AcmeBackendBundle:GenericCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.tipo.pago:
+        class: Acme\BackendBundle\Admin\TipoPagoAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Tipo de Pago", label: "Tipos de Pago"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoPago
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.cliente:
+        class: Acme\BackendBundle\Admin\ClienteAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Cliente", label: "Clientes"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Cliente
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+      
+    sonata.admin.boleto.estado:
+        class: Acme\BackendBundle\Admin\EstadoBoletoAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Boleto", label: "Estados"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\EstadoBoleto
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.boleto.tipo.documento:
+        class: Acme\BackendBundle\Admin\TipoDocumentoBoletoAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Boleto", label: "Tipos de Documentos"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoDocumentoBoleto
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.encomienda.tipo.documento:
+        class: Acme\BackendBundle\Admin\TipoDocumentoEncomiendaAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Encomienda", label: "Tipos de Documentos"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoDocumentoEncomienda
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.reservacion.estado:
+        class: Acme\BackendBundle\Admin\EstadoReservacionAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Reservación", label: "Estados"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\EstadoReservacion
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.encomienda.estado:
+        class: Acme\BackendBundle\Admin\EstadoEncomiendaAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Encomienda", label: "Estados"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\EstadoEncomienda
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.rol:
+        class: Acme\BackendBundle\Admin\RolAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Usuarios y Roles", label: "Roles"}
+        arguments:
+            - ~
+            - Acme\BackendBundle\Entity\Rol
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\BackendBundle]]
+
+    sonata.admin.usuario:
+        class: Acme\BackendBundle\Admin\UserAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Usuarios y Roles", label: "Usuarios"}
+        arguments:
+            - ~
+            - Acme\BackendBundle\Entity\User
+            - 'AcmeBackendBundle:UserCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\BackendBundle]]
+            - [ setTemplate, [edit, AcmeBackendBundle:UserAdmin:edit.html.twig]]
+            - [ setTemplate, [list, AcmeBackendBundle:UserAdmin:list.html.twig]]
+
+    sonata.admin.factura:
+        class: Acme\BackendBundle\Admin\FacturaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Factura", label: "Series de Facturas"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Factura
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+    sonata.admin.factura.calendario:
+        class: Acme\BackendBundle\Admin\CalendarioFacturaRutaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Factura", label: "Calendarios de Facturas"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\CalendarioFacturaRuta
+            - 'AcmeBackendBundle:CalendarioFacturaRutaCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            - [ setTemplate, [edit, AcmeBackendBundle:CalendarioFacturaRuta:edit.html.twig]]
+
+    sonata.admin.factura.generada:
+        class: Acme\BackendBundle\Admin\FacturaGeneradaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Factura", label: "Facturas Generadas"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\FacturaGenerada
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+#    sonata.admin.factura.generada:
+#        class: Acme\BackendBundle\Admin\FacturaGeneradaAdmin
+#        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Factura", label: "Facturas Generadas"}
+#        arguments:
+#            - ~
+#            - Acme\TerminalOmnibusBundle\Entity\FacturaGenerada
+#            - ~
+#        calls:
+#            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.log.item:
+        class: Acme\BackendBundle\Admin\LogItemAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Trasas del sistema", label: "Trasas"}
+        arguments:
+            - ~
+            - Acme\BackendBundle\Entity\LogItem
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\BackendBundle]]
+
+    sonata.admin.log.code:
+        class: Acme\BackendBundle\Admin\LogCodeAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Trasas del sistema", label: "Códigos"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\BackendBundle\Entity\LogCode
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\BackendBundle]]
+            
+    sonata.admin.autorizacion.cortesia:
+        class: Acme\BackendBundle\Admin\AutorizacionCortesiaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Autorizaciones", label: "Cortesias"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\AutorizacionCortesia
+            - 'AcmeBackendBundle:AutorizacionCortesiaCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            - [ setTemplate, [edit, AcmeBackendBundle:AutorizacionCortesia:edit.html.twig]]
+
+    sonata.admin.autorizacion.internas:
+        class: Acme\BackendBundle\Admin\AutorizacionInternaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Autorizaciones", label: "Internas"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\AutorizacionInterna
+            - 'AcmeBackendBundle:AutorizacionInternaCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            - [ setTemplate, [edit, AcmeBackendBundle:AutorizacionInterna:edit.html.twig]]
+
+    sonata.admin.boleto.tarifa:
+        class: Acme\BackendBundle\Admin\TarifaBoletoAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Tarifas", label: "Tarifas de Boletos"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TarifaBoleto
+            - 'AcmeBackendBundle:TarifaBoletoCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.encomienda.tarifa:
+        class: Acme\BackendBundle\Admin\TarifaEncomiendaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Tarifas", label: "Tarifas de Encomiendas", show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TarifaEncomienda
+            - 'SonataAdminBundle:CRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.encomienda.tarifa.distancia:
+        class: Acme\BackendBundle\Admin\TarifaEncomiendaDistanciaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Tarifas", label: "Tarifas de Encomienda por Distancia"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TarifaEncomiendaDistancia
+            - 'AcmeBackendBundle:TarifaEncomiendaCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+    sonata.admin.encomienda.tarifa.efectivo:
+        class: Acme\BackendBundle\Admin\TarifaEncomiendaEfectivoAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Tarifas", label: "Tarifas de Encomienda de Efectivo"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TarifaEncomiendaEfectivo
+            - 'AcmeBackendBundle:TarifaEncomiendaCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.encomienda.tarifa.paquetes.peso:
+        class: Acme\BackendBundle\Admin\TarifaEncomiendaPaquetesPesoAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Tarifas", label: "Tarifas de Encomienda de Paquetes por Peso"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TarifaEncomiendaPaquetesPeso
+            - 'AcmeBackendBundle:TarifaEncomiendaCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+    
+    sonata.admin.encomienda.tarifa.paquetes.volumen:
+        class: Acme\BackendBundle\Admin\TarifaEncomiendaPaquetesVolumenAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Tarifas", label: "Tarifas de Encomienda de Paquetes por Volumen"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TarifaEncomiendaPaquetesVolumen
+            - 'AcmeBackendBundle:TarifaEncomiendaCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+    sonata.admin.encomienda.tarifa.especiales:
+        class: Acme\BackendBundle\Admin\TarifaEncomiendaEspecialesAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Tarifas", label: "Tarifas de Encomienda Especiales"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TarifaEncomiendaEspeciales
+            - 'AcmeBackendBundle:TarifaEncomiendaCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.estado.salida:
+        class: Acme\BackendBundle\Admin\EstadoSalidaAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Salida", label: "Estados de salidas"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}            
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\EstadoSalida
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.salida:
+        class: Acme\BackendBundle\Admin\SalidaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Salida", label: "Salidas"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Salida
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.salida.bitacora:
+        class: Acme\BackendBundle\Admin\SalidaBitacoraAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Salida", label: "Bitácora de Salidas" , show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\SalidaBitacora
+            - 'SonataAdminBundle:CRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+    sonata.admin.boleto:
+        class: Acme\BackendBundle\Admin\BoletoAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Boleto", label: "Boletos"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Boleto
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+#    sonata.admin.boleto:
+#        class: Acme\BackendBundle\Admin\BoletoAdmin
+#        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Boleto", label: "Boletos"}
+#        arguments:
+#            - ~
+#            - Acme\TerminalOmnibusBundle\Entity\Boleto
+#            - 'AcmeBackendBundle:BoletoCRUD'
+#        calls:
+#            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+#            - [ setTemplate, [edit, AcmeBackendBundle:Boleto:edit.html.twig]]
+
+    sonata.admin.bus.asiento:
+        class: Acme\BackendBundle\Admin\AsientoBusAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Bus", label: "Asientos", show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\AsientoBus
+            - 'SonataAdminBundle:CRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.reservacion:
+        class: Acme\BackendBundle\Admin\ReservacionAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Reservación", label: "Reservaciones"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Reservacion
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+#    sonata.admin.reservacion:
+#        class: Acme\BackendBundle\Admin\ReservacionAdmin
+#        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Reservación", label: "Reservaciones"}
+#        arguments:
+#            - ~
+#            - Acme\TerminalOmnibusBundle\Entity\Reservacion
+#            - 'AcmeBackendBundle:ReservacionCRUD'
+#        calls:
+#            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+#            - [ setTemplate, [edit, AcmeBackendBundle:Reservacion:edit.html.twig]]
+
+    sonata.admin.encomienda.tipo:
+        class: Acme\BackendBundle\Admin\TipoEncomiendaAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Encomienda", label: "Tipos de Encomiendas" }
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoEncomienda
+            - ~
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+
+    sonata.admin.encomienda:
+        class: Acme\BackendBundle\Admin\EncomiendaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Encomienda", label: "Encomiendas"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Encomienda
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+    sonata.admin.encomienda.bitacora:
+        class: Acme\BackendBundle\Admin\EncomiendaBitacoraAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Encomienda", label: "Bitácora de Encomiendas" , show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\EncomiendaBitacora
+            - 'SonataAdminBundle:CRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.encomienda.especiales.tipo:
+        class: Acme\BackendBundle\Admin\TipoEncomiendaEspecialesAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Encomienda", label: "Tipos de Encomienda Especiales"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoEncomiendaEspeciales
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+            
+    sonata.admin.caja.operacion.tipo:
+        class: Acme\BackendBundle\Admin\TipoOperacionCajaAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Caja", label: "Tipos de Operaciones"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}   
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoOperacionCaja
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.caja.estado:
+        class: Acme\BackendBundle\Admin\EstadoCajaAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Caja", label: "Estados"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}   
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\EstadoCaja
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+     
+    sonata.admin.moneda:
+        class: Acme\BackendBundle\Admin\MonedaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Caja", label: "Monedas"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Moneda
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.caja:
+        class: Acme\BackendBundle\Admin\CajaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Caja", label: "Cajas"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Caja
+            - 'AcmeBackendBundle:CajaCRUD'
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.caja.operacion:
+        class: Acme\BackendBundle\Admin\OperacionCajaAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Caja", label: "Operaciones"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\OperacionCaja
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.caja.tipo.tipo.cambio:
+        class: Acme\BackendBundle\Admin\TipoTipoCambioAdmin
+        tags:
+#            - { name: sonata.admin, manager_type: orm, group: "Caja", label: "Tipos de TipoCambio"}
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}            
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoTipoCambio
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.caja.tipo.cambio:
+        class: Acme\BackendBundle\Admin\TipoCambioAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Caja", label: "Tipos de Cambio"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoCambio
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.scheduler:
+        class: Acme\BackendBundle\Admin\JobAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Scheduling, label: "Jobs" }
+        arguments:
+            - ~
+            - Acme\BackendBundle\Entity\Job
+            - SonataAdminBundle:CRUD
+
+    sonata.admin.impresora:
+        class: Acme\BackendBundle\Admin\ImpresoraAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Impresora", label: "Impresoras"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\Impresora
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.impresora.operaciones:
+        class: Acme\BackendBundle\Admin\ImpresoraOperacionesAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Impresora", label: "Operaciones"}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\ImpresoraOperaciones
+            - ~
+        calls:
+            - [ setTranslationDomain, [Acme\TerminalOmnibusBundle]]
+
+    sonata.admin.impresora.tipo:
+        class: Acme\BackendBundle\Admin\TipoImpresoraAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\TipoImpresora
+            - ~
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+
+    sonata.admin.impresora.plugin:
+        class: Acme\BackendBundle\Admin\PluginImpresionAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, show_in_dashboard: false}
+        arguments:
+            - ~
+            - Acme\TerminalOmnibusBundle\Entity\PluginImpresion
+            - ~
+        calls:
+            - [ setTranslationDomain, [AcmeTerminalOmnibusBundle]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

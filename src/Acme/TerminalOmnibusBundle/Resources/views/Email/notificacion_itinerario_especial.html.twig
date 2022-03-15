@@ -1,0 +1,17 @@
+{{ 'Se ha creado una salida extra en la empresa ' ~ itinerarioEspecial.empresa.alias ~ ' con las siguientes caracteristicas.' }}
+
+IDENTIFICADOR: {{ itinerarioEspecial.id ~ "." }}
+EMPESA: {{ itinerarioEspecial.empresa.alias | upper ~ "." }}
+CREADO EN: {{ itinerarioEspecial.estacionOrigen | upper ~ "." }}
+RUTA: {{ itinerarioEspecial.ruta | upper ~ "." }}
+HORARIO: {{ itinerarioEspecial.fecha | date('d/m/Y h:i A') }}
+CLASE TARIFA: {{ itinerarioEspecial.tipoBus.clase.nombre | upper ~ "." }}
+SUPERVISOR: {{ app.user.fullName ~ "." }}
+TELÉFONO: {{ ((app.user.phone is null or app.user.phone is empty) ? 'N/D' : app.user.phone) ~ "." }}
+MOTIVO: {{ itinerarioEspecial.motivo | upper ~ "." }}
+
+{{ ' ' }}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}

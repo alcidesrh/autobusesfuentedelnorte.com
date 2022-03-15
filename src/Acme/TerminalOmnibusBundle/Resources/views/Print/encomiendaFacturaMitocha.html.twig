@@ -1,0 +1,52 @@
+{#Este formato requiere un tamaño de hoja de 14cm de altura por 20.5 cm de ancho.#}
+{% extends "::print.html.twig" %}
+{% block container %}
+{% set epson300 = tipoImpresora is not empty and tipoImpresora.id is sameas(2) ? true : false %}
+{% set id = 'ENCOMIENDAS_' ~ idsEncomiendas %}     
+<div id="{{ id }}" class="itemEncomiendaFacturaPrint" style="position:relative; height: 82mm; width: {{ epson300 ? 150 : 800 }}mm; border-bottom:1mm none #000000; border-top:1mm none #000000;">
+<label ></label>
+{#{% set text = 'TEXT_ENCOMIENDA_' ~ idsEncomiendas %}                                                     #}
+{#<div style="position:absolute; top: 5mm; left: 70mm;">{{ customQRcodeImg(text, null, 120, 120, 75) }}</div>                                                         #}
+{% set letterSpacing = espacioLetras ? ' letter-spacing: 5px; ' : '' %}
+{% set factura = facturaGenerada.factura.serieResolucionFactura ~ ' ' ~  facturaGenerada.consecutivo %} 
+<label style="position:absolute; top: {{ epson300 ? 25 : 27 }}mm; left: {{ epson300 ? 120 : 250 }}mm; font-size: 14px; width: {{ epson300 ? 58 : 60 }}mm; {{ letterSpacing }} ">{{ factura }}</label>
+<label style="position:absolute; top: {{ epson300 ? 30 : 32 }}mm; left: {{ epson300 ? 10 : 25 }}mm; font-size: 14px; {{ letterSpacing }} ">{{ facturaGenerada.fecha | date('d/m/Y')  }}</label>
+<label style="position:absolute; top: {{ epson300 ? 30 : 32 }}mm; left: {{ epson300 ? 60 : 140 }}mm; font-size: 14px; {{ letterSpacing }} ">{{ primeraEncomienda.estacionOrigen }}</label>
+<label style="position:absolute; top: {{ epson300 ? 30 : 32 }}mm; left: {{ epson300 ? 120 : 235 }}mm; font-size: 14px; {{ letterSpacing }} ">{{ primeraEncomienda.estacionDestino }}</label>
+<label style="position:absolute; top: {{ epson300 ? 37 : 39 }}mm; left: {{ epson300 ? 30 : 33 }}mm; font-size: 14px; {{ letterSpacing }} ">{{ primeraEncomienda.clienteRemitente.nombre }}</label>
+<label style="position:absolute; top: {{ epson300 ? 44 : 46 }}mm; left: {{ epson300 ? 40 : 43 }}mm; font-size: 14px; {{ letterSpacing }}  ">{{ clienteDestinatarioSTR }}</label>
+<label style="position:absolute; top: 46mm; left: {{ epson300 ? 130 : 261 }}mm; font-size: 14px; {{ letterSpacing }} ">{{ nitSTR }}</label>
+
+{% set top = 42 %}
+<table class="itemsGroupEncomienda" style="position:absolute; top: 57mm; width: 100%; display: inline-block;">
+{% for encomienda in encomiendas %}
+<tr class="itemEncomienda" style="margin: 0; padding: 0px; font-size: 13px; line-height: 13px; {{ letterSpacing }} ">
+    <td style="width: 25mm; text-align: center; {{ letterSpacing }} ">
+        <label>{{ encomienda.cantidad }}</label>
+    </td>
+    <td style="width: {{ epson300 ? 120 : 200 }}mm; {{ letterSpacing }} ">
+        <label>{{ "ID: " ~ encomienda.id ~ ". " ~ "Tipo: " ~ encomienda.tipoEncomienda.nombre ~ ". " ~ encomienda.descripcion }}</label>
+    </td> 
+    
+    <td style="width: {{ epson300 ? 10 : 10 }}mm; text-align: center; {{ letterSpacing }} ">
+        <label>{{ facturaGenerada.moneda.sigla }}</label>
+    </td>
+    <td style="width: {{ epson300 ? 25 : 22 }}mm; text-align: {{ epson300 ? 'left' : 'right' }}; {{ letterSpacing }} ">
+        <label>{{ encomienda.precioCalculado | number_format(2) }}</label>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+{% if facturaGenerada.moneda.sigla is not sameas("GTQ") %}
+<label style="position:absolute; top: 85mm; left: 37mm; font-size: 14px; {{ letterSpacing }} ">{{ "TC: " ~ facturaGenerada.tipoCambio.tasa }}</label>		
+{% endif %}
+
+<label style="position:absolute; top: 85mm; left: {{ epson300 ? 100 : 190 }}mm; font-size: 14px; text-align: center; {{ letterSpacing }} ">TOTALES</label>
+<label style="position:absolute; top: 85mm; left: {{ epson300 ? 120 : 225 }}mm; font-size: 14px; text-align: right; {{ letterSpacing }} ">{{ facturaGenerada.moneda.sigla }}</label>
+<label style="position:absolute; top: 85mm; left: {{ epson300 ? 125 : 235 }}mm; font-size: 14px; width: {{ epson300 ? 15 : 25 }}mm; text-align: right; {{ letterSpacing }} ">{{ facturaGenerada.importeTotal | number_format(2) }}</label>
+
+<label style="position:absolute; top: 120mm; left: {{ epson300 ? 50 : 130 }}mm; font-size: 14px; {{ letterSpacing }} ">{{ facturaGenerada.usuario.fullName }}</label>
+
+</div>
+{% endblock %}

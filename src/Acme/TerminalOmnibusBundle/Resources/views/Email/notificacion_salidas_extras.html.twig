@@ -1,0 +1,37 @@
+{{ ' Salidas extras generadas el día : ' ~ fechaDia | date('d/m/Y') ~ ' en la empresa: ' ~ empresa ~ "." }}
+{{ ' ' }}
+{{ '---------  SALIDAS EXTRAS   -------------'}}
+{{ ' ' }}
+{% for salida in salidas %}
+{{ 'IDENTIFICADOR: ' ~ salida.id ~ "."}}
+{{ 'ESTACIÓN: ' ~ salida.itinerario.ruta.estacionOrigen ~ "."}}
+{{ 'HORARIO: ' ~ salida.fecha | date('d/m/Y h:i A') }}
+{{ 'RUTA: ' ~ salida.itinerario.ruta ~ "."}}
+{{ 'ITINERARIO: ' ~ salida.itinerario.tipoStr ~ "."}}
+{{ 'ESTADO: ' ~ salida.estado.nombre | upper ~ "."}}
+{{ 'CLASE TARIFA: ' ~ salida.itinerario.tipoBus.clase.nombre ~ "."}}
+{{ 'BUS: ' ~ ((salida.bus is null) ? 'N/D' : salida.bus.codigo ~ ', PLACA: ' ~ salida.bus.placa ~ "." ) ~ "." }}
+{{ 'PILOTO: ' ~ ((salida.piloto is null) ? 'N/D' : salida.piloto ) ~ "." }}
+{{ 'TELÉFONO: ' ~ ((salida.piloto is null or salida.piloto.telefono is null or salida.piloto.telefono is empty) ? 'N/D' : salida.piloto.telefono) ~ "." }}
+{{ 'MOTIVO: ' ~ salida.itinerario.motivo | upper ~ "." }}
+{{ '-----------  INICIO DE LA LISTA DE BOLETOS DE LA SALIDA CON IDENTIFICADOR ' ~ salida.id ~ '  -----------'}}
+{% set boletos = mapSalidaBoletos[salida.id] %}
+{% for boleto in boletos %}
+{% set facturaGeneradaStr =  ', FACTURA: N/D, IMPORTE: 0.00' %}
+{% if boleto.facturaGenerada is not null %}
+{% set facturaGeneradaStr =  ', FACTURA: ' ~ boleto.facturaGenerada.info2 ~ ', IMPORTE: ' ~ boleto.facturaGenerada.monedaImporte %}
+{% endif %}
+{{ "NRO: " ~ loop.index ~ ', ID: ' ~ boleto.id ~ facturaGeneradaStr ~ ', ESTADO: ' ~ boleto.estado.nombre ~ "." }}
+{% else %}
+NO SE EMITIERON BOLETOS.
+{% endfor %}
+{{ '-----------  FINAL DE LA LISTA DE BOLETOS DE LA SALIDA CON IDENTIFICADOR ' ~ salida.id ~ '  -----------'}}
+{{ ' ' }}
+{{ ' ' }}
+{% endfor %}
+
+{{ ' ' }}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}

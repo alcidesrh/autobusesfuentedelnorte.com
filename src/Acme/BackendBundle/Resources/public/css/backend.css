@@ -1,0 +1,170 @@
+/**  BACKEND  **/
+
+.iconos {
+    margin-top:15px;
+}
+
+.iconos .close {
+    display:none !important;
+}
+
+.iconos .detalle {
+    display:none !important;
+}
+
+.item {
+    position: absolute !important;
+}
+
+.item .close {
+    display:inline-block !important;
+    position:absolute;
+    right:1px;
+    top:-4px;
+}
+
+.item .detalle {
+    display:inline-block !important;
+    position:absolute;
+    bottom: 7px;
+    left: 0px;
+}
+
+.asiento figcaption {
+    color: #000000;
+    font-size: 30px;
+    line-height: 50px;
+    position: relative;
+    text-align: center;
+    top: -50px;
+}
+
+figure{
+    height:40px;
+    width:40px;
+    display:inline-block !important;
+    margin: 5px;
+}
+
+.lista {
+    display:block !important;
+    /*margin-top: 10px;*/
+    border: 1px solid #E3E3E3;
+    border-radius:3px 3px 3px 3px;
+    background-color:#F5F5F5;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+    width: 252px;  /* Se prevee los 2 pixeles del borde */
+    
+/*    height: 1002px;  //20 filas */
+    height: 852px; /* 17 filas */
+    
+    clear:both;
+    content:"";
+    line-height:0;
+    position:relative;
+}
+
+ul.nivel{
+    margin-bottom: 0px!important;
+    border-bottom: none!important;
+}
+
+.tabbable{
+    margin-top: 15px!important;
+}
+
+.control-group > label, control-label{
+    margin-right: 10px;
+    width:150px!important;
+}
+
+.saludo{
+    float:right;
+    line-height:40px;
+    text-align:center;
+}
+
+#acme_backendbundle_create_user_type  ul > li,
+#acme_backendbundle_edit_user_type  ul > li{
+    display:inline-block !important;
+    margin:0 15px;
+}
+
+#acme_backendbundle_create_user_type  ul > li > label,
+#acme_backendbundle_edit_user_type  ul > li > label{
+    display:inline !important;
+}
+
+label[for*='ipRanges']{
+    display:none;
+}
+
+input[name*='ipRanges']{
+    width:165px !important;
+}
+
+div[id*='ipRanges']{
+    display:inline-block !important;
+}
+
+.sonata-collection-delete{
+    margin-top:0px;
+}
+
+.sonata-collection-delete + .control-group{
+    display:inline-block !important;
+}
+
+.empresa{
+    display:inline-block;
+    position:relative;
+    width:auto;
+    margin:0 5%;
+    width: auto;
+    height:40px;
+    line-height:40px;
+}
+.empresa-seleccionado{
+    float:left;
+    margin:25% !important;
+    width:auto;
+}
+
+.empresa-color{
+    display:inline-block;
+    height:30px;
+    width:30px;
+    line-height:30px;
+    margin:4px 10px 3px 4px;
+    vertical-align:middle;
+    border: 1px solid #E3E3E3;
+    border-radius:3px 3px 3px 3px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+}
+
+.empresa-nombre{
+    display:inline !important;
+    position:relative;
+    width:auto;
+    line-height:30px;
+    vertical-align:middle;
+    text-align:center;
+    
+}
+
+.item-mes-dia, 
+th.fecha {
+    text-align: center !important;
+}
+
+.select2-allowclear[id*='year']{
+    width: 85px !important;
+}
+
+div[id*='_backendbundle_boleto_type_']{
+    width: 500px !important;
+}
+
+div[id*='_backendbundle_reservacion_type_']{
+    width: 500px !important;
+}

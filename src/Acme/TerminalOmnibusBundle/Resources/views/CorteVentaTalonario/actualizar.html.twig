@@ -1,0 +1,66 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+     Actualizar Corte de Venta de Talonario
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            actualizarCorteVenta.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+
+<form class="form-horizontal corteVentaTalonarioForm" id="corteVentaTalonarioForm" name="corteVentaTalonarioForm" action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+   
+    <div class="row-fluid">
+    <div class="span6">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>      
+                <tr>
+                    <th style="text-align:center; vertical-align:middle; width: 50%;">Nro</th>
+                    <th style="text-align:left; vertical-align:middle; width: 50%;">Importe</th>
+                </tr>
+            </thead>
+            <tbody id="listItemsBody">
+                <tr class="emptyListDiv">
+                    <td colspan="2" style="text-align:center; vertical-align:middle;">
+                        No existen resultados
+                    </td>
+                </tr>
+                <tr class="prototype hidden">
+                    <td style="text-align:center; vertical-align:middle; width: 50%;" class="numero"></td>
+                    <td style="text-align:center; vertical-align:middle; width: 50%;">
+                        <input data-id='' class="importe" type="number" value="" min="0" max="99999" step="1">
+                    </td>
+                </tr>
+            </tbody>
+        </table>     
+    </div> 
+    </div>
+    
+    </div>  
+    
+    <input type="hidden" id="pathHomeCorteVentaTalonario" value="{{ url('corteVentaTalonario-home') }}"></input>
+    {{ form_rest(form) }}
+    
+</form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="aceptar" href="#" class="btn btn-primary">Aceptar</a>
+    <a id="cancelar" href="{{ url('corteVentaTalonario-home') }}" class="btn">Cancelar</a>
+     
+{% endblock %}
+

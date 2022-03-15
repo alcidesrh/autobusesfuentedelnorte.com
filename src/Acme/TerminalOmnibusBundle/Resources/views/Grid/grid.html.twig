@@ -1,0 +1,8 @@
+<!-- MyProjectMyBundle::grid.html.twig -->
+
+{% if not subRequest %}
+    {{ grid_search(grid) }}
+{% endif %}
+
+{{ grid(grid, 'AcmeTerminalOmnibusBundle:Grid:disable_grid_filters.html.twig') }}
+

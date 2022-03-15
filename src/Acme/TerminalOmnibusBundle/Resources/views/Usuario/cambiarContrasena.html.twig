@@ -1,0 +1,39 @@
+<form id="formCambiarContrasena" action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+        <div class="row-fluid">
+        <div class="span12">  
+            <label class="control-label">Nombre de Usuario:</label>
+            <input class="input-xlarge" type="text" placeholder="No definido" disabled value="{{ app.user.username  }}"/> 
+        </div> 
+        </div>
+        <div class="row-fluid">
+        <div class="span12">  
+        {{ form_label(form.contrasenaAnterior) }}
+        {{ form_errors(form.contrasenaAnterior ) }}
+        {{ form_widget(form.contrasenaAnterior , {'attr': {'placeholder': 'Entre la contraseña actual' } }) }}
+        </div> 
+        </div> 
+        <div class="row-fluid">
+        <div class="span12">  
+        {{ form_label(form.contrasenaNueva.first) }}
+        {{ form_errors(form.contrasenaNueva.first) }}
+        {{ form_widget(form.contrasenaNueva.first , {'attr': {'placeholder': 'Entre la nueva contraseña' } }) }}
+        </div> 
+        </div> 
+        <div class="row-fluid">
+        <div class="span12">  
+        {{ form_label(form.contrasenaNueva.second) }}
+        {{ form_errors(form.contrasenaNueva.second) }}
+        {{ form_widget(form.contrasenaNueva.second , {'attr': {'placeholder': 'Entre la nueva contraseña' } }) }}
+        </div> 
+        </div> 
+        
+    </div>    
+        
+    {{ form_rest(form) }}
+    
+</form>

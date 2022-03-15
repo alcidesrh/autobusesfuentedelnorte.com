@@ -1,0 +1,14 @@
+menu:
+  principal:
+      inicio-name: About
+      inicio-titulo: Pagina de bienvenida del sitio (Ingles)
+      servicios-name: Services
+      servicios-titulo: Servicios ofrecidos por el terapeuta (Ingles)
+      precios-name: Prices
+      precios-titulo: Precios de los servicios (Ingles)
+      consulta-name: Consultations
+      consulta-titulo: Solicitar una consulta con el terapeuta (Ingles)
+      quienSoy-name: Our staff
+      quienSoy-titulo: Curriculum del terapeuta (Ingles)
+      contactenos-name: Contacts
+      contactenos-titulo: Contactar con el terapeuta (Ingles)

@@ -1,0 +1,38 @@
+<form action="{{ path('anularEncomienda-case1') }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+    <div class="row-fluid">
+    <div class="span12">  
+        <label> <strong> ¿Está seguro que desea anular las {{ cantidadEncomiendas }} encomiendas asociadas a la factura? </strong> </label>
+    </div> 
+    </div>
+    <div class="row-fluid">
+        <div class="span12">  
+            Identificadores de Encomiendas: {{ idEncomiendasFacturas }}
+        </div>    
+    </div>
+    <div class="row-fluid">
+    <div class="span12">  
+    <label class="control-label">Importe Total a Entregar:</label>
+    <div class="input-prepend">    
+        <span class="add-on">GTQ</span>
+        <input class="span12" type="text" placeholder="Importe" disabled value="{{ totalEntregar }}"/> 
+    </div>     
+    </div>
+    </div>
+    <div class="row-fluid">
+    <div class="span12">  
+        {{ form_label(form.observacion) }}
+        {{ form_widget(form.observacion) }}
+    </div>
+    </div>
+    <span class="help-block">
+        Nota: Para proceder con la anulación el cliente debe entregar la factura original.
+    </span>
+    </div> 
+    {{ form_rest(form) }}
+    
+</form>

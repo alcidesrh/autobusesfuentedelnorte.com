@@ -1,0 +1,321 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+Registrar Encomiendas
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            registrarEncomienda.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal encomiendaForm" id="encomiendaForm" name="encomiendaForm" action="{{ path('encomiendas-registrar-case1') }}" method="post" {{ form_enctype(form) }}>
+       
+        <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+        {{ form_errors(form) }}
+        
+        <div class="row-fluid"> 
+        <div class="span6">
+            {{ form_label(form.clienteRemitente) }}
+            {{ form_widget(form.clienteRemitente , {'attr': {'placeholder': 'Seleccione el cliente remitente.', 'data-pathListarClientesPaginando': path('ajaxListarClientesPaginando') } }) }}
+            <span class="clienteActions">
+                <a id="addClienteRemitente" class="btn btn-small add" data-title="Adicionar Cliente" href="{{ path('cliente-crear-case1') }}"><i class="icon-plus"></i></a>
+                <a id="updateClienteRemitente" class="btn btn-small" data-title="Actualizar Cliente" data-index="registrar_encomienda_command_clienteRemitente" data-index-message="Debe seleccionar un cliente." href="{{ path('cliente-actualizar-case1') }}"><i class="icon-edit"></i></a>
+                <a id="seachClienteRemitente" class="btn btn-small" data-title="Buscador de cliente" data-fullscreen="true" data-find="true" data-grid=".clienteGrid" href="{{ path('cliente-buscador-case1') }}"><i class="icon-search"></i></a>
+            </span>
+            {{ form_errors(form.clienteRemitente ) }}
+        </div>
+        <div class="span6">
+            {{ form_label(form.clienteDestinatario) }}
+            {{ form_widget(form.clienteDestinatario , {'attr': {'placeholder': 'Seleccione el cliente destinatario.', 'data-pathListarClientesPaginando': path('ajaxListarClientesPaginando') } }) }}
+            <span class="clienteActions">
+                <a id="addClienteDestinatario" class="btn btn-small add" data-title="Adicionar Cliente" href="{{ path('cliente-crear-case1') }}"><i class="icon-plus"></i></a>
+                <a id="updateClienteDestinatario" class="btn btn-small" data-title="Actualizar Cliente" data-index="registrar_encomienda_command_clienteDestinatario" data-index-message="Debe seleccionar un cliente." href="{{ path('cliente-actualizar-case1') }}"><i class="icon-edit"></i></a>
+                <a id="seachClienteDestinatario" class="btn btn-small" data-title="Buscador de cliente" data-fullscreen="true" data-find="true" data-grid=".clienteGrid" href="{{ path('cliente-buscador-case1') }}"><i class="icon-search"></i></a>
+            </span>
+            {{ form_errors(form.clienteDestinatario ) }}
+        </div>
+        </div>
+        
+        <div class="row-fluid">
+        <div class="span6">
+            {{ form_label(form.estacionOrigen) }}
+            {{ form_widget(form.estacionOrigen , {'attr': {'placeholder': 'Seleccione la estación origen' } }) }}
+            {{ form_errors(form.estacionOrigen ) }}
+        </div>
+        <div class="span6">
+            {{ form_label(form.boleto) }}
+            {{ form_widget(form.boleto , {'attr': {'placeholder': 'Seleccione el boleto', 'data-pathlistarboletospaginando' : path('ajaxListarBoletosPaginando') } }) }}
+            {{ form_errors(form.boleto ) }}
+        </div>
+        </div> 
+        
+        <input type="hidden" id="pathGetInformacionBoleto" value="{{ url('ajaxGetInformacionBoleto') }}"></input>
+        <input type="hidden" id="pathGetRutasPorEstacion" value="{{ url('ajaxGetRutasPorEstacion') }}"></input>
+        <input type="hidden" id="pathGetEstacionesDestinosPorRuta" value="{{ url('ajaxGetEstacionesDestinosPorRuta') }}"></input>
+        
+        <div class="row-fluid margin-top-2">
+        <div class="span12">
+            <span>Rutas</span>
+            <span class="rutasActions pull-right">
+                <a id="adicionarRuta" class="btn btn-small" href="#"><i class="icon-plus"></i></a>
+            </span>
+            <table id="rutaTable" class="table table-striped table-bordered table-hover margin-top-1">
+            <thead>      
+                <tr>
+                    <th style="width: 10%;" class="numeroRutaTH">Nro</th>
+                    <th style="width: 50%;" class="nombreRutaTH">Ruta</th>
+                    <th style="width: 30%;" class="estacionFinalRutaTH">Estación Final</th>
+                    <th style="width: 10%;" class="accionesRutaTH">Acciones</th>
+                </tr>
+             </thead>
+             <tbody id="rutaBody">
+                <tr id="rutaVacioTR">
+                    <td colspan="4"> No existen elementos.</td> 
+                </tr>
+             </tbody>
+             </table>
+        </div>
+        </div> 
+        
+        <div class="row-fluid margin-top-2">
+        <div class="span12">
+            <span>Encomiendas</span>
+            <span class="encomiendaActions pull-right">
+                <a id="adicionarEncomienda" class="btn btn-small" href="#"><i class="icon-plus"></i></a>
+            </span>
+            <table id="clienteEncomiendaTable" class="table table-striped table-bordered table-hover margin-top-1">
+            <thead>      
+                <tr>
+                    <th style="width: 15%;" class="cantidadEncomiendaTH">Cantidad</th>
+                    <th style="width: 15%;" class="cantidadEncomiendaTH">Declarado</th>
+                    <th style="width: 10%;" class="tipoEncomiendaTH">Tipo</th>
+                    <th style="width: 50%;" class="descripcionEncomiendaTH">Descripción</th>
+                    <th style="width: 10%;" class="descripcionEncomiendaTH">Acciones</th>
+                </tr>
+             </thead>
+             <tbody id="clienteEncomiendaBody">
+                <tr id="clienteEncomiendaVacioTR">
+                    <td colspan="5"> No existen elementos.</td> 
+                </tr>
+             </tbody>
+             </table>    
+        </div>   
+        </div>
+        
+        <div class="row-fluid margin-top-2">
+        <div class="span4">
+            {{ form_label(form.codigoExternoCliente) }}
+            {{ form_widget(form.codigoExternoCliente) }}
+            {{ form_errors(form.codigoExternoCliente) }}
+        </div>
+        </div> 
+        
+        <div id="adicionarEncomiendaDIV" style="display: none">
+            <div class="row-fluid"> 
+            <div class="span6">
+            {{ form_label(form.cantidadVirtual) }}
+            {{ form_widget(form.cantidadVirtual , {'attr': {'placeholder': 'Entre la cantidad del producto.' } }) }}
+            {{ form_errors(form.cantidadVirtual ) }}    
+            </div>
+            <div class="span6">
+            <div id="valorDeclaradoVirtualDIV" class="row-fluid">
+            {{ form_label(form.valorDeclaradoVirtual) }}
+            {{ form_widget(form.valorDeclaradoVirtual , {'attr': {'placeholder': 'Entre el valor declarado.' } }) }}
+            {{ form_errors(form.valorDeclaradoVirtual ) }}    
+            </div>
+            </div> 
+            </div>
+            <div class="row-fluid"> 
+            <div class="span12">
+            {{ form_label(form.tipoEncomiendaVirtual) }}
+            {{ form_widget(form.tipoEncomiendaVirtual , {'attr': {'placeholder': 'Seleccione el tipo de producto.' } }) }}
+            {{ form_errors(form.tipoEncomiendaVirtual ) }}    
+            </div>  
+            </div>
+            <div id="tipoEncomiendaEspecialVirtualDIV" class="row-fluid"> 
+            <div class="span12">
+            {{ form_label(form.tipoEncomiendaEspecialVirtual) }}
+            {{ form_widget(form.tipoEncomiendaEspecialVirtual, {'attr': {'placeholder': 'Seleccione la encomienda especial.', 'data-pathListarTipoEncomiendaEspecialPaginando': path('ajaxListarTipoEncomiendaEspecialPaginando') } }) }}
+            {{ form_errors(form.tipoEncomiendaEspecialVirtual ) }}   
+            </div>  
+            </div>
+            <div id="paqueteVirtualDIV" class="row-fluid"> 
+                
+            <div class="row-fluid">     
+            <div class="span4">
+            {{ form_label(form.pesoVirtual) }}
+            {{ form_widget(form.pesoVirtual) }}
+            {{ form_errors(form.pesoVirtual ) }}    
+            </div> 
+            </div> 
+                
+            <div class="row-fluid bloqueVolumen">     
+            <div class="span4">
+            {{ form_label(form.volumenAltoVirtual) }}
+            {{ form_widget(form.volumenAltoVirtual) }}
+            {{ form_errors(form.volumenAltoVirtual ) }}    
+            </div> 
+             <div class="span4">
+            {{ form_label(form.volumenAnchoVirtual) }}
+            {{ form_widget(form.volumenAnchoVirtual) }}
+            {{ form_errors(form.volumenAnchoVirtual ) }}    
+            </div> 
+             <div class="span4">
+            {{ form_label(form.volumenProfundidadVirtual) }}
+            {{ form_widget(form.volumenProfundidadVirtual) }}
+            {{ form_errors(form.volumenProfundidadVirtual ) }}    
+            </div>
+            </div>    
+                
+            </div>
+            <div class="row-fluid"> 
+            <div class="span12">
+            {{ form_label(form.descripcionVirtual) }}
+            {{ form_widget(form.descripcionVirtual , {'attr': {'placeholder': 'Entre la descripción del producto.' } }) }}
+            {{ form_errors(form.descripcionVirtual ) }}    
+            </div>  
+            </div>
+        </div>
+        
+        <div id="adicionarRutaDIV" style="display: none">
+            <div class="row-fluid"> 
+            <div class="span12">
+            {{ form_label(form.rutaVirtual) }}
+            {{ form_widget(form.rutaVirtual , {'attr': {'placeholder': 'Seleccione la ruta.' } }) }}
+            {{ form_errors(form.rutaVirtual ) }}    
+            </div>  
+            </div>
+            <div id="estacionFinalDIV" class="row-fluid"> 
+            <div class="span12">
+            {{ form_label(form.estacionFinalVirtual) }}
+            {{ form_widget(form.estacionFinalVirtual , {'attr': {'placeholder': 'Seleccione la estación final.' } }) }}
+            {{ form_errors(form.estacionFinalVirtual ) }}    
+            </div>  
+            </div>
+        </div>
+        
+        <div id="cortesiaDIV" style="display: none">
+            <div class="row-fluid"> 
+            <div class="span12">
+                <label for="pinAutorizacionCortesia">PIN de autorización</label>
+                <input style="text-transform: uppercase;" type="text" placeholder="XXXX-XXXX-XXXX"  autofocus autocomplete="off" class="span8" id="pinAutorizacionCortesia" required="required">
+            </div>  
+            </div>
+            <span class="help-block totalEncomiendasEfectivo"></span>
+        </div>
+        <div id="internaDIV" style="display: none">
+            <div class="row-fluid"> 
+            <div class="span12">
+                <label for="pinAutorizacionInterna">PIN de autorización</label>
+                <input style="text-transform: uppercase;" type="text" placeholder="XXXX-XXXX-XXXX"  autofocus autocomplete="off" class="span8" id="pinAutorizacionInterna" required="required">
+            </div>  
+            </div>
+            <span class="help-block totalEncomiendasEfectivo"></span>
+        </div>
+        <div id="facturaDIV" style="display: none">
+            <div class="row-fluid bloque0">
+                <div class="span12">
+                    {{ form_label(form.serieFacturaVirtual) }}
+                    {{ form_widget(form.serieFacturaVirtual) }}
+                </div>
+            </div>
+            <div class="row-fluid bloque1"> 
+            <div class="span6">
+                {{ form_label(form.tipoPagoVirtual) }}
+                {{ form_widget(form.tipoPagoVirtual , {'attr': {'placeholder': 'Seleccione el tipo de pago.' } }) }}
+                {{ form_errors(form.tipoPagoVirtual ) }}
+            </div>
+            <div class="span6">
+                <span>Total Neto. </span>
+                <span class="descuentoSpan" style="color: red;"></span>
+                <div class="input-prepend">
+                <span class="add-on">GTQ</span>
+                {{ form_widget(form.totalNetoVirtual , {'attr': {'placeholder': 'Total neto.' } }) }}
+                </div>
+                {{ form_errors(form.totalNetoVirtual ) }}
+            </div>    
+            </div>
+            <div class="row-fluid bloque2"> 
+            <div class="span6">
+                {{ form_label(form.monedaPagoVirtual) }}
+                {{ form_widget(form.monedaPagoVirtual , {'attr': {'placeholder': 'Seleccione la moneda de pago.' } }) }}
+                {{ form_errors(form.monedaPagoVirtual ) }}
+            </div>
+            <div class="span6">
+                {{ form_label(form.referenciaExternaVirtual) }}
+                {{ form_widget(form.referenciaExternaVirtual , {'attr': {'placeholder': 'XXXXXXXXXXXXXXXXXXXX', 'maxlength' : '20' } }) }}
+                {{ form_errors(form.referenciaExternaVirtual ) }}
+            </div>
+            </div>
+            <div class="row-fluid bloque3"> 
+            <div class="span6">
+                {{ form_label(form.tasaVirtual) }}
+                {{ form_widget(form.tasaVirtual , {'attr': {'placeholder': 'Tasa aplicada.' } }) }}
+                {{ form_errors(form.tasaVirtual ) }}
+            </div>
+            <div class="span6">
+                {{ form_label(form.totalPagoVirtual) }}
+                <div class="input-prepend">
+                <span id="prependTotalPagoVirtual" class="add-on">GTQ</span>
+                {{ form_widget(form.totalPagoVirtual , {'attr': {'placeholder': 'Total neto.' } }) }}
+                </div>
+                {{ form_errors(form.totalPagoVirtual ) }}
+            </div>
+            </div>
+            <div class="row-fluid bloque4"> 
+            <div class="span6">
+                {{ form_label(form.efectivoVirtual) }}
+                <div class="input-prepend">
+                <span id="prependEfectivoVirtual" class="add-on">GTQ</span>
+                {{ form_widget(form.efectivoVirtual , {'attr': {'placeholder': 'Efectivo entregado por el cliente.' } }) }}
+                </div>
+                {{ form_errors(form.efectivoVirtual ) }}
+            </div>
+            <div class="span6">
+                {{ form_label(form.vueltoVirtual) }}
+                <div class="input-prepend">
+                <span class="add-on">GTQ</span>
+                {{ form_widget(form.vueltoVirtual , {'attr': {'placeholder': 'Efectivo a entregar al cliente.' } }) }}
+                </div>
+                {{ form_errors(form.vueltoVirtual ) }}
+            </div>
+            </div>
+            <span class="help-block totalEncomiendasEfectivo"></span>
+        </div>
+        
+        <input type="hidden" id="aplicarTarifaVolumen" value="{{ getParameter('aplicar_tarifa_volumen') }}"></input>
+        <input type="hidden" id="pathSeriesActivaPorEstacion" value="{{ url('ajaxSeriesActivaPorEstacion') }}"></input>
+        <input type="hidden" id="pathMonedasCajasAbiertas" value="{{ url('ajaxMonedasCajasAbiertas') }}"></input>
+        <input type="hidden" id="pathCalcularImporteTotalMonedaBase" value="{{ url('ajaxCalcularImporteTotalMonedaBaseEncomienda') }}"></input>
+        <input type="hidden" id="pathCalcularImporteTotalPorMoneda" value="{{ url('ajaxCalcularImporteTotalPorMoneda') }}"></input>
+        <input type="hidden" id="pathPrintEncomiendaDatos" value="{{ url('ajaxPrintDatosEncomienda') }}"></input> 
+        <input type="hidden" id="pathPrintEncomiendaFactura" value="{{ url('ajaxPrintFacturaEncomienda') }}"></input>
+        <input type="hidden" id="pathHomeEncomienda" value="{{ url('encomiendas-home') }}"></input>
+        {{ form_rest(form) }}
+        
+    </form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+{#    <a id="printStiker" class="btn btn-small" style="float: left;">Imprimir Stiker</a>  #}
+    <a id="facturar" href="#" class="btn btn-primary">Facturar</a>
+    <a id="porCobrar" href="#" class="btn btn-primary">Por Cobrar</a>
+{#    <a id="autorizacionCortesia" href="#" class="btn btn-primary">Autorización Cortesía</a>#}
+    <a id="autorizacionInterna" href="#" class="btn btn-primary">Autorización Interna</a>
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}
+
+
+
+
+
+

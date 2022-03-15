@@ -1,0 +1,19 @@
+{{ 'Pilotos con licencias próximas a vencer en la empresa: ' ~ empresa ~ "." }}
+{{ '---------  PILOTOS   -------------'}}
+{% for piloto in pilotos %}
+CÓDIGO: {{ piloto.codigo ~ "." }}
+NOMBRE: {{ piloto.fullName ~ "." }}
+FECHA DE NACIMIENTO: {{ ((piloto.fechaNacimiento is null) ? 'N/D' : piloto.fechaNacimiento | date('d/m/Y')) ~ "." }}
+LICENCIA: {{ ((piloto.numeroLicencia is null or piloto.numeroLicencia is empty) ? 'N/D' : piloto.numeroLicencia) ~ "." }}
+FECHA DE VENCIMIENTO: {{ ((piloto.fechaVencimientoLicencia is null) ? 'N/D' : piloto.fechaVencimientoLicencia | date('d/m/Y')) ~ "." }}
+DPI: {{ ((piloto.dpi is null or piloto.dpi is empty) ? 'N/D' : piloto.dpi) ~ "." }}
+SEGURO SOCIAL: {{ ((piloto.seguroSocial is null or piloto.seguroSocial is empty) ? 'N/D' : piloto.seguroSocial) ~ "." }}
+TELÉFONO: {{ ((piloto.telefono is null or piloto.telefono is empty) ? 'N/D' : piloto.telefono) ~ "." }}
+{{ ' ' }}
+{% endfor %}
+
+{{ ' ' }}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}

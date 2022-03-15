@@ -1,0 +1,44 @@
+{% extends "::frontend.html.twig" %}
+
+{% block containerSection %}
+
+    {{ parent() }} 
+
+    <div class="line margin-top-1"></div>
+    
+    <form action="{{ path('usuario_registrar') }}" method="post" {{form_enctype(form) }}>
+        
+        {{ form_errors(form) }}
+        
+        <fieldset class="control-group">
+            <legend> Datos personales</legend>
+            {{ form_row(form.nombre) | accesskey }} 
+            {{ form_row(form.apellidos) | accesskey }}
+            {{ form_row(form.fechaNacimiento) | accesskey }}
+            {{ form_row(form.dni) | accesskey }}
+            {{ form_row(form.direccion) | accesskey }}
+        </fieldset>
+        
+        <fieldset class="control-group">
+            <legend>Datos de acceso</legend>
+            {{ form_row(form.email) | accesskey }}
+            {{ form_row(form.password) | accesskey }}
+        </fieldset>
+        
+        <fieldset class="control-group">
+            <legend>Otros datos</legend>
+            {{ form_errors(form.permiteEmail) }}
+            {{ form_widget(form.permiteEmail) }}
+            <span>{{ form_label(form.permiteEmail, "Me gustaría recibir el boletín de ofertas") | accesskey('o') }}</span>
+        </fieldset>
+        
+        {{ form_rest(form) }}
+        
+        <nav class="form-actions">
+            <button class="btn btn-primary" type="submit" tabindex="8" value="Registrarme">Registrarme</button>
+        </nav>
+        
+    </form>
+    
+{% endblock %}
+

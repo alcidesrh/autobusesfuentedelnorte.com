@@ -1,0 +1,62 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+   Configurar Factura Encomienda
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            configurarFacturaEncomienda.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+
+<form class="form-horizontal configurarFacturaForm" id="configurarFacturaForm" name="configurarFacturaForm" action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+    
+    <div class="row-fluid"> 
+    <div class="span12">
+    <label class="required">Estación:</label>
+    <input class="span6" type="text" disabled value="{{ configurarFacturaModel.estacion }}"/>
+    </div>
+    </div>
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.empresa) }}
+    {{ form_errors(form.empresa ) }}
+    {{ form_widget(form.empresa , {'attr': {'placeholder': 'Seleccione la empresa'} }) }}
+    </div>
+    </div> 
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.factura) }}
+    {{ form_errors(form.factura ) }}
+    {{ form_widget(form.factura , {'attr': {'placeholder': 'Seleccione la factura'} }) }}
+    </div>
+    </div>
+    
+    </div>  
+    
+     <input type="hidden" id="pathListarFacturas" value="{{ url('ajaxListarFacturas') }}"></input>
+    {{ form_rest(form) }}
+    
+</form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="aceptar" href="#" class="btn btn-primary">Aceptar</a>
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}

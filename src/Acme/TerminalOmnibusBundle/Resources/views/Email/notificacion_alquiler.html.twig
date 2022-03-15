@@ -1,0 +1,25 @@
+Se le informa que ha iniciado un alquiler con las siguientes características:
+{{ 'ID: ' ~ alquiler.id ~ "."}}
+{{ 'Fecha Inicial: ' ~ alquiler.fechaInicial | date('d/m/Y') }}
+{{ 'Fecha Final: ' ~ alquiler.fechaFinal | date('d/m/Y') }}
+{{ 'EMPRESA: ' ~ alquiler.empresa.alias ~ "."}}
+{{ 'BUS: ' ~ alquiler.bus.codigo ~ ', PLACA: ' ~ alquiler.bus.placa ~ "." }}
+{{ 'PILOTO1: ' ~ alquiler.piloto ~ "."}}
+{{ 'PILOTO2: ' ~ alquiler.pilotoAux ~ "."}}
+{{ 'IMPORTE: GTQ' ~ alquiler.importe ~ "." }}
+{{ 'OBSERVACIÓN: ' ~ alquiler.observacion ~ "." }}
+{{ 'SUPERVISOR: ' ~ app.user.fullName ~ "." }}
+{{ 'TELÉFONO: ' ~ ((app.user.phone is null or app.user.phone is empty) ? 'N/D' : app.user.phone) ~ "." }}
+{{ ' ' }}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}
+
+
+
+
+
+                 
+                  
+              

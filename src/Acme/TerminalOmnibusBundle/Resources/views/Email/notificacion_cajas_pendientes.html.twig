@@ -1,0 +1,22 @@
+{{ ' Cajas no cerradas hasta el día : ' ~ fechaDia | date('d/m/Y') ~ ' en la estación: ' ~ estacion ~ "." }}
+{{ ' ' }}
+{{ '---------  CAJAS PENDIENTES   -------------'}}
+{{ ' ' }}
+{% for caja in cajas %}
+{{ 'NRO: ' ~ loop.index }}
+{{ 'ID: ' ~ caja.id }}
+{{ 'USUARIO: ' ~ caja.usuario }}
+{{ 'ESTADO: ' ~ caja.estado.nombre }}
+{{ 'MONEDA: ' ~ caja.moneda.sigla }}
+{{ 'FECHA CREACIÓN: ' ~ ((caja.fechaCreacion is null) ? 'N/D' : caja.fechaCreacion | date('d/m/Y H:i:s')) ~ "."  }}
+{{ 'FECHA APERTURA: ' ~ ((caja.fechaApertura is null) ? 'N/D' : caja.fechaApertura | date('d/m/Y H:i:s')) ~ "." }}
+{{ 'FECHA CIERRE: ' ~  ((caja.fechaCierre is null) ? 'N/D' : caja.fechaCierre | date('d/m/Y H:i:s')) ~ "." }}
+{{ 'FECHA CANCELACIÓN: ' ~ ((caja.fechaCancelacion is null) ? 'N/D' : caja.fechaCancelacion | date('d/m/Y H:i:s')) ~ "." }}
+{{ ' ' }}
+{% endfor %}
+
+{{ ' ' }}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}

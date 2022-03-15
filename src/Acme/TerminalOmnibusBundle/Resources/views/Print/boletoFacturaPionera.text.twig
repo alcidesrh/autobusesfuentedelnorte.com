@@ -1,0 +1,44 @@
+{% extends "::print.html.twig" %}
+{% block tamanoimpresion %}
+    <input type="hidden" id="idtamanoimpresion" name="idtamanoimpresion"  value="1" />
+{% endblock %}
+{% block container %}
+{% set dataHex = {'#':'\x23','$':'\x24','á':'\x40','Á':'\x40','é':'\x5E','É':'\x5E','í':'\x7B','Í':'\x7B','ó':'\x7D','Ó':'\x7D','ú':'\x7E','Ú':'\x7E','ñ':'\x7C','Ñ':'\x5C'} %}
+{% set showline = false %}
+{% set margin = '  ' %}
+{% for boleto in boletos %}
+{{ (loop.first ? '' : '\r' ) ~ (showline ? '01' : margin) ~ '\r' }}
+{{ (showline ? '02' : '') ~ '\r' }}
+{{ (showline ? '03' : '') ~ '\r' }}
+{{ (showline ? '04' : '') ~ '\r' }}Agente de Retención de IVA
+{{ (showline ? '05' : '') ~ '\r' }}
+{{ (showline ? '06' : margin) ~ processText(horaSalida | date('h:i A'), {'text_init':'     ', 'text_length':24}) ~ processText(boleto.salida.fecha | date('d/m/Y'), {'text_length':22}) ~ processText((boleto.asientoBus is not empty ? boleto.asientoBus.numero : 'N/D'), {'text_length':4}) ~ '\r' }}
+{{ (showline ? '07' : '') ~ '\r' }}
+{{ (showline ? '08' : margin) ~ processText(boleto.estacionOrigen.nombre, {'text_init':' ', 'text_length':30}) ~ processText(boleto.estacionDestino.nombre, {'text_length':30}) ~ '\r' }}
+{{ (showline ? '09' : '') ~ '\r' }}
+{{ (showline ? '10' : margin) ~ processText((boleto.clienteDocumento.nit is empty ? 'CF' : boleto.clienteDocumento.nit), {'text_init':' ', 'text_length':20}) ~ '\r' }}
+{{ (showline ? '11' : '') ~ '\r' }}
+{{ (showline ? '12' : margin) ~ processText(boleto.clienteDocumento.nombre, {'text_init':' ', 'text_length':60}) | replace(dataHex) ~ '\r' }}
+{{ (showline ? '13' : '') ~ '\r' }}
+{{ (showline ? '14' : margin) ~ processText(boleto.clienteBoleto.nombre, {'text_init':' ', 'text_length':60}) | replace(dataHex) ~ '\r' }}
+{{ (showline ? '15' : margin) ~ '            ' ~ getBarCodeEAN8(boleto.id) ~ processText((boleto.facturaGenerada.moneda.sigla ~ ' ' ~ (boleto.reasignado is null ? boleto.facturaGenerada.importeTotal | number_format(2) : '0.00')), {'text_init':23, 'text_length':50}) ~ '\r' }}
+{{ (showline ? '16' : margin) ~ processText((boleto.facturaGenerada.moneda.sigla ~ ' ' ~ (boleto.reasignado is not null ? boleto.facturaGenerada.importeTotal | number_format(2) : '0.00')), {'text_init':35, 'text_length':50}) ~ '\r' }}
+{{ (showline ? '17' : margin) ~ processText((boleto.facturaGenerada.moneda.sigla ~ ' ' ~ (boleto.facturaGenerada.importeTotal | number_format(2))), {'text_init':35, 'text_length':50}) ~ '\r' }}
+{{ (showline ? '18' : margin) ~ processText('ID:' ~ boleto.id ~ ', Factura:' ~ boleto.facturaGenerada.factura.serieResolucionFactura ~ ' ' ~  boleto.facturaGenerada.consecutivo ~ ', ' ~ boleto.facturaGenerada.factura.empresa.alias ~ '. TP:' ~ boleto.tipoPago.nombre | replace(dataHex) ~ '.', {'text_init':' ', 'text_length':60}) ~ '\r' }}
+{{ (showline ? '19' : margin) ~ processText(boleto.estacionCreacion ~ '. ' ~ boleto.fechaCreacion | date('d/m/Y h:i A'), {'text_init':12, 'text_length':60}) ~ '\r' }}
+{{ (showline ? '20' : '') ~ '\r' }}
+{{ (showline ? '21' : '') ~ '\r' }}
+{{ (showline ? '22' : '') ~ '\r' }}{# INI - EmitirDTEGenerico - 11/10/2020 23:00 Hrs. - EEAR #}
+{% for sAutorizacionUUID in sAutorizacionUUIDr %}{% if loop.parent.loop.index - loop.index == 0 %}
+{{ (showline ? '23' : margin) ~ processText('AutorizadoUUID:' ~ sAutorizacionUUID.sAutorizacionUUIDok, {'text_init':' ', 'text_length':60}) ~ '\r' }}
+{% endif %}{% endfor %}
+{% for sNumeroDTE in sNumeroDTEr %}{% if loop.parent.loop.index - loop.index == 0 %}{% for sSerieDTE in sSerieDTEr %}{% if loop.parent.loop.parent.loop.index - loop.index == 0 %}
+{{ (showline ? '24' : margin) ~ processText('NumeroDTE:' ~ sNumeroDTE.sNumeroDTEok ~ ', SerieDTE:' ~ sSerieDTE.sSerieDTEok, {'text_init':' ', 'text_length':60}) ~ '\r' }}{% endif %}{% endfor %}{% endif %}{% endfor %}{% for sFechaCertificaDTE in sFechaCertificaDTEr %}{% if loop.parent.loop.index - loop.index == 0 %}
+{{ (showline ? '25' : margin) ~ processText('FechaCertificaDTE:' ~ sFechaCertificaDTE.sFechaCertificaDTEok | date('d/m/Y h:i A') ~ '.', {'text_init':' ', 'text_length':60}) ~ '\r' }}
+{% endif %}{% endfor %}{# END - EmitirDTEGenerico - 11/10/2020 23:00 Hrs. - EEAR #}
+{{ (showline ? '26' : '') ~ '\r' }}
+{{ (showline ? '27' : '') ~ '\r' }}
+{{ (showline ? '28' : margin) ~ processText((boleto.facturaGenerada.moneda.sigla ~ ' ' ~ (boleto.facturaGenerada.importeTotal | number_format(2))), {'text_init':35, 'text_length':50}) ~ '\r' }}
+{{ (showline ? '29' : margin) ~ processText((boleto.asientoBus is not empty ? boleto.asientoBus.numero : 'N/D'), {'text_init':40, 'text_length':45}) ~ '\r' }}
+{{ (showline ? '30' : '') ~ '\r' }}
+{{ '\x0C' }}{% endfor %}{% endblock %}

@@ -1,0 +1,139 @@
+-----------------------------------------------------------------------------------------------------------------
+#1. CAMBIO EN LA CLASE Doctrine\DBAL\Platforms\SQLServerPlatform
+-----------------------------------------------------------------------------------------------------------------
+FECHA: 2013/11/02
+CAUSA: Cuado se estaba administrando el modulo Itinerario Ciclico con Sonata sql server lanzo la excepcion:
+"Sintaxis incorrecta junto a la palabra clave 'with'. Si esta instrucción es una expresión de tabla común, una cláusula xmlnamespaces o una cláusula 
+de contexto de seguimiento de cambios, la instrucción anterior debe terminarse con punto y coma."
+La consulta generada de forma automatica por sonata fue:
+SELECT count(DISTINCT i0_.id) AS sclr0 FROM itineario_ciclico i1_ INNER JOIN itineario i0_ ON i1_.id = i0_.id WITH (NOLOCK)
+El problema consiste en que no previeron la herencia y cocatenan al final del sql la expresion WITH (NOLOCK).
+SOLUCION: En la clase SQLServerPlatform en el metodo appendLockHint se sustituye la linea 
+return $fromClause . $lockClause;
+por
+return $fromClause = str_replace("_ ", "_ " .$lockClause. " ", $fromClause);
+
+-----------------------------------------------------------------------------------------------------------------
+#2. PROBLEMA CON LAS ANOTACIONES @Assert\Date(), @Assert\DateTime(), @Assert\Time()
+-----------------------------------------------------------------------------------------------------------------
+FECHA: 2013/11/02
+CAUSA: Cuado se estaba administrando el modulo de Piloto synfony mostro errores intentando que un string parseara un formato de fecha,
+cosa que no se puede. Cuando no se usa las anotaciones de validaciones todo pincha ok, pero cuando se incorporan para mayor seguridad 
+cuando se utiliza el modulo de piloto generado desde sonata, es que ocurre el error.
+SOLUCION:Se modificaron 4 clases de la siguiente manera:
+1. En las clases Doctrine\DBAL\Types\DateType, 
+                 Doctrine\DBAL\Types\DateTimeType y
+                 Doctrine\DBAL\Types\TimeType
+
+se cambio el metodo convertToDatabaseValue de
+public function convertToDatabaseValue($value, AbstractPlatform $platform)
+{     
+    return ($value !== null) ? $value->format($platform->getDateFormatString()) : null;
+}
+por 
+public function convertToDatabaseValue($value, AbstractPlatform $platform)
+{     
+    if(is_string($value)){  return $value;  }        //Linea adicionada
+    return ($value !== null) ? $value->format($platform->getDateFormatString()) : null;
+}
+Nota: Esto resulve el error en los persistir.
+
+2. En la clase Symfony\Component\Form\Extension\Core\DataTransformer
+se cambio el metodo reverseTransform que esta en linea 131 de
+public function reverseTransform($value)
+{
+    if (empty($value)) {    return null;    }
+    if (!is_string($value)) {   throw new TransformationFailedException('Expected a string.');  }
+    ......
+
+por 
+public function reverseTransform($value)
+{
+    if (empty($value)) {    return null;    }
+    if (is_a($value, "\DateTime")) {    return $value;  }   //Linea adicionada
+    if (!is_string($value)) {   throw new TransformationFailedException('Expected a string.');  }
+    ......
+Nota:En la version synfony 2.2.10 esta clase se llama:Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer
+-----------------------------------------------------------------------------------------------------------------
+#3. La anotación de validación UniqueEntity no funciona correctamente.
+-----------------------------------------------------------------------------------------------------------------
+FECHA: 2014/01/03
+CAUSA: El error ocurre en la clase Boleto que puede tener o no FacturasGeneradas, si el boleto no tiene factura no hace ningun chequeo
+pero cuando se le setea, y la factura aun no se ha persistido, ocurre que va a buscar a la BD un boleto con identificador de la factura,
+trae las que no tienen facturas que estan en null, cuando no debe hacerce el chequeo.
+SOLUCION: Se modifico la clase: Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator
+En el metodo validate se cambio la linea:
+$criteria[$fieldName] = array_pop($relatedId)
+por las siguientes:
+$value = array_pop($relatedId);
+if($constraint->ignoreNull && null === $value){
+    return;
+}
+$criteria[$fieldName] = $value;
+-----------------------------------------------------------------------------------------------------------------
+#4. Configurar propiedad para generar codigo de bara QR
+-----------------------------------------------------------------------------------------------------------------
+En la clase Endroid\QrCode\QrCode se le cambio las siguientes propiedades
+padding: Se cambio de 16 a 1;
+error_correction: Se cambio de LEVEL_MEDIUM a LEVEL_HIGH
+
+-----------------------------------------------------------------------------------------------------------------
+#5. Cambio de seguridad para poder validar la IP
+-----------------------------------------------------------------------------------------------------------------
+El cambio es en el fichero de configuracion:
+vendor->symfony->symfony->src->Symfony->Bundle->SecurityBundle->Resources->config->security.xml
+5.1: Se cambia la linea
+<parameter key="security.user_checker.class">Symfony\Component\Security\Core\User\UserChecker</parameter>
+por
+<parameter key="security.user_checker.class">Acme\BackendBundle\Security\CustomUserChecker</parameter>
+
+5.2: Se cambia la linea
+<service id="security.user_checker" class="%security.user_checker.class%" public="false" />
+por
+<service id="security.user_checker" class="%security.user_checker.class%" public="false">
+    <argument type="service" id="service_container" />
+</service>
+
+-----------------------------------------------------------------------------------------------------------------
+#6. Cambio en la clase ConstraintValidator
+-----------------------------------------------------------------------------------------------------------------
+En el fichero Symfony\Component\Validator\ConstraintValidator se debe comentariar la linea 106. El metodo debe quedar asi:
+public function validate($value, Constraint $constraint)
+{
+//trigger_error('isValid() is deprecated since version 2.1 and will be removed in 2.3. Implement validate() instead.', E_USER_DEPRECATED);
+return $this->isValid($value, $constraint);
+}
+
+-----------------------------------------------------------------------------------------------------------------
+#7. Cambio en la clase FileCache, necesario pq en windows no funciona siempre el metodo @rename
+-----------------------------------------------------------------------------------------------------------------
+En la clase Metadata\Cache\FileCache el metodo putClassMetadataInCache debe quedar de la siguiente forma
+    public function putClassMetadataInCache(ClassMetadata $metadata)
+    {
+        $path = $this->dir.'/'.strtr($metadata->name, '\\', '-').'.cache.php';
+
+        $tmpFile = tempnam($this->dir, 'metadata-cache');
+        file_put_contents($tmpFile, '<?php return unserialize('.var_export(serialize($metadata), true).');');
+        
+        chmod($tmpFile, 0666 & ~umask());        
+        
+        if (false === @rename($tmpFile, $path)) {
+            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                if (file_exists($path) && false === unlink($path)) {
+                    throw new \RuntimeException(sprintf('(WIN) Could not delete temp cache file to %s.', $path));
+                }
+                if (file_exists($tmpFile) && false === copy($tmpFile, $path)) {
+                    throw new \RuntimeException(sprintf('(WIN) Could not write new cache file to %s.', $path));
+                }
+            } else {
+                throw new \RuntimeException(sprintf('Could not write new cache file to %s.', $path));
+            }
+        }
+    }
+
+-----------------------------------------------------------------------------------------------------------------
+#8. 
+-----------------------------------------------------------------------------------------------------------------
+
+
+

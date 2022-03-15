@@ -1,0 +1,60 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Listado de estaciones y paradas
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            page.funcionesAddOnload();
+        });  
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+        <BR><BR>
+        <dl>
+        {% set estaciones = getEstaciones() %}
+        {% for item in estaciones %}
+        <dt>
+        {{ item.tipo.nombre | raw | upper ~ ': ' }}<strong><abbr>{{ item.alias | raw }}</abbr>{{ ' - ' }}<em>{{ item.nombre | raw }}</em></strong><BR>
+        </dt>
+        <dd>
+        {{ 'DIRECCIÓN: ' }}<em>{{ item.direccion | raw }}</em>
+        <BR>
+        {{ 'TELÉFONOS: ' }}
+        {% for telef in item.listaTelefono if telef.activo %}
+        {% if loop.first is sameas(false) %}
+        {{ ', ' }}
+        {% endif %}
+        <i>{{ telef.telefono | raw | upper }}</i>
+        {% else %}
+        {{ 'No disponible' }}
+        {% endfor %}
+        <BR>
+        </dd>
+        <BR>
+        {% else %}
+        No existen resultados
+        {% endfor %} 
+        </dl>
+        <BR><BR> 
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+    </div> 
+    </div> 
+
+    </div> 
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+{% endblock %}

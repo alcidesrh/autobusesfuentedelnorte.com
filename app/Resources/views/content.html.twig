@@ -1,0 +1,28 @@
+<div id="contentModal" class="modal">
+    <div id="contentHeaderModal" class="modal-header">
+        <a id="clouseContentModal" type="button" class="close" data-dismiss="modal" aria-hidden="true" href="{{ url('homeInternal-default') }}">&times;</a>
+        <h3>
+           {% block contentHeaderModal %}
+                Titulo de la acción, debe remplazar el bloque containerTitle.
+           {% endblock %}
+        </h3>
+    </div>
+    <div id="contentBodyModal" class="modal-body">
+        {% block contentBodyModal %}
+            Body de la acción, debe remplazar el bloque containerBody.
+        {% endblock %}
+    </div>
+    <div id="contentFooterModal" class="modal-footer">
+        {% block contentFooterModal %}
+            Footer de la acción, debe remplazar el bloque containerFooter.
+        {% endblock %}
+    </div>
+    
+    {% block javascripts %}
+        <script>	
+            $(document).ready(function(){
+                frondend.loadPage();
+            }); 
+        </script>        
+    {% endblock %}
+</div>

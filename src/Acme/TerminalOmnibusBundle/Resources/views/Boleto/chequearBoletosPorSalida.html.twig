@@ -1,0 +1,80 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Chequear Boletos por Salida
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            chequearBoletosPorSalida.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+
+<form class="form-horizontal chequearBoletosPorSalida" id="chequearBoletosPorSalida" name="chequearBoletosPorSalida" action="{{ path(route) }}" >
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    
+    <div class="container-fluid">
+   
+    <div class="row-fluid">     
+    <div class="span12">  
+        {{ form_label(form.salida) }}
+        {{ form_errors(form.salida) }}
+        {{ form_widget(form.salida) }}
+    </div>    
+    </div>
+    <BR>       
+    <div class="row-fluid"> 
+        <div class="span12"> 
+            <a id="manifiestoInterno" href="{{ url('reporte-manifiesto_boleto_full') }}" class="btn">Manif. Interno</a>
+            <a id="manifiestoPiloto" href="{{ url('reporte-manifiesto_boleto_piloto') }}" class="btn">Manif. Piloto</a>
+        </div>
+    </div>
+    <BR> 
+    
+    <div class="row-fluid">     
+    <div class="span12">  
+        <label class="required">BOLETOS</label>
+        <table id="boletoTable" class="table table-striped table-bordered table-hover">
+        <thead>      
+            <tr>
+                <th style="width: 10%; text-align:center; vertical-align:middle;" class="idBoletoTH" rowspan="2">Identificador</th>
+                <th style="width: 5%; text-align:center; vertical-align:middle;" class="chequeadoTH" colspan="2">Chequeado</th>
+                <th style="width: 5%; text-align:center; vertical-align:middle;" class="asientoTH" rowspan="2">Asiento</th>
+                <th style="width: 20%; text-align:center; vertical-align:middle;" class="facturasTH" rowspan="2">Facturas</th>
+                <th style="width: 20%; text-align:center; vertical-align:middle;" class="origenTH" rowspan="2">Origen</th>
+                <th style="width: 20%; text-align:center; vertical-align:middle;" class="destinoTH" rowspan="2">Destino</th>
+                <th style="width: 20%; text-align:center; vertical-align:middle;" class="clienteTH" rowspan="2">Cliente</th>
+            </tr>
+            <tr>
+                <th style="width: 2%; text-align:center; vertical-align:middle;" class="chequeadoSiTH">SI</th>
+                <th style="width: 2%; text-align:center; vertical-align:middle;" class="chequeadoNoTH">NO</th>
+            </tr>
+        </thead>
+        <tbody id="boletoBody" style="vertical-align:middle;">
+            <tr id="boletoVacioTR">
+                <td colspan="8"> No existen elementos.</td> 
+            </tr>
+        </tbody>
+         </table>
+    </div> 
+    </div> 
+    
+    </div>
+    
+    <input type="hidden" id="pathListarBoletosAChequear" value="{{ url('ajaxListarBoletosAChequear') }}"></input>
+</form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="aceptar" href="#" class="btn btn-primary">Aceptar</a>
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}

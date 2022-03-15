@@ -1,0 +1,100 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Adicionar Corte de Venta
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            adicionarCorteVenta.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal corteVentaForm" id="corteVentaForm" name="corteVentaForm" action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+       
+        <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+        {{ form_errors(form) }}
+        
+        {% if app.user.hasRole("ROLE_INSPECTOR_BOLETO") == false %}
+        <div class="row-fluid"> 
+            <div class="span4">
+                {{ form_label(form.fecha) }}
+                {{ form_widget(form.fecha) }}
+                {{ form_errors(form.fecha) }}
+            </div>
+        </div>
+        <div class="row-fluid"> 
+            <div class="span4">
+                {{ form_label(form.inspector) }}
+                {{ form_widget(form.inspector) }}
+                {{ form_errors(form.inspector) }}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="row-fluid"> 
+            <div class="span4">
+                {{ form_label(form.estacionCreacion) }}
+                {{ form_widget(form.estacionCreacion) }}
+                {{ form_errors(form.estacionCreacion) }}
+            </div>
+        </div>
+        
+        <div class="row-fluid"> 
+            <div class="span4">
+                {{ form_label(form.tarjeta) }}
+                {{ form_widget(form.tarjeta) }}
+                {{ form_errors(form.tarjeta) }}
+            </div>
+        </div>
+        
+        <div id="talonarioDiv" class="row-fluid hidden"> 
+            <div class="span4">
+                {{ form_label(form.talonario) }}
+                {{ form_widget(form.talonario) }}
+                {{ form_errors(form.talonario) }}
+            </div>
+        </div>
+        
+        <div id="corteVentaDiv" class="row-fluid hidden"> 
+            <div class="span4">
+                {{ form_label(form.inicial) }}
+                {{ form_widget(form.inicial) }}
+                {{ form_errors(form.inicial) }}
+            </div>
+            <div class="span4">
+                {{ form_label(form.final) }}
+                {{ form_widget(form.final) }}
+                {{ form_errors(form.final) }}
+            </div>
+            <div class="span4">
+                {{ form_label(form.importeTotal) }}
+                {{ form_widget(form.importeTotal) }}
+                {{ form_errors(form.importeTotal) }}
+            </div>
+        </div>
+        
+        {{ form_rest(form) }}
+        <input type="hidden" id="pathGetTarjetasRecientes" value="{{ url('ajaxGetTarjetasRecientes') }}" />
+        
+    </form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="aceptar" href="#" class="btn btn-primary">Aceptar</a>
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}
+
+
+
+
+
+

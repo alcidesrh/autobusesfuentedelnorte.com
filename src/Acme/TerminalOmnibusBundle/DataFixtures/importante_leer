@@ -1,0 +1,10 @@
+Para que cuando se borren los datos de las tablas los contadores se inicien a 1.
+1-En el fichero Doctrine\Common\DataFixtures\Purger\ORMPurger cambiar la linea 132 de
+$this->em->getConnection()->executeUpdate("DELETE FROM " . $tbl);
+por
+$this->em->getConnection()->executeUpdate("DELETE FROM " . $tbl . "; ALTER TABLE ". $tbl ." AUTO_INCREMENT =1");
+
+
+$ php app/console doctrine:fixtures:load 
+--fixtures=src/Acme/RehabilitacionBundle/DataFixtures/ORM/
+

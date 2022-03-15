@@ -1,0 +1,67 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Galerías de FDN
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            page.funcionesAddOnload();
+        });  
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+        <BR><BR>
+        {% set galerias = getGalerias() %}
+        {% for item in galerias %}
+            {% if loop.index0 is divisibleby(3) %}
+            <ul class="thumbnails">
+            {% endif %}
+            <li class="span4">
+                <div class="thumbnail">
+                    <input id="{{ 'link_' ~ item.id }}" type="hidden" value="{{ item.id }}"/>
+                    {% if item.imagenes | length > 0%}
+                    {% set imagenDefault = item.imagenes[0] %}
+                    <a class="linkHelp" href="{{ path('pages_static-case1', { 'pagina': 'page8' }) }}" data-dialog="false" data-index="{{ 'link_' ~ item.id }}">
+                    <img src="{{ 'data:image/jpg;base64,' ~ imagenDefault.imagenPequena }}"/>
+                    </a>
+                    {% endif %}
+                    <div class="caption">
+                        <a class="linkHelp" href="{{ path('pages_static-case1', { 'pagina': 'page8' }) }}" data-dialog="false" data-index="{{ 'link_' ~ item.id }}">
+                            <h4>{{ item.nombre | upper }}</h4>
+                        </a>
+                        <p>{{ item.descripcion | nl2br }}</p>
+                    </div>
+                </div>
+            </li>
+            {% if loop.index is divisibleby(3) or loop.last %}
+            </ul>
+            {% endif %}
+        {% else %}
+            <ul class="thumbnails">
+                <li class="span12">
+                    No existen resultados
+                </li>
+            </ul>
+        {% endfor %} 
+        <BR><BR>
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+    </div> 
+    </div> 
+
+    </div> 
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+{% endblock %}

@@ -1,0 +1,17 @@
+
+{% stylesheets '@AcmeBackendBundle/Resources/public/css/reset.css'
+ '@AcmeBackendBundle/Resources/public/css/bootstrap-2.3.2.css'
+ '@AcmeBackendBundle/Resources/public/css/bootstrap-responsive-2.3.2.css'
+ '@AcmeBackendBundle/Resources/public/css/login.css'
+filter='yui_css' 
+output='css/login.css'
+%}
+<link href="{{ asset_url }}" rel="stylesheet" type="text/css" />
+{% endstylesheets %}
+
+{#
+<link href="{{ asset('bundles/acmebackend/css/reset.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmebackend/css/bootstrap-2.3.2.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmebackend/css/bootstrap-responsive-2.3.2.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmebackend/css/login.css') }}" type="text/css" rel="stylesheet" />
+#}

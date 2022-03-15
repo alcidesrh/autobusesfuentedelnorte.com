@@ -1,0 +1,23 @@
+{{ ' Boletos facturados con tarjetas del día : ' ~ fechaDia | date('d/m/Y') ~ ' en la empresa: ' ~ empresa ~ "." }}
+{{ ' ' }}
+{{ '---------  BOLETOS FACTURADOS CON TARJETAS   -------------'}}
+{{ ' ' }}
+{% for estacion in mapEstaciones %}
+ESTACIÓN: {{ estacion.nombre | upper ~ '.' }}
+{% set boletos = mapEstacionesBoletos[estacion.id] %}
+{% set total = 0 %}
+{% for boleto in boletos %}
+{{ "NRO: " ~ loop.index ~ ', ID: ' ~ boleto.id ~ ', FACTURA: ' ~ boleto.facturaGenerada.info2 ~ ', IMPORTE: ' ~ boleto.facturaGenerada.monedaImporte ~ ', ESTADO: ' ~ boleto.estado.nombre ~ "." }}
+{% set total = total + boleto.facturaGenerada.importeTotal %}
+{% endfor %}
+{{ 'TOTAL: GTQ ' ~ total ~ '.' }}
+{{ ' ' }}
+{% else %}
+NO SE UTILIZARON TARJETAS.
+{% endfor %}
+
+{{ ' ' }}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}

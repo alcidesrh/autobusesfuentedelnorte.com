@@ -1,0 +1,32 @@
+<form action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+          
+        <div class="row-fluid">
+        <div class="span12">  
+            {{ form_label(form.tipo) }}
+            {{ form_widget(form.tipo) }}    
+        </div>
+        </div>
+
+        <div class="row-fluid">
+        <div class="span12">  
+            {{ form_label(form.motivo) }}
+            {{ form_widget(form.motivo) }}
+        </div>
+        </div>
+        
+    </div> 
+    {{ form_rest(form) }}
+    
+</form>
+<script>
+    $(document).ready(function(){
+        $("#registrar_autorizacion_boleto_command_tipo").select2({
+            allowClear: true
+        });	
+    }); 
+</script>

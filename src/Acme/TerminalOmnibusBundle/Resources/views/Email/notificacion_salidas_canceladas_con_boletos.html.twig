@@ -1,0 +1,28 @@
+{{ 'Se le informa que se ha cancelado una salida con boletos.' }}
+{{ 'ID SALIDA: ' ~ salida.id ~ "."}}
+{{ 'FECHA: ' ~ salida.fecha | date('d/m/Y h:i A') }}
+{{ 'EMPRESA (SALIDA): ' ~ salida.empresa.alias ~ "."}}
+{{ 'CANTIDAD BOLETOS: ' ~ cantidadBoletos ~ "."}}
+{{ ' ' }}
+{{ 'EMPRESA (CALENDARIO FACTURACION): ' ~ ( (empresaCalendarioFacturacion is null) ? 'NO TIENE' : empresaCalendarioFacturacion.alias ) ~ "."}}
+{{ ' ' }}
+{{ 'Se le recuerda que en estos casos se debe:' }}
+{{ '1ro: Crear una salida extra para el' ~ salida.fecha | date('d/m/Y h:i A') ~ '.' }}
+{{ '2do: Cacelar todos los boletos vendidos.' }}
+{{ '3ro: Crear un boleto de cortesia en la salida extra por cada boleto cancelado.' }}
+{{ ' ' }}
+{{ ' ' }}
+Nota: El sistema cancelo la salida automaticamente porque se quito o cambio la empresa en el calendario de facturacion.
+{{ ' ' }}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}
+
+
+
+
+
+                 
+                  
+              

@@ -1,0 +1,29 @@
+{% extends "::print.html.twig" %}
+{% block tamanoimpresion %}
+    <input type="hidden" id="idtamanoimpresion" name="idtamanoimpresion"  value="3" />
+{% endblock %}
+{% block container %}
+{% set dataHex = {'#':'\x23','$':'\x24','á':'\x40','Ñ':'\x5C','é':'\x5E','í':'\x7B','ñ':'\x7C','ó':'\x7D','ú':'\x7E'} %}
+{% set showline = false %}
+{% set margin = '  ' %}
+{{ (showline ? '01' : '') ~ '\r' }}
+{{ (showline ? '02' : '') ~ '\r' }}
+{{ (showline ? '03' : margin) ~ processText(facturaGenerada.info2, {'text_init':80, 'text_length':110}) ~ '\r' }}
+{{ (showline ? '04' : '') ~ processText('FechaCertificaDTE:' ~ facturaGenerada.sFechaCertificaDTEsat | date('d/m/Y h:i A') ~ '.', {'text_init':18, 'text_length':100}) ~ '\r' }}
+{{ (showline ? '05' : '') ~ '\r' }}Agente de Retención de IVA
+{{ (showline ? '06' : margin) ~ processText((facturaGenerada.fecha | date('d/m/Y')), {'text_init':7, 'text_length':50}) ~ processText(primeraEncomienda.estacionOrigen, {'text_init':5, 'text_length':35}) ~ processText(primeraEncomienda.estacionDestino, {'text_init':5, 'text_length':35}) ~ '\r' }}
+{{ (showline ? '07' : margin) ~ processText(primeraEncomienda.clienteRemitente.nombre, {'text_init':10, 'text_length':80}) | replace(dataHex) ~ '\r' }}
+{{ (showline ? '08' : margin) ~ processText(clienteDestinatarioSTR, {'text_init':15, 'text_length':100}) | replace(dataHex) ~ processText(nitSTR, {'text_init':5, 'text_length':20}) ~ '\r' }}
+{{ (showline ? '09' : '') ~ '\r' }}
+{{ (showline ? '10' : margin) ~ (encomiendas[0] is defined ? ( processText(encomiendas[0].cantidad, {'text_init':3, 'text_length':8}) ~ processText("ID: " ~ encomiendas[0].id ~ ". " ~ "Tipo: " ~ encomiendas[0].tipoEncomienda.nombre ~ ". " ~ encomiendas[0].descripcion, {'text_init':3, 'text_length':89}) | replace(dataHex) ~ processText((facturaGenerada.moneda.sigla ~ ' ' ~ (encomiendas[0].precioCalculado | number_format(2))), {'text_init':3, 'text_length':15}) ) : '') ~ '\r' }}
+{{ (showline ? '11' : margin) ~ (encomiendas[1] is defined ? ( processText(encomiendas[1].cantidad, {'text_init':3, 'text_length':8}) ~ processText("ID: " ~ encomiendas[1].id ~ ". " ~ "Tipo: " ~ encomiendas[1].tipoEncomienda.nombre ~ ". " ~ encomiendas[1].descripcion, {'text_init':3, 'text_length':89}) | replace(dataHex) ~ processText((facturaGenerada.moneda.sigla ~ ' ' ~ (encomiendas[1].precioCalculado | number_format(2))), {'text_init':3, 'text_length':15}) ) : '') ~ '\r' }}
+{{ (showline ? '12' : margin) ~ (encomiendas[2] is defined ? ( processText(encomiendas[2].cantidad, {'text_init':3, 'text_length':8}) ~ processText("ID: " ~ encomiendas[2].id ~ ". " ~ "Tipo: " ~ encomiendas[2].tipoEncomienda.nombre ~ ". " ~ encomiendas[2].descripcion, {'text_init':3, 'text_length':89}) | replace(dataHex) ~ processText((facturaGenerada.moneda.sigla ~ ' ' ~ (encomiendas[2].precioCalculado | number_format(2))), {'text_init':3, 'text_length':15}) ) : '') ~ '\r' }}
+{{ (showline ? '13' : margin) ~ (encomiendas[3] is defined ? ( processText(encomiendas[3].cantidad, {'text_init':3, 'text_length':8}) ~ processText("ID: " ~ encomiendas[3].id ~ ". " ~ "Tipo: " ~ encomiendas[3].tipoEncomienda.nombre ~ ". " ~ encomiendas[3].descripcion, {'text_init':3, 'text_length':89}) | replace(dataHex) ~ processText((facturaGenerada.moneda.sigla ~ ' ' ~ (encomiendas[3].precioCalculado | number_format(2))), {'text_init':3, 'text_length':15}) ) : '') ~ '\r' }}
+{{ (showline ? '14' : margin) ~ (encomiendas[4] is defined ? ( processText(encomiendas[4].cantidad, {'text_init':3, 'text_length':8}) ~ processText("ID: " ~ encomiendas[4].id ~ ". " ~ "Tipo: " ~ encomiendas[4].tipoEncomienda.nombre ~ ". " ~ encomiendas[4].descripcion, {'text_init':3, 'text_length':89}) | replace(dataHex) ~ processText((facturaGenerada.moneda.sigla ~ ' ' ~ (encomiendas[4].precioCalculado | number_format(2))), {'text_init':3, 'text_length':15}) ) : '') ~ '\r' }}
+{{ (showline ? '15' : '') ~ processText('AutorizadoUUID:' ~ facturaGenerada.sAutorizacionUUIDsat, {'text_init':18, 'text_length':100}) ~ '\r' }}
+{{ (showline ? '16' : '') ~ processText('NumeroDTE:' ~ facturaGenerada.sNumeroDTEsat ~ ', SerieDTE:' ~ facturaGenerada.sSerieDTEsat, {'text_init':18, 'text_length':98}) ~ processText((facturaGenerada.moneda.sigla ~ ' ' ~ (facturaGenerada.importeTotal | number_format(2))), {'text_init':3, 'text_length':15}) ~ '\r' }}
+{{ (showline ? '17' : '') ~ '\r' }}
+{{ (showline ? '18' : '') ~ processText(facturaGenerada.usuario.fullName, {'text_init':50, 'text_length':100}) | replace(dataHex) ~ '\r' }}
+{{ (showline ? '19' : '') ~ '\r' }}
+{{ (showline ? '20' : '') ~ '\r' }}
+{{ '\x0C' }}{% endblock %}

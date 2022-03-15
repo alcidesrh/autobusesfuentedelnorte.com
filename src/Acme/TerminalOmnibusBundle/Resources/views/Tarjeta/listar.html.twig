@@ -1,0 +1,94 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Tarjetas
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            frondendTarjetas.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal" id="filtersForm">
+        <div id="accordionFilters" class="accordion" >
+        <div class="accordion-group">
+        <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionFilters" href="#collapseFilters">
+        Filtrar resultados
+        </a>
+        </div>    
+        <div id="collapseFilters" class="accordion-body collapse">
+        <div class="accordion-inner">
+            
+        <div class="row-fluid">
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="numero">Numero:</label>
+                <div class="controls">
+                    <input id="numero" name="numero" type="text"  placeholder="Filtrar por numero" />
+                </div>
+            </div>       
+        </div>
+        <div class="span5">
+            <div class="control-group"> 
+                <label class="control-label" for="salida">Salida:</label>
+                <div class="controls">
+                    <input id="salida" name="salida" type="text" placeholder="Filtrar por salida" />
+                </div>
+            </div> 
+        </div>
+        </div>
+            
+        <div class="row-fluid">
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="rangoFecha">Fecha:</label>
+                <div class="controls">
+                    <input id="rangoFecha" name="rangoFecha" type="text"  placeholder="Filtrar por fecha" />
+                </div>
+            </div>       
+        </div>
+        <div class="span5">
+            <div class="control-group"> 
+                <label class="control-label" for="empresa">Empresa:</label>
+                <div class="controls">
+                    <input id="empresa" name="empresa" type="text" placeholder="Filtrar por empresa" />
+                </div>
+            </div> 
+        </div>
+        </div>
+
+       <div class="control-group">
+       <div class="controls"> 
+            <a id="linkFilter" class="btn btn-primary" type="submit" href="#"><i class="icon-filter icon-white"></i> Filtrar</a>
+       </div>
+       </div> 
+                
+    </div>
+    </div>
+    </div>
+    </div>
+    </form>
+
+    {{ renderMenu('menuTarjetas') }}
+    
+    <table id="grid" style="display:none" data-url="{{url('tarjetas-listarPaginado')}}"></table>
+   
+
+{% endblock %}
+
+{% block contentFooterModal %}
+    
+{% endblock %}
+
+
+
+
+
+

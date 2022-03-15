@@ -1,0 +1,45 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Tutorial para limpiar la cache del navegador.
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            page.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+        <BR><BR>
+        
+        <p>La cache del navegador se debe limpiar cada dos o tres días, o cuando se realice una actualización del 
+            sistema que será notificado a través del mecanismo de alertas establecidos.</p>
+        <p>1. En el menú del navegador se busca la opción <b>Historial</b>, luego <b>Limpiar el historial reciente</b>.</p>
+        <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto1/imag1.png') }}"/> 
+        <p>2. Debe tener asegurarse que este seleccionada la opción <b>Todo</b> y que estén seleccionada todas las opciones 
+            de la lista. Luego se presiona en la opción <b>Limpiar ahora</b>.</p>
+        <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto1/imag2.png') }}"/> 
+        
+        
+        <BR><BR> 
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+    </div> 
+    </div> 
+
+    </div> 
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+{% endblock %}

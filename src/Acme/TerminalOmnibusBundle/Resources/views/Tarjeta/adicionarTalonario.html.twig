@@ -1,0 +1,34 @@
+<form action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+      
+    <div class="row-fluid">
+    <div class="span12">  
+        <label>Talonarios</label>
+        <table class="table table-striped table-bordered table-hover">
+            <thead>      
+                <tr>
+                    <th style="text-align:center; vertical-align:middle;">Nro</th>
+                    <th style="text-align:left; vertical-align:middle;">Del</th>
+                    <th style="text-align:left; vertical-align:middle;">Al</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th style="text-align:center; vertical-align:middle;">1</th>
+                    <th style="text-align:center; vertical-align:middle;">{{ form_widget(form.inicial) }}</th>
+                    <th style="text-align:center; vertical-align:middle;">{{ form_widget(form.final) }}</th>
+                </tr>
+            </tbody>
+        </table>     
+    </div> 
+    </div>
+        
+    </div>
+    
+    {{ form_rest(form) }}
+    
+</form>

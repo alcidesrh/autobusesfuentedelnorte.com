@@ -1,0 +1,36 @@
+idiomas:
+  ingles: Ingles
+  espanol: Español
+    
+frontend:
+  cambiarIdiomaAIngles: Cambiar idioma a Ingles
+  cambiarIdiomaAEspanol: Cambiar idioma a Español
+  
+  home:
+    article_1:
+      titulo_1: Bienvenido a El Terapeuta (INGLES)
+      contenido_1_1: > 
+            Soy un terapeuta especializado en la rehabilitación de pacientes con diferentes secuelas neurológicas u ortopédicas,
+            mediante ejercicios físicos dosificados y/o con el empleo de aparatos que contribuyen al fortalecimiento físico
+            general, con el objetivo de lograr que el paciente alcance la mayor independencia posible para realizar actividades
+            de la vida cotidiana. Se ofrecen (INGLES)
+      contenido_1_2: servicios de rehabilitación física (INGLES)
+      contenido_1_3: desde los niños hasta los adultos y la planificación de los ejercicios varía según la edad. (INGLES)
+      link_1_title: Servicios ofrecidos por el terapeuta (INGLES)
+    
+    article_2:
+      titulo_1: Infantil (INGLES)
+      contenido_1: > 
+            Se rehabilitan niños con diagnóstico de parálisis cerebral infantil, retardo en el desarrollo psicomotor y con 
+            operaciones ortopédicas. (INGLES)
+      link_1_title: Servicios ofrecidos por el terapeuta (INGLES)
+      link_1_content: leer más (INGLES)
+      
+    article_3:
+      titulo_1: Adultos (INGLES)
+      contenido_1: > 
+            Se rehabilitan adultos con secuelas de infarto cerebral, enfermedades cerebro vascular, 
+            traumas de cráneo encefálico, accidentes, heridas y operaciones ortopédicas.  (INGLES)
+      link_1_title: Servicios ofrecidos por el terapeuta (INGLES)
+      link_1_content: leer más (INGLES)
+      

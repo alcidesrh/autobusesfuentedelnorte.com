@@ -1,0 +1,48 @@
+{% stylesheets '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/base/reset.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/bootstrap/bootstrap-2.3.2.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/app/print.css'
+filter='yui_css' 
+output='css/frontendBase.css' 
+%}
+<link id="frontendBase" href="{{ asset_url }}" rel="stylesheet" type="text/css" />
+{% endstylesheets %}
+
+{% stylesheets '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/bootstrap/bootstrap-responsive-2.3.2.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/pnotify/pnotify.custom.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/datepicker/datepicker.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/daterangepicker/daterangepicker-bs2.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/bootstrap-timepicker/bootstrap-timepicker.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/jquery/jquery.dialog2.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/flexigrid/flexigrid.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/select2/select2.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/print-preview/print-preview.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/bootstrap-switch/bootstrap-switch.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/bootstrap-slider/bootstrap-slider.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/lib/fancybox/jquery.fancybox.css'
+ '@AcmeTerminalOmnibusBundle/Resources/public/css/app/frontend.css'
+filter='yui_css' 
+output='css/frontend.css' 
+%}
+<link id="frontend" href="{{ asset_url }}" rel="stylesheet" type="text/css" />
+{% endstylesheets %}
+
+
+{#
+<link id="cssReset" href="{{ asset('bundles/acmeterminalomnibus/css/lib/base/reset.css') }}" type="text/css" rel="stylesheet" />
+<link id="cssBootstrap" href="{{ asset('bundles/acmeterminalomnibus/css/lib/bootstrap/bootstrap-2.3.2.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/bootstrap/bootstrap-responsive-2.3.2.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/datepicker/datepicker.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/daterangepicker/daterangepicker-bs2.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/bootstrap-timepicker/bootstrap-timepicker.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/jquery/jquery.dialog2.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/flexigrid/flexigrid.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/select2/select2.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/print-preview/print-preview.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/bootstrap-switch/bootstrap-switch.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/simple-slider/simple-slider.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/lib/simple-slider/simple-slider-volume.css') }}" type="text/css" rel="stylesheet" />
+<link href="{{ asset('bundles/acmeterminalomnibus/css/app/frontend.css') }}" type="text/css" rel="stylesheet" />
+<link id="cssPrint" href="{{ asset('bundles/acmeterminalomnibus/css/app/print.css') }}" type="text/css" rel="stylesheet" media="print" />
+#}

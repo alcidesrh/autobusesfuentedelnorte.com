@@ -1,0 +1,68 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Reporte Asistencia de Pilotos
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            asistenciaPilotosReporte.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal reporteForm" id="reporteForm" name="reporteForm" action="{{ path(route) }}" method="post" >
+       
+        <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+        <div id="accordionFilters" class="accordion" >
+        <div class="accordion-group">
+            
+            <div class="accordion-heading">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionFilters" href="#collapseFilters">
+            Parámetros del reporte
+            </a>
+            </div>   
+            
+            <div id="collapseFilters" class="accordion-body">
+            <div class="accordion-inner">
+
+            <div class="row-fluid">
+            <div class="span6">
+                {{ form_label(form.rangoFecha) }}
+                {{ form_widget(form.rangoFecha , {'attr': {'placeholder': 'Seleccione rango de fecha' } }) }}
+                {{ form_errors(form.rangoFecha ) }}
+            </div> 
+            <div class="span6">
+                {{ form_label(form.empresa) }}
+                {{ form_widget(form.empresa , {'attr': {'placeholder': 'Seleccione la estacion' } }) }}
+                {{ form_errors(form.empresa ) }}
+            </div> 
+            </div>
+                
+            </div>
+            </div>
+            
+        </div>
+        </div>
+        
+        <div class="control-group">
+            <a class="btn btn-primary ejecutar" type="submit" href="#" data-type="PDF" ><i class="icon-filter icon-white"></i> PDF</a>
+            <a class="btn btn-primary ejecutar" type="submit" href="#" data-type="EXCEL" ><i class="icon-filter icon-white"></i> EXCEL</a>
+        </div>
+        {{ form_rest(form) }}
+    </form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}     
+{% endblock %}
+
+
+
+
+
+

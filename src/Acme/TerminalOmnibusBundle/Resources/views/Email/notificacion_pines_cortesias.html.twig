@@ -1,0 +1,15 @@
+{{ '--------------------------------------'}}
+{{ ' NOTIFICACION DE PINES DE CORTESIAS. '}}
+{{ '--------------------------------------'}}
+{{ ' USUARIO: ' ~ app.user.fullName }}
+{{ ' MOTIVO: ' ~ motivo ~ "." }}
+{% for value in cortesias %}
+{{ ' PIN('~loop.index~'):' ~ value.codigo | upper }}
+{% else %}
+NO EXISTEN DATOS.
+{% endfor %}
+{{ ' ' }}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}

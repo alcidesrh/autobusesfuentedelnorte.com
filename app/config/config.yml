@@ -1,0 +1,159 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+    - { resource: services.yml }
+    - { resource: sonata.yml }
+
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     "C:\wkhtmltopdf\wkhtmltopdf.exe"
+        options:    []
+        
+fos_user:
+    db_driver: orm
+    firewall_name: main
+    user_class: Acme\BackendBundle\Entity\User
+    registration:
+        confirmation:
+            enabled:    false
+            from_email:
+                address:        noreply@fdn.com
+                sender_name:    Fuente del Norte - Registro de Usuarios
+#    resetting:
+#        email:
+#            from_email:
+#                address:        resetting@acmedemo.com
+#                sender_name:    Fuente del Norte - Cambiando Contraseña
+                
+    from_email:
+        address:        noreply@fdn.com
+        sender_name:    Fuente del Norte
+        
+framework:
+    esi:             { enabled: true }
+    translator:      { enabled: true, fallback: es }
+    secret:          %secret%
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: %kernel.debug%
+    form:            ~
+    csrf_protection: ~
+    validation:      { enable_annotations: true }
+#    charset : UTF-8
+    templating:
+        engines: ['twig']
+        assets_version_format: %%s?v=%%s
+        assets_version: 2.5
+    default_locale:  "%locale%"
+    trusted_proxies: ~
+    session: ~
+    fragments:       { path: /_fragment }
+
+# Twig Configuration
+twig:
+    debug:            %kernel.debug%
+    strict_variables: %kernel.debug%
+    autoescape: true
+    #Se accede a la variable global con {{ global.var1 }}
+    globals:
+        global:
+            var1: 18
+     
+# Assetic Configuration
+assetic:
+    debug:          false
+    use_controller: false
+    bundles:        [ AcmeTerminalOmnibusBundle ]
+    java: C:\Program Files\Java\jre7\bin\java.exe
+    filters:
+        cssrewrite: ~
+        #closure:
+        #    jar: %kernel.root_dir%/Resources/java/compiler.jar
+        yui_css:
+            jar: %kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar
+        yui_js:
+            jar: %kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar     
+#            
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver:   %database_driver%
+        host:     %database_host%
+        port:     %database_port%
+        dbname:   %database_name%
+        user:     %database_user%
+        password: %database_password%
+        charset:  UTF8
+#        default_connection:   default
+#        connections:
+#            default:
+#                driver:   %database_driver%
+#                host:     %database_host%
+#                port:     %database_port%
+#                dbname:   %database_name%
+#                user:     %database_user%
+#                password: %database_password%
+#                charset:  UTF8
+#                slaves:
+#                    slave1:
+#                        host:     %database_host_slave1%
+#                        port:     %database_port_slave1%
+#                        dbname:   %database_name_slave1%
+#                        user:     %database_user_slave1%
+#                        password: %database_password_slave1%
+                        
+        
+        # if using pdo_sqlite as your database driver, add the path in parameters.yml
+        # e.g. database_path: %kernel.root_dir%/data/data.db3
+        # path:     %database_path%
+
+    orm:
+        auto_generate_proxy_classes: %kernel.debug%
+        auto_mapping: true
+
+# Swiftmailer Configuration
+# La encryption anterior original era: ssl en este archivo ahora es tls, y el mailer_password: tcpevxielllmnmcy# en el parametersTB.yml- modificado por Erick Alvarez 19/07/2019 a las 11:41 am
+swiftmailer:
+        transport:  smtp
+        encryption: ssl
+        auth_mode:  login
+        host:       smtp.gmail.com
+        username:  %mailer_user%
+        password:  %mailer_password%
+#    transport: %mailer_transport%
+#    host:      %mailer_host%
+
+monolog: 
+    handlers:
+        main:
+            type:         fingers_crossed
+            action_level: error
+            handler:      nested      
+        nested:
+            type:  rotating_file
+            path:  %kernel.logs_dir%/%kernel.environment%.log
+            level: info
+
+#  envía un email con todos los mensajes de log solamente cuando se produce un error          
+#        mail:
+#            type: fingers_crossed
+#            action_level: error
+#            handler: buffered
+#        buffered:
+#            type: buffer
+#            handler: swift
+#        swift:
+#            type: swift_mailer
+#            from_email: robot@cupon.com
+#            to_email: errores@cupon.com
+#            subject: Se ha producido un error
+#            level: debug
+            
+ #  Se guardan los log en db            
+        doctrine:
+            type: service
+            id: acme_backend_handler_log
+            level: info
+            channels: [app]

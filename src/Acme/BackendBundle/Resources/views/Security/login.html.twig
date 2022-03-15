@@ -1,0 +1,42 @@
+{% extends "AcmeBackendBundle::layout.html.twig" %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block title %}
+    <title>FDN - AUTENTICACIÓN</title>
+{% endblock %}
+            
+{% block fos_user_content %}
+
+<form class="form-signin" action="{{ path("fos_user_security_check") }}" method="post">
+
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />    
+    <h2 class="form-signin-heading">Control de Acceso</h2>
+    
+    <div class="control-group">
+        <label class="control-label" for="username">Usuario:</label>
+        <div class="controls">
+            <input class="input-block-level" type="text" id="username" name="_username" value="{{ last_username }}" required="required" autofocus placeholder="Entre su usuario..."/>
+        </div>
+    </div>
+    
+    <div class="control-group">
+        <label class="control-label"  for="password">Clave:</label>
+        <div class="controls">
+            <input class="input-block-level" type="password" id="password" name="_password" required="required" placeholder="Entre su contraseña..."/>
+        </div>
+    </div>
+    
+    {% if error %}
+        <div class="alert alert-error">{{ error|trans }}</div>
+    {% endif %}
+    
+     <div class="control-group">
+        <div class="controls">
+            <input class="btn btn-large btn-primary" type="submit" id="_submit" name="_submit" value="Entrar" />
+        </div>
+     </div>
+    
+</form>
+    
+{% endblock fos_user_content %}

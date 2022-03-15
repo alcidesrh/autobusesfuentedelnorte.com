@@ -1,0 +1,79 @@
+<div class="container-fluid">
+<div class="row-fluid">
+<div class="span12">  
+
+    <div class="row-fluid">
+         <div class="span2">
+            <label class="control-label">Identificador</label>
+            <input class="span12" type="text" id="identificadorSalida" disabled placeholder="Identificador" value="{{ salida.id }}"/>       
+         </div>
+         <div class="span2">
+            <label class="control-label">Fecha Salida:</label>
+            <input class="span12" type="text" disabled placeholder="Fecha" value="{{ salida.fecha | date('d/m/Y h:i A') }}"/>       
+         </div>  
+         <div class="span2">
+            <label class="control-label">Estado Actual:</label>
+            <input class="span12" type="text" disabled placeholder="Estado" value="{{ salida.estado.nombre }}"/>       
+         </div>
+        <div class="span6">
+             <label class="control-label">Ruta</label>
+            <input class="span12" type="text" disabled placeholder="Ruta" value="{{ salida.itinerario.ruta.codigo ~ ' - ' ~ salida.itinerario.ruta.nombre }}"/>
+         </div>
+     </div>  
+    
+    <BR>
+    <div id="buttonDIV" class="row-fluid">
+        <div class="span12"> 
+            <a id="manifiestoInterno" href="{{ url('reporte-manifiesto_boleto_full') }}" class="btn">Manif. Interno</a>
+            <a id="manifiestoPiloto" href="{{ url('reporte-manifiesto_boleto_piloto') }}" class="btn">Manif. Piloto</a>
+            <a id="manifiestoEncominda" href="{{ url('reporte-manifiesto_encomienda_full') }}" class="btn">Manif. Encomienda</a>
+        </div>
+    </div>
+    <BR>
+    
+     <div class="row-fluid margin-top-2">
+     <div class="span12">
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+            <tr>
+                <th style="width: 15%; text-align:center; vertical-align:middle;">Fecha</th>
+                <th style="width: 15%; text-align:center; vertical-align:middle;">Estado</th>
+                <th style="width: 20%; text-align:left; vertical-align:middle;">Usuario</th>
+                <th style="width: 50%; text-align:left; vertical-align:middle;">Descripción</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for item in salida.bitacoras %}
+                    <tr>
+                        <td style="width: 15%; text-align:center; vertical-align:middle;">{{ item.fecha | date('d/m/Y H:i:s') }}</td>
+                        <td style="width: 15%; text-align:center; vertical-align:middle;">{{ item.estado.nombre }}</td>
+                        <td style="width: 20%; text-align:left; vertical-align:middle;">{{ item.usuario is null ? 'Sistema' : item.usuario.fullName }}</td>
+                        <td style="width: 50%; text-align:left; vertical-align:middle;">{{ item.descripcion }}</td>
+                    </tr>		
+                {% else %}
+                    <tr><td colspan="4" >No existen datos</td></tr>
+                {% endfor %}
+            </tbody>
+         </table>
+     </div>
+     </div>
+    
+</div> 
+</div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $("#manifiestoInterno").data("index", "identificadorSalida");
+        $("#manifiestoInterno").data("autoopenfile", "PDF");
+        $("#manifiestoInterno").click(frondend.loadSubPage);
+        
+        $("#manifiestoPiloto").data("index", "identificadorSalida");
+        $("#manifiestoPiloto").data("autoopenfile", "PDF");
+        $("#manifiestoPiloto").click(frondend.loadSubPage);
+        
+        $("#manifiestoEncominda").data("index", "identificadorSalida");
+        $("#manifiestoEncominda").data("autoopenfile", "PDF");
+        $("#manifiestoEncominda").click(frondend.loadSubPage);
+    });  
+</script>

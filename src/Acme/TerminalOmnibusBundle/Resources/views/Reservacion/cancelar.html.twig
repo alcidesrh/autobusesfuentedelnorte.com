@@ -1,0 +1,22 @@
+
+<form action="{{ path('reservacion-cancelar-case1') }}" method="post" {{ form_enctype(form) }}>
+    
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+               <label> <strong> ¿Está seguro que desea cancelar la reservación? </strong> </label>       
+            </div>
+        </div>
+    <div class="row-fluid">
+        <div class="span12">
+            {{ form_label(form.observacion) }}
+            {{ form_widget(form.observacion , {'attr': {'placeholder': 'Especifique el motivo de la cancelación' } }) }}
+            {{ form_errors(form.observacion ) }}     
+        </div>
+     </div> 
+    </div>
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    {{ form_rest(form) }}  
+
+</form>

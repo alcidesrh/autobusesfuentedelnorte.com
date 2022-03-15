@@ -1,0 +1,26 @@
+{{ '---------  Inventario de Encomiendas Pendientes hasta la fecha ' ~ fechaDia | date('d/m/Y') ~ '   -------------'}}
+{{ ' ' }}
+{{ '---------  RESUMEN   -------------'}}
+{% for item in data %}
+{% for value in item %}
+{% if loop.first %}
+ESTACIÓN: {{ value.nombreEstacion | upper }}
+{% endif %}
+{{ value.tipo | upper ~ ' (' ~ value.nombreTipoDocumento | upper ~ '): GTQ ' ~ value.total | number_format(0, '.', '') ~ ', (' ~ value.cantidad ~ ').' }}
+{% endfor %}
+{{ ' ' }}
+{% endfor %}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}
+{{ ' ' }}
+{{ ' ' }}
+
+
+
+
+
+                 
+                  
+              

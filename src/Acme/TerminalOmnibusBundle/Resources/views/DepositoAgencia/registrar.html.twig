@@ -1,0 +1,89 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Crear Depósito de Agencia
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            registrarDepositoAgencia.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal depositoAgenciaForm" id="depositoAgenciaForm" name="depositoAgenciaForm" action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+       
+        <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+        {{ form_errors(form) }}
+        
+{#        <div class="row-fluid"> 
+            <div class="span12">
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <h4>Pasos para acreditar saldo</h4>
+                    1 - Los depósitos se acreditan en la cuenta <b>3198020413</b> de <b>Fuente del Norte la Pionera</b> y se debe registrar en el sistema el mismo día.<BR>
+                    2 - Se toma una foto a la boleta de depósito y se le envía por whatsapp o correo electrónico al encargado del FDN para ser validada.<BR>
+                    3 - Si todo está correcto se acredita el depósito.
+                </div>
+            </div>
+        </div> #}
+        
+        <div class="row-fluid">
+            <div class="span12">
+                {{ form_label(form.estacion) }}
+                {{ form_widget(form.estacion) }}
+            </div>
+        </div> 
+        
+        <div class="row-fluid">
+            <div class="span4">
+                {{ form_label(form.fecha) }}
+                {{ form_widget(form.fecha) }}
+            </div>
+            <div class="span4">
+                {{ form_label(form.numeroBoleta) }}
+                {{ form_widget(form.numeroBoleta) }}
+            </div>
+            <div class="span4">
+                {{ form_label(form.importe) }}
+                {{ form_widget(form.importe) }}
+            </div>
+        </div>
+        <br>
+        <div class="row-fluid">
+            <div class="span12">
+                {{ form_widget(form.aplicaBono) }}
+                {{ form_label(form.aplicaBono) }}
+            </div>
+        </div>
+        
+        <div class="row-fluid">
+        <div class="span12">  
+            {{ form_label(form.observacion) }}
+            {{ form_widget(form.observacion) }}
+        </div> 
+        </div>
+        
+        <input type="hidden" id="pathHomeDepositoAgencia" value="{{ url('deposito-agencia-home') }}"></input>
+        {{ form_rest(form) }}
+        
+    </form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="aceptar" href="#" class="btn btn-primary">Aceptar</a>
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}
+
+
+
+
+
+

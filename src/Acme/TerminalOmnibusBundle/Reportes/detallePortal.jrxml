@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detalleFactura" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.4641000000000133"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DATA_PORTAL_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_NOMBRE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FECHA_DIA" class="java.lang.String"/>
+	<parameter name="FECHA_INICIAL" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FECHA_FINAL" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_EMPRESA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[declare @usuario_id bigint
+declare @usuario_estacion_id bigint
+declare @usuario_empresas_id TABLE (id bigint)
+
+declare @data_estacion_id bigint
+declare @data_empresa_id bigint
+declare @data_fecha_init datetime2
+declare @data_fecha_end datetime2
+
+-- PARAMETROS DE SEGURIDAD INIT
+set @usuario_id = $P{USUARIO_ID}
+SELECT @usuario_estacion_id = estacion_id FROM custom_user WHERE id = @usuario_id
+INSERT INTO @usuario_empresas_id
+SELECT cue.empresa_id FROM custom_user AS cu LEFT JOIN custom_user_empresa AS cue ON cu.id=cue.user_id
+WHERE cu.id = @usuario_id
+-- PARAMETROS DE SEGURIDAD INIT
+
+set @data_estacion_id = $P{DATA_PORTAL_ID}
+set @data_empresa_id = $P{DATA_EMPRESA_ID}
+set @data_fecha_init = CAST($P{FECHA_INICIAL}+' 00:00:00' AS datetime2(7))
+set @data_fecha_end = CAST($P{FECHA_FINAL}+' 23:59:59' AS datetime2(7))
+
+SELECT
+     boleto."id" as idBoleto,
+     voucher."fecha" as fechaOperacion,
+     FORMAT(voucher."fecha", 'dd/MM/yyyy') as diaOperacion,
+     RIGHT(CONVERT(CHAR(20), voucher."fecha", 22), 11) AS horaOperacion,
+     estacionCreacion."id" AS idEstacionVenta,
+     estacionCreacion."nombre" AS nombreEstacionVenta,
+     empresa."alias" AS aliasEmpresa,
+     estado."nombre" as nombreEstado,
+     boleto."salida_id" as idSalida,
+     ruta."nombre" as nombreRuta,
+     FORMAT(salida."fecha", 'dd/MM/yyyy')+' '+RIGHT(CONVERT(CHAR(20), salida."fecha", 22), 11) as fechaHoraSalida,
+     (case when estado."id" = 4
+     then 0
+     else voucher."importeTotal"
+     end) AS importePrincipal
+FROM
+     "dbo"."boleto_voucher_internet" voucher
+     INNER JOIN "dbo"."boleto" boleto ON  boleto."voucher_internet_id" = voucher."id"
+     INNER JOIN "dbo"."salida" salida ON salida."id" = boleto."salida_id"
+     INNER JOIN "dbo"."itineario" itinerario ON itinerario."id" = salida."itinerario_id"
+     INNER JOIN "dbo"."ruta" ruta ON ruta."codigo" = itinerario."ruta_codigo"
+     INNER JOIN "dbo"."estacion" estacionCreacion ON  estacionCreacion."id" = voucher."estacion_id"
+     INNER JOIN "dbo"."boleto_estado" estado ON  estado."id" = boleto."estado_id"
+     INNER JOIN "dbo"."moneda" moneda ON moneda."id" = voucher."moneda_id"
+     INNER JOIN "dbo"."empresa" empresa ON empresa."id" = voucher."empresa_id"
+ WHERE
+    ((@usuario_estacion_id is not null and @usuario_estacion_id=estacionCreacion."id") or @usuario_estacion_id is NULL)
+   -- and ( empresa."id" IN (SELECT id FROM @usuario_empresas_id) )
+    and ((@data_estacion_id is not null and @data_estacion_id=estacionCreacion."id") or @data_estacion_id is NULL)
+    and ((@data_empresa_id is not null and @data_empresa_id=empresa."id") or @data_empresa_id is NULL)
+    and (((@data_fecha_init is not null and @data_fecha_end is not null) and
+           (voucher."fecha" between @data_fecha_init and @data_fecha_end))
+           or (@data_fecha_init is NULL or @data_fecha_end is NULL))
+ORDER BY
+FORMAT(voucher."fecha", 'yyyy/MM/dd'),
+nombreEstacionVenta,
+aliasEmpresa]]>
+	</queryString>
+	<field name="idBoleto" class="java.lang.Long"/>
+	<field name="fechaOperacion" class="java.lang.String"/>
+	<field name="diaOperacion" class="java.lang.String"/>
+	<field name="horaOperacion" class="java.lang.String"/>
+	<field name="idEstacionVenta" class="java.lang.Long"/>
+	<field name="nombreEstacionVenta" class="java.lang.String"/>
+	<field name="aliasEmpresa" class="java.lang.String"/>
+	<field name="nombreEstado" class="java.lang.String"/>
+	<field name="idSalida" class="java.lang.Long"/>
+	<field name="nombreRuta" class="java.lang.String"/>
+	<field name="fechaHoraSalida" class="java.lang.String"/>
+	<field name="importePrincipal" class="java.math.BigDecimal"/>
+	<variable name="importeTotal" class="java.math.BigDecimal" resetType="Group" resetGroup="datos02" calculation="Sum">
+		<variableExpression><![CDATA[$F{importePrincipal}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.math.BigDecimal("0")]]></initialValueExpression>
+	</variable>
+	<variable name="importeTotalGlobal" class="java.math.BigDecimal" resetType="Group" resetGroup="datos01" calculation="Sum">
+		<variableExpression><![CDATA[$F{importePrincipal}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.math.BigDecimal("0")]]></initialValueExpression>
+	</variable>
+	<group name="datos01">
+		<groupFooter>
+			<band height="31">
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="512" y="6" width="60" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{importeTotalGlobal}.setScale(2, java.math.BigDecimal.ROUND_DOWN)]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="442" y="6" width="70" height="14">
+						<printWhenExpression><![CDATA[]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Total Global:]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="2" width="572" height="1"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="datos02">
+		<groupExpression><![CDATA[$F{diaOperacion}+
+$F{nombreEstacionVenta}+
+$F{aliasEmpresa}]]></groupExpression>
+		<groupHeader>
+			<band height="70">
+				<line>
+					<reportElement x="0" y="68" width="572" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="512" y="53" width="60" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IMPORTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="53" width="60" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ID BOLETO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="60" y="53" width="60" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[HORA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="120" y="53" width="60" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ID SALIDA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="442" y="53" width="70" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ESTADO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="2" width="80" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Portal Web:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="22" width="80" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fecha Venta:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="80" y="22" width="185" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{diaOperacion}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="80" y="2" width="185" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{nombreEstacionVenta}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="328" y="2" width="59" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Empresa:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="387" y="2" width="185" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{aliasEmpresa}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="180" y="53" width="162" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[RUTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="342" y="53" width="100" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VIAJE]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="26">
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="512" y="2" width="60" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="false" isUnderline="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{importeTotal}.setScale(2, java.math.BigDecimal.ROUND_DOWN)]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="442" y="2" width="70" height="14">
+						<printWhenExpression><![CDATA[]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Totales:]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="1" width="572" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="131" y="2" width="311" height="14">
+						<printWhenExpression><![CDATA[$F{nombreEstacionVenta} == null]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[No existen resultados]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="0" y="2" width="131" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Cantidad: " + $V{datos02_COUNT}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="55" splitType="Stretch">
+			<textField>
+				<reportElement x="465" y="15" width="107" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{USUARIO_NOMBRE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="31" width="572" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VENTA PORTAL WEB]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="465" y="-1" width="107" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{FECHA_DIA}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="420" height="31"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRANSPORTE FUENTE DEL NORTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="-1" width="45" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="15" width="45" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="60" y="0" width="60" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{horaOperacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="60" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idBoleto}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="120" y="0" width="60" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idSalida}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="442" y="0" width="70" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreEstado}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="180" y="0" width="162" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreRuta}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="512" y="0" width="60" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{importePrincipal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="342" y="0" width="100" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaHoraSalida}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="32" splitType="Stretch">
+			<textField>
+				<reportElement x="442" y="5" width="90" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="531" y="5" width="35" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

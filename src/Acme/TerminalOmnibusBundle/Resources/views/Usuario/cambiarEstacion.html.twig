@@ -1,0 +1,27 @@
+<form id="formCambiarEstacion" action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+        <div class="row-fluid">
+        <div class="span12">  
+        {{ form_label(form.estacion) }}
+        {{ form_errors(form.estacion) }}
+        {{ form_widget(form.estacion) }}
+        </div> 
+        </div>
+    </div>    
+    
+    {{ form_rest(form) }}
+    
+</form>
+<script>
+    $(document).ready(function(){
+        if(!core.isMovil()){
+            $("#cambiar_estacion_usuario_command_estacion").select2({
+                allowClear: false
+            });
+        }	
+    }); 
+</script>

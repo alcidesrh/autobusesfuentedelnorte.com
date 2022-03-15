@@ -1,0 +1,67 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    {% set id = app.request.query.get('id')  %}
+    {% set galeria = getGaleriaById(id) %}
+    {{ galeria.nombre }}
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            page.funcionesAddOnload();
+        });  
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+{#    <input type="hidden" id="pathDataImagen" value="{{ url('ajaxDataImagen') }}"></input>#}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <a href="{{ path('pages_static-case1', { 'pagina': 'page7' }) }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+        <BR><BR>
+        
+        <div class="galery">
+        <div class="row-fluid">
+            {% set id = app.request.query.get('id')  %}
+            {% set imagenes = getImagenesGaleria(id) %}
+            {% for item in imagenes %}
+                {% if loop.index0 is divisibleby(4) %}
+                <ul class="thumbnails">
+                {% endif %}
+                <li class="span3">
+                    <a class="fancybox thumbnail linkLoadImage" title="{{ item.descripcion }}" rel="gallery" href="{{ path('ajaxDataImagen', { 'id': item.id, 'full' : true }) }}" data-idimagen="{{ item.id }}" >
+                        <img style="width: 260px; height: 180px;" src="{{ 'data:image/jpg;base64,' ~ item.imagenPequena }}"/>
+                    </a>
+                </li>
+                {% if loop.index is divisibleby(4) or loop.last %}
+                </ul>
+                {% endif %}
+            {% else %}
+                <ul class="thumbnails">
+                    <li class="span12">
+                        No existen resultados
+                    </li>
+                </ul>
+            {% endfor %}
+        
+        </div>
+        </div>
+        
+        <BR><BR>
+        <a href="{{ path('pages_static-case1', { 'pagina': 'page7' }) }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+    </div> 
+    </div> 
+
+    </div> 
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+{% endblock %}

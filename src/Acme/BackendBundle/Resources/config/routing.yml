@@ -1,0 +1,7 @@
+########################################################################################################
+#                               MultiAction - INI
+########################################################################################################
+acme_multiAction:
+   resource: "@AcmeBackendBundle/Controller/MultiActionController.php"
+   type:     annotation
+   prefix:  /

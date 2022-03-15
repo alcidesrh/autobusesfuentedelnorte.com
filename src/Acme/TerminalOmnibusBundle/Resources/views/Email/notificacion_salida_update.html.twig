@@ -1,0 +1,94 @@
+Reporte de actualización de salida:
+{{ 'ESTACIÓN ACTUALIZACION: ' ~ estacionActualizacion ~ "."}}
+{{ 'HORARIO ACTUALIZACION: ' ~ 'now' | date('d/m/Y h:i A') }}
+{{ 'SUPERVISOR: ' ~ app.user.fullName ~ "." }}
+{{ 'TELÉFONO: ' ~ ((app.user.phone is null or app.user.phone is empty) ? 'N/D' : app.user.phone) ~ "." }}
+{{ ' ' }}
+{{ 'ESTACIÓN: ' ~ salida.itinerario.ruta.estacionOrigen ~ "."}}
+{{ 'HORARIO: ' ~ salida.fecha | date('d/m/Y h:i A') }}
+{{ 'RUTA: ' ~ salida.itinerario.ruta ~ "."}}
+{{ 'ITINERARIO: ' ~ itinerario ~ "."}}
+{{ 'CLASE TARIFA: ' ~ salida.itinerario.tipoBus.clase.nombre ~ "."}}
+{{ 'BUS: ' ~ salida.bus.codigo ~ ', PLACA: ' ~ salida.bus.placa ~ "." }}
+{{ 'PILOTO: ' ~ salida.piloto ~ "." }}
+{{ 'TELÉFONO: ' ~ ((salida.piloto.telefono is null or salida.piloto.telefono is empty) ? 'N/D' : salida.piloto.telefono) ~ "." }}
+{{ ' ' }}
+{{ '---------  RESUMEN   -------------'}}
+{% set totalGlobalBoleto = 0 %}
+{% set totalGlobalEncomienda = 0 %}
+{% for value in resumen %}
+{% set totalParcialBoleto = 0 %}
+{% set totalParcialEncomienda = 0 %}
+ESTACIÓN VENTA: {{ value.nombreEstacionCreacion | upper }}
+{% if value.importeBolFacturadoEstacion is defined and value.importeBolFacturadoEstacion | number_format(0) is not sameas("0") %}
+BOL FACT: {{ 'GTQ ' ~ value.importeBolFacturadoEstacion | number_format(0, '.', '') ~ ', (' ~ value.cantidadBolFacturadoEstacion ~ ').'  }}
+{% set totalParcialBoleto = totalParcialBoleto + value.importeBolFacturadoEstacion %}
+{% set totalGlobalBoleto = totalGlobalBoleto + value.importeBolFacturadoEstacion %}
+{% endif %}
+{% if value.importeBolVoucherEstacion is defined and value.importeBolVoucherEstacion | number_format(0) is not sameas("0") %}
+BOL VOUCHER: {{ 'GTQ ' ~ value.importeBolVoucherEstacion | number_format(0, '.', '') ~ ', (' ~ value.cantidadBolVoucherEstacion ~ ').'  }}
+{% set totalParcialBoleto = totalParcialBoleto + value.importeBolVoucherEstacion %}
+{% set totalGlobalBoleto = totalGlobalBoleto + value.importeBolVoucherEstacion %}
+{% endif %}
+{% if value.importeBolVoucherAgencia is defined and value.importeBolVoucherAgencia | number_format(0) is not sameas("0") %}
+BOL VOUCHER: {{ 'GTQ ' ~ value.importeBolVoucherAgencia | number_format(0, '.', '') ~ ', (' ~ value.cantidadBolVoucherAgencia ~ ').'  }}
+{% set totalParcialBoleto = totalParcialBoleto + value.importeBolVoucherAgencia %}
+{% set totalGlobalBoleto = totalGlobalBoleto + value.importeBolVoucherAgencia %}
+{% endif %}
+{% if value.importeBolBonoAgencia is defined and value.importeBolBonoAgencia | number_format(0) is not sameas("0") %}
+BOL BONO: {{ 'GTQ ' ~ value.importeBolBonoAgencia | number_format(0, '.', '') ~ ', (' ~ value.cantidadBolBonoAgencia ~ ').'  }}
+{% set totalParcialBoleto = totalParcialBoleto + value.importeBolBonoAgencia %}
+{% set totalGlobalBoleto = totalGlobalBoleto + value.importeBolBonoAgencia %}
+{% endif %}
+{% if value.cantidadBolCortesias is defined and value.cantidadBolCortesias | number_format(0) is not sameas("0")  %}
+BOL CORTESIA: {{ value.cantidadBolCortesias ~ '.'  }}
+{% endif %}
+{% if totalParcialBoleto is not sameas(0) %}
+BOL SUBTOTAL: {{ "GTQ " ~ totalParcialBoleto ~ '.'  }}
+{% endif %}
+{% if value.importeEncoFacturadoEstacion is defined and value.importeEncoFacturadoEstacion | number_format(0) is not sameas("0") %}
+ENCO FACT: {{ 'GTQ ' ~ value.importeEncoFacturadoEstacion | number_format(0, '.', '') ~ ', (' ~ value.cantidadEncoFacturadoEstacion ~ ').'  }}
+{% set totalParcialEncomienda = totalParcialEncomienda + value.importeEncoFacturadoEstacion %}
+{% set totalGlobalEncomienda = totalGlobalEncomienda + value.importeEncoFacturadoEstacion %}
+{% endif %}
+{% if value.importeEncoPorCobrarEstacion is defined and value.importeEncoPorCobrarEstacion | number_format(0) is not sameas("0") %}
+ENCO POR COBRAR: {{ 'GTQ ' ~ value.importeEncoPorCobrarEstacion | number_format(0, '.', '') ~ ', (' ~ value.cantidadEncoPorCobrarEstacion ~ ').'  }}
+{% set totalParcialEncomienda = totalParcialEncomienda + value.importeEncoPorCobrarEstacion %}
+{% set totalGlobalEncomienda = totalGlobalEncomienda + value.importeEncoPorCobrarEstacion %}
+{% endif %}
+{% if value.cantidadEncoGuiasEstacion is defined and value.cantidadEncoGuiasEstacion | number_format(0) is not sameas("0") %}
+ENCO GUIA: {{ value.cantidadEncoGuiasEstacion ~ '.'  }}
+{% endif %}
+{% if totalParcialEncomienda is not sameas(0) %}
+ENCO SUBTOTAL: {{ "GTQ " ~ totalParcialEncomienda ~ '.'  }}
+{% endif %}
+{{ ' ' }}
+{% else %}
+No existen datos.
+{% endfor %}
+{{ '----------------------'}}
+{% if totalGlobalBoleto is not sameas(0) %}
+BOL TOTAL: {{ "GTQ " ~ totalGlobalBoleto ~ '.'  }}
+{% endif %}
+{% if totalGlobalBoleto is not sameas(0) %}
+ENCO TOTAL: {{ "GTQ " ~ totalGlobalEncomienda ~ '.'  }}
+{% endif %}
+{% set totalGlobal = totalGlobalBoleto + totalGlobalEncomienda %}
+{% if totalGlobal is not sameas(0) %}
+TOTAL: {{ "GTQ " ~ totalGlobal ~ '.'  }}
+{{ '----------------------'}}
+{% endif %}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}
+{{ ' ' }}
+{{ ' ' }}
+
+
+
+
+
+                 
+                  
+              

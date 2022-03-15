@@ -1,0 +1,42 @@
+CREATE TABLE autorizacion_operacion (id BIGINT IDENTITY NOT NULL, estacion_id BIGINT NOT NULL, boleto_id BIGINT NOT NULL, tipo_id SMALLINT, estado_id SMALLINT, estacion_creacion_id BIGINT, usuario_creacion_id BIGINT, usuario_actualizacion_id BIGINT, motivo NVARCHAR(150) NOT NULL, observacion NVARCHAR(150), fecha_creacion DATETIME2(6) NOT NULL, fecha_actualizacion DATETIME2(6), PRIMARY KEY (id));
+CREATE INDEX IDX_A41AAA522A4AF395 ON autorizacion_operacion (estacion_id);
+CREATE INDEX IDX_A41AAA527F6F0A9B ON autorizacion_operacion (boleto_id);
+CREATE INDEX IDX_A41AAA52A9276E6C ON autorizacion_operacion (tipo_id);
+CREATE INDEX IDX_A41AAA529F5A440B ON autorizacion_operacion (estado_id);
+CREATE INDEX IDX_A41AAA525F37B590 ON autorizacion_operacion (estacion_creacion_id);
+CREATE INDEX IDX_A41AAA52AEADF654 ON autorizacion_operacion (usuario_creacion_id);
+CREATE INDEX IDX_A41AAA52CCED81D ON autorizacion_operacion (usuario_actualizacion_id);
+CREATE UNIQUE INDEX CUSTOM_IDX_AUTORIZACION_ESTACION_BOLETO_TIPO_ESTADO ON autorizacion_operacion (estacion_id, boleto_id, tipo_id, estado_id) WHERE estacion_id IS NOT NULL AND boleto_id IS NOT NULL AND tipo_id IS NOT NULL AND estado_id IS NOT NULL;
+CREATE TABLE autorizacion_operacion_estado (id SMALLINT NOT NULL, nombre NVARCHAR(40) NOT NULL, PRIMARY KEY (id));
+CREATE UNIQUE INDEX UNIQ_3BFACD073A909126 ON autorizacion_operacion_estado (nombre) WHERE nombre IS NOT NULL;
+CREATE TABLE autorizacion_operacion_tipo (id SMALLINT NOT NULL, nombre NVARCHAR(40) NOT NULL, activo BIT NOT NULL, PRIMARY KEY (id));
+CREATE UNIQUE INDEX UNIQ_96D757DD3A909126 ON autorizacion_operacion_tipo (nombre) WHERE nombre IS NOT NULL;
+ALTER TABLE autorizacion_operacion ADD CONSTRAINT FK_A41AAA522A4AF395 FOREIGN KEY (estacion_id) REFERENCES estacion (id);
+ALTER TABLE autorizacion_operacion ADD CONSTRAINT FK_A41AAA527F6F0A9B FOREIGN KEY (boleto_id) REFERENCES boleto (id);
+ALTER TABLE autorizacion_operacion ADD CONSTRAINT FK_A41AAA52A9276E6C FOREIGN KEY (tipo_id) REFERENCES autorizacion_operacion_tipo (id);
+ALTER TABLE autorizacion_operacion ADD CONSTRAINT FK_A41AAA529F5A440B FOREIGN KEY (estado_id) REFERENCES autorizacion_operacion_estado (id);
+ALTER TABLE autorizacion_operacion ADD CONSTRAINT FK_A41AAA525F37B590 FOREIGN KEY (estacion_creacion_id) REFERENCES estacion (id);
+ALTER TABLE autorizacion_operacion ADD CONSTRAINT FK_A41AAA52AEADF654 FOREIGN KEY (usuario_creacion_id) REFERENCES custom_user (id);
+ALTER TABLE autorizacion_operacion ADD CONSTRAINT FK_A41AAA52CCED81D FOREIGN KEY (usuario_actualizacion_id) REFERENCES custom_user (id);
+
+ALTER TABLE autorizacion_operacion_tipo ADD descripcion NVARCHAR(100);
+ALTER TABLE autorizacion_operacion_tipo ALTER COLUMN nombre NVARCHAR(50) NOT NULL;
+
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'CUSTOM_IDX_AUTORIZACION_ESTACION_BOLETO_TIPO_ESTADO')
+                    ALTER TABLE autorizacion_operacion DROP CONSTRAINT CUSTOM_IDX_AUTORIZACION_ESTACION_BOLETO_TIPO_ESTADO
+                ELSE
+                    DROP INDEX CUSTOM_IDX_AUTORIZACION_ESTACION_BOLETO_TIPO_ESTADO ON autorizacion_operacion;
+CREATE UNIQUE INDEX CUSTOM_IDX_AUTORIZACION_ESTACION_BOLETO_TIPO ON autorizacion_operacion (estacion_id, boleto_id, tipo_id) WHERE estacion_id IS NOT NULL AND boleto_id IS NOT NULL AND tipo_id IS NOT NULL;
+
+
+id	nombre                  descripcion                     activo
+1	Reasignación por Tiempo	Vencido el límite de tiempo	1
+2	Anulación por Tiempo	Vencido el límite de tiempo	1
+
+
+id      nombre
+1	Registrado
+2	Autorizado
+3	Denegado
+
+ROLE_AUTORIZADOR

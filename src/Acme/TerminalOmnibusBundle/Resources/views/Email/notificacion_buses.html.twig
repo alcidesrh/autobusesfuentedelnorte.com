@@ -1,0 +1,18 @@
+{{ 'Buses con tarjetas de operaciones próximas a vencer en la empresa: ' ~ empresa ~ "." }}
+{{ '---------  BUSES   -------------'}}
+{% for bus in buses %}
+CÓDIGO: {{ bus.codigo ~ "." }}
+TARJETA DE OPERACIONES: {{ bus.numeroTarjetaOperaciones ~ "." }}
+FECHA DE VENCIMIENTO: {{ bus.fechaVencimientoTarjetaOperaciones | date('d/m/Y') ~ "." }}
+PLACA: {{ bus.placa ~ "." }}
+ESTADO: {{ bus.estado.nombre ~ "." }}
+PILOTO: {{ ((bus.piloto is null or bus.piloto is empty) ? 'N/D' : bus.piloto.codigoFullName) ~ "." }}
+DESCRIPCIÓN: {{ ((bus.descripcion is null or bus.descripcion is empty) ? 'N/D' : bus.descripcion) ~ "." }}
+{{ ' ' }}
+{% endfor %}
+
+{{ ' ' }}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}

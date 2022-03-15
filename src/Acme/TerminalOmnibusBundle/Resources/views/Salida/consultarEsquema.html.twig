@@ -1,0 +1,175 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Consultar Salidas
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            consultarEsquema.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal salidaForm" id="salidaForm" name="salidaForm">
+
+        <div class="row-fluid"> 
+            <div class="span12">
+                <label>Fecha:</label>
+                <input id="fecha" class="span10" type="text"/> 
+            </div>
+        </div> 
+        
+        <div class="row-fluid">
+            <div class="span12">
+                <label>Salida:</label>
+                <select id="salida" class="span10"></select> 
+            </div>
+        </div> 
+        <BR>
+        <div id="buttonDIV" class="row-fluid">
+            <div class="span12"> 
+                <a id="manifiestoInterno" href="{{ url('reporte-manifiesto_boleto_full') }}" class="btn btn-block">Manif. Interno</a>
+                <a id="manifiestoPiloto" href="{{ url('reporte-manifiesto_boleto_piloto') }}" class="btn btn-block">Manif. Piloto</a>
+                <a id="manifiestoEncominda" href="{{ url('reporte-manifiesto_encomienda_full') }}" class="btn btn-block">Manif. Encomienda</a>
+            </div>
+        </div> 
+        <BR>
+        <div id="esquemaDIV" class="row-fluid">
+            <div class="span12" >
+                <input type="hidden" id="listaAsientosHidden" value=""></input>
+                <input type="hidden" id="listaSenalesHidden" value=""></input>
+                <input type="hidden" id="listaBoletosHidden" value=""></input>
+                <input type="hidden" id="listaReservacionesHidden" value=""></input>
+                
+                <div class="containment">
+                <div class="row-fluid">
+                <div class="span12"> 
+                    <div class="detalleDiv">
+                        <label>
+                            <span>Cantidad: </span>
+                            <span id="utilizadoSpan">0 </span>
+                            <span>/ </span>
+                            <span id="totalSpan">0 </span>
+                        </label>
+                    </div>
+                    <div class="tabbable">
+                        <ul class="nav nav-tabs nivel">
+                            <li id="nav1" class="active"><a href="#tab1" data-toggle="tab">Nivel 1</a></li> 
+                            <li id="nav2" ><a href="#tab2" data-toggle="tab">Nivel 2</a></li>  
+                            <li id="pendientes"><a href="#tab3" data-toggle="tab">Pendientes</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab1">    
+                                <div class="lista nivel1"></div>
+                            </div>  
+                            <div class="tab-pane" id="tab2">    
+                                <div class="lista nivel2"></div>
+                            </div> 
+                            <div class="tab-pane" id="tab3">    
+                                <div class="lista pendientes"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                
+               <div class="span2 iconosMapaBus">                                            
+               <ul id="iconos">
+                    <li>
+                        <figure class="icono asiento claseA libre">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseA.png') }}" alt="Clase A, asiento libre" title="Clase A, asiento libre"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseA cortesia">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseACortesia.png') }}" alt="Clase A, asiento de cortesía" title="Clase A, asiento de cortesía"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseA reservado">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseAReservado.png') }}" alt="Clase A, asiento reservado" title="Clase A, asiento reservado"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseA vendido">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseAVendido.png') }}" alt="Clase A, asiento vendido" title="Clase A, asiento vendido"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseB libre">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseB.png') }}" alt="Clase B, asiento libre" title="Clase B, asiento libre"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseB cortesia">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseBCortesia.png') }}" alt="Clase B, asiento de cortesía" title="Clase B, asiento de cortesía"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseB reservado">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseBReservado.png') }}" alt="Clase B, asiento reservado" title="Clase B, asiento reservado"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseB vendido">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseBVendido.png') }}" alt="Clase B, asiento vendido" title="Clase B, asiento vendido"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono senal salida">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/puerta.png') }}" alt="Puerta de entrada y salida" title="Puerta de entrada y salida"/>
+                        </figure>  
+                    </li>
+                    <li>
+                        <figure class="icono senal chofer">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/chofer.png') }}" alt="Chofer" title="Chofer"/>
+                        </figure>
+                    </li>
+                </ul>
+                </div>
+                
+                </div>
+            </div> 
+        </div> 
+        
+        <input type="hidden" id="pathListarSalidasByFecha" value="{{ url('ajaxlistarSalidasByFecha') }}"></input>
+        <input type="hidden" id="pathGetInformacionPorSalida" value="{{ url('ajaxGetInformacionPorSalida') }}"></input>
+        <input type="hidden" id="pathCancelarBoleto" value="{{ url('cancelarBoleto-case1') }}"></input>
+        <input type="hidden" id="pathInfoAsientoSalida" value="{{ url('consultarAsientoSalida-case2') }}"></input>
+        
+    </form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}
+
+
+
+
+
+

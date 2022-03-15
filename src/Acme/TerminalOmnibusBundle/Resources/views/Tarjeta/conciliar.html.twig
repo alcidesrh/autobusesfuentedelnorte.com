@@ -1,0 +1,184 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+     Conciliar Tarjetas Pendientes
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            conciliarTarjeta.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+
+<form class="form-horizontal tarjetaForm" id="tarjetaForm" name="tarjetaForm" action="{{ path(route) }}" method="post" >
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}" />
+    
+    <div class="container-fluid">
+   
+    <div class="row-fluid">
+    <div class="span12">
+        {% for tarjeta in tarjetas %}
+        <table id="tarjeta_{{ tarjeta.id }}" data-tarjeta-id="{{ tarjeta.id }}" 
+               class="table table-striped table-bordered table-hover" style="margin-bottom: 50px;">
+            <thead>  
+                <tr>
+                    <th colspan="5" style="text-align:left; vertical-align:middle; width: 50%; font-weight: normal;">
+                        <span class="text-left">
+                            <strong>
+                                Nro Tarjeta: 
+                                <a class="showTarjetaDetails btn-link"
+                                title="Clic para ver los detalles de la tarjeta"
+                                href="{{ path("tarjeta-consultar-case2", { 'id' : tarjeta.id}) }}"
+                                >
+                                    <i>{{ tarjeta.alias }}</i>
+                                </a>
+                            </strong>
+                        </span> 
+                        <span class="pull-right text-right">
+                            Salida ID: 
+                            <a class="showSalidaDetails btn-link"
+                               title="Clic para ver los detalles de la salida"
+                               href="{{ path("salida-consultar-case2", { 'id' : tarjeta.salida.id}) }}"
+                               >
+                                {{ tarjeta.salida.id }}
+                            </a>
+                        </span>
+                    </th>
+                </tr>
+                <tr>
+                    <th style="text-align:center; vertical-align:middle; width: 20%; font-weight: normal;">Intervalo</th>
+                    <th style="text-align:center; vertical-align:middle; width: 20%; font-weight: normal;">Importe Inspector</th>
+                    <th style="text-align:center; vertical-align:middle; width: 20%; font-weight: normal;">Total Revisor</th>
+                    <th style="text-align:center; vertical-align:middle; width: 20%; font-weight: normal;">Diferencia</th>
+                    <th style="text-align:center; vertical-align:middle; width: 20%; font-weight: normal;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set listaCortesVentas = tarjeta.listCortesVenta %}
+                {% for corteVenta in listaCortesVentas %}
+                    {% set estado = corteVenta.estado.id %}
+                    {% set diff = (corteVenta.importeTotal - corteVenta.importeTotalItems) %}
+                    <tr class="corteVentaTR {{ diff != 0 ? "error" : "" }}" >
+                        <td style="text-align:center; vertical-align:middle; width: 20%;">
+                            <a  class="showDetails btn-link"
+                                title="Clic para ver los detalles"
+                                href="{{ path("corte-venta-consultar-case1", { 'id' : corteVenta.id}) }}">
+                                {% if estado == 4 %}
+                                    <del>
+                                {% endif %}
+                                [{{ corteVenta.inicial ~ ' al '~ corteVenta.final }}]
+                                {% if estado == 4 %}
+                                    </del>
+                                {% endif %}
+                            </a>
+                        </td>
+                        <td style="text-align:center; vertical-align:middle; width: 20%;">
+                            {% if estado == 4 %}
+                                <del>
+                            {% endif %}
+                                GTQ {{ corteVenta.importeTotal|parseImporte }}
+                            {% if estado == 4 %}
+                                </del>
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center; vertical-align:middle; width: 20%;">
+                            {% if estado != 4 %}
+                                GTQ {{ corteVenta.importeTotalItems|parseImporte }}
+                            {% else %}
+                                <strong>Anulado</strong>
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center; vertical-align:middle; width: 20%;">
+                            {% if estado != 4 %}
+                                GTQ {{ diff|abs|parseImporte }}
+                            {% else %}
+                                <strong>Anulado</strong>
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center; vertical-align:middle; width: 20%;">
+                            <a class="ponerEnRevision btn btn-mini" href="{{ path("corte-venta-poner-revision-case1", { 'id' : corteVenta.id}) }}">
+                                Poner en revisión
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align:center; vertical-align:middle;">
+                            No existen resultados
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" style="text-align:center; vertical-align:middle;">
+                        {% if tarjeta.checkCortesVentaSuccess %}
+                            <a class="conciliarSuccess btn btn-mini btn-primary" href="{{ path("tarjeta-conciliar-success-case1", { 'id' : tarjeta.id}) }}">
+                                Conciliar
+                            </a>
+                        {% else %}
+                            <a class="conciliarDiferencias btn btn-mini btn-warning" href="{{ path("tarjeta-conciliar-diferencias-case1", { 'id' : tarjeta.id}) }}">
+                                Conciliar con Diferencias
+                            </a>
+                            
+                            <label style="text-align: left;">Observación</label>
+                            <textarea class="description span12" required="required" rows="2"></textarea>
+                            
+                            <table class="table table-striped table-bordered table-hover" style="border: 1px solid gray; margin-top: 10px;">
+                                <thead>   
+                                    <tr>
+                                        <th colspan="4" style="text-align:center; vertical-align:middle; width: 50%;">Cobros</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:center; vertical-align:middle; width: 50%;">Inspector</th>
+                                        <th style="text-align:center; vertical-align:middle; width: 50%;">Importe</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% set mapDiferencias = tarjeta.getMapDiferencias %}
+                                    {% for key, values in mapDiferencias %}
+                                    <tr>
+                                        <td style="text-align:center; vertical-align:middle; width: 50%;">
+                                            {{ values['user'].fullname }}
+                                        </td>
+                                        <td style="text-align:center; vertical-align:middle; width: 50%;">
+                                            {{ values['total']|parseImporte }}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>   
+        {% else %}
+            <div class="alert alert-info">
+                No existen tarjetas pendientes de conciliación.
+            </div>
+        {% endfor %}
+    </div> 
+    </div>
+    
+    </div>  
+    
+    <input type="hidden" id="pathConciliarTarjeta" value="{{ url('tarjeta-conciliar-case1') }}" />
+    <input type="hidden" id="pathHomeTarjeta" value="{{ url('tarjetas-home') }}" />
+    
+</form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="cancelar" href="{{ url('tarjetas-home') }}" class="btn">Cancelar</a>
+     
+{% endblock %}
+

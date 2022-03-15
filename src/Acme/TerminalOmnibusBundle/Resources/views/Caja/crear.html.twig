@@ -1,0 +1,65 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Crear Caja
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            crearCaja.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal cajaForm" id="cajaForm" name="cajaForm" action="{{ path('cajas-crear-case1') }}" method="post" {{ form_enctype(form) }}>
+       
+        <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+        {{ form_errors(form) }}
+        
+        <div class="row-fluid"> 
+            <div class="span12">
+                {{ form_label(form.moneda) }}
+                {{ form_widget(form.moneda , {'attr': {'placeholder': 'Moneda de la caja.' } }) }}
+                {{ form_errors(form.moneda ) }}
+            </div>
+        </div> 
+        
+         <div class="row-fluid"> 
+            <div class="span12">
+                {{ form_label(form.importe) }}
+                {{ form_widget(form.importe , {'attr': {'placeholder': 'Importe inicial de la caja.' } }) }}
+                {{ form_errors(form.importe ) }}
+            </div>
+        </div> 
+        
+        <div class="row-fluid"> 
+            <div class="span12">
+                {{ form_label(form.usuario) }}
+                {{ form_widget(form.usuario , {'attr': {'placeholder': 'Usuario que se le asigna la caja.' } }) }}
+                {{ form_errors(form.usuario ) }}
+            </div>
+        </div> 
+        
+        <input type="hidden" id="pathHomeCaja" value="{{ url('cajas-home') }}"></input>
+        {{ form_rest(form) }}
+        
+    </form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="aceptar" href="#" class="btn btn-primary">Aceptar</a>
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}
+
+
+
+
+
+

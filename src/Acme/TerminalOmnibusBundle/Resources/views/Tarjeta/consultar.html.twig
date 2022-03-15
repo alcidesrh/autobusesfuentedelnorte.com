@@ -1,0 +1,298 @@
+<div class="container-fluid">
+
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}" />
+
+    <div class="row-fluid">
+        <div class="span4">
+            <label class="control-label">Tarjeta:</label>
+            <input class="span12" type="text" disabled value="{{ entity.alias }}"/>       
+        </div>
+        <div class="span4">
+            <label class="control-label">Salida:</label>
+            <input class="span12" type="text" disabled value="{{ entity.salida.id }}"/>       
+        </div>
+        <div class="span4">
+            <label class="control-label">Estado:</label>
+            <input class="span12" type="text" disabled value="{{ entity.estado }}"/>       
+        </div>
+    </div> 
+    <div class="row-fluid">
+        <div class="span4">
+            <label class="control-label">Fecha Creación:</label>
+            <input class="span12" type="text" disabled value="{{ entity.fechaCreacion | date('d/m/Y h:i A') }}"/>       
+        </div>
+        <div class="span4">
+            <label class="control-label">Oficina Creación:</label>
+            <input class="span12" type="text" disabled value="{{ entity.estacionCreacion }}"/>       
+        </div>
+        <div class="span4">
+            <label class="control-label">Usuario Creación:</label>
+            <input class="span12" type="text" disabled value="{{ entity.usuarioCreacion.fullName }}"/>       
+        </div>
+    </div>
+    
+    {% if entity.estado.id == 3 or entity.estado.id == 4 %}
+    <div class="row-fluid">
+        <div class="span4">
+            <label class="control-label">Fecha Conciliación:</label>
+            <input class="span12" type="text" disabled value="{{ entity.fechaConciliacion | date('d/m/Y h:i A') }}"/>       
+        </div>
+        <div class="span4">
+            <label class="control-label">Usuario Conciliación:</label>
+            <input class="span12" type="text" disabled value="{{ entity.usuarioConciliacion.fullName }}"/>       
+        </div>
+    </div>
+    {% if entity.estado.id == 4 %}
+        <div class="row-fluid">
+            <div class="span12">
+                <label class="control-label">Observación:</label>
+                <textarea class="span12" required="required" disabled rows="2">{{ entity.observacionConciliacion }}</textarea>   
+            </div>
+        </div>
+    {% endif %}
+    {% endif %}
+    
+    <BR>
+    <div class="row-fluid">
+    <div class="span12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th colspan="6" style="text-align:center; vertical-align:middle;">
+                        Cortes de Venta
+                    </th>
+                </tr>
+                <tr>
+                    <th style="text-align:center; vertical-align:middle; width: 15%;">Intervalo</th>
+                    <th style="text-align:center; vertical-align:middle; width: 15%;">Fecha</th>
+                    <th style="text-align:center; vertical-align:middle; width: 20%;">Oficina</th>
+                    <th style="text-align:center; vertical-align:middle; width: 20%;">Inspector</th>
+                    <th style="text-align:center; vertical-align:middle; width: 15%;">Importe Inspector</th>
+                    <th style="text-align:center; vertical-align:middle; width: 15%;">Total Revisor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set listaCortesVentas = entity.listCortesVenta %}
+                {% for corteVenta in listaCortesVentas %}
+                    {% set estadoCorteVenta = corteVenta.estado.id %}
+                    {% set diff = (corteVenta.importeTotal - corteVenta.importeTotalItems) %}
+                    <tr class="corteVentaTR {{ diff != 0 ? "error" : "" }}" >
+                        <td style="text-align:center; vertical-align:middle; width: 15%;">
+                            <button class="showTalonarios btn btn-mini" type="button" 
+                                    data-target="#talonarios_{{ corteVenta.id }}"
+                                    title="Ver detalles">
+                                <i class="icon-eye-open"></i>
+                            </button>
+                            {% if estadoCorteVenta == 4 %}
+                                <del>
+                            {% endif %}
+                            [{{ corteVenta.inicial ~ ' al '~ corteVenta.final }}]
+                            {% if estadoCorteVenta == 4 %}
+                                </del>
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center; vertical-align:middle; width: 15%;">
+                           {% if estadoCorteVenta == 4 %}
+                                <del>
+                           {% endif %}
+                           {{ corteVenta.fecha | date('d/m/Y') }}
+                           {% if estadoCorteVenta == 4 %}
+                                </del>
+                           {% endif %}
+                        </td>
+                        <td style="text-align:center; vertical-align:middle; width: 20%;">
+                           {% if estadoCorteVenta == 4 %}
+                                <del>
+                           {% endif %}
+                           {{ corteVenta.estacionCreacion }}
+                           {% if estadoCorteVenta == 4 %}
+                                </del>
+                           {% endif %}
+                        </td>
+                        <td style="text-align:center; vertical-align:middle; width: 20%;">
+                           {% if estadoCorteVenta == 4 %}
+                                <del>
+                           {% endif %}
+                           {{ corteVenta.inspector.fullname }}
+                           {% if estadoCorteVenta == 4 %}
+                                </del>
+                           {% endif %}
+                        </td>
+                        <td style="text-align:center; vertical-align:middle; width: 15%;">
+                           {% if estadoCorteVenta == 4 %}
+                                <del>
+                           {% endif %}
+                           GTQ {{ corteVenta.importeTotal|parseImporte }}
+                           {% if estadoCorteVenta == 4 %}
+                                </del>
+                           {% endif %}
+                        </td>
+                        <td style="text-align:center; vertical-align:middle; width: 15%;">
+                            {% if estadoCorteVenta != 4 %}
+                                GTQ {{ corteVenta.importeTotalItems|parseImporte }}
+                            {% else %}
+                                <strong>Anulado</strong>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr id="talonarios_{{ corteVenta.id }}" class="hidden">
+                        <td colspan="6">
+                            <table class="table table-striped table-bordered table-hover" style="border: 1px solid gray;">
+                                <thead>   
+                                    <tr>
+                                        <th colspan="4" style="text-align:center; vertical-align:middle; width: 50%;">Talonario</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:center; vertical-align:middle; width: 30%;">Fecha</th>
+                                        <th style="text-align:center; vertical-align:middle; width: 30%;">Usuario</th>
+                                        <th style="text-align:center; vertical-align:middle; width: 20%;">Nro</th>
+                                        <th style="text-align:center; vertical-align:middle; width: 20%;">Importe</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% set listaItems = corteVenta.listaItems %}
+                                    {% for item in listaItems %}
+                                    <tr>
+                                        <td style="text-align:center; vertical-align:middle; width: 30%;">
+                                            {% if estadoCorteVenta == 4 %}
+                                                <del>
+                                            {% endif %}
+                                            {{ item.fechaActualizacion | date('d/m/Y h:i A') }}
+                                            {% if estadoCorteVenta == 4 %}
+                                                </del>
+                                            {% endif %}
+                                        </td>
+                                        <td style="text-align:center; vertical-align:middle; width: 30%;">
+                                            {% if estadoCorteVenta == 4 %}
+                                                <del>
+                                            {% endif %}
+                                            {{ item.usuarioActualizacion.fullname }}
+                                            {% if estadoCorteVenta == 4 %}
+                                                </del>
+                                            {% endif %}
+                                        </td>
+                                        <td style="text-align:center; vertical-align:middle; width: 20%;">
+                                            {% if estadoCorteVenta == 4 %}
+                                                <del>
+                                            {% endif %}
+                                            {{ item.numero }}
+                                            {% if estadoCorteVenta == 4 %}
+                                                </del>
+                                            {% endif %}
+                                        </td>
+                                        <td style="text-align:center; vertical-align:middle; width: 20%;">
+                                            {% if estadoCorteVenta != 4 %}
+                                                {{ item.importe|parseImporte }}
+                                            {% else %}
+                                                <strong>Anulado</strong>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="4" style="text-align:center; vertical-align:middle;">
+                                                No existen resultados
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table> 
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align:center; vertical-align:middle;">
+                            No existen resultados
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table> 
+    </div> 
+    </div>
+
+    {% if entity.estado.id == 3 or entity.estado.id == 4 %}
+    {% set mapDiferencias = entity.getMapDiferencias %}
+    {% if mapDiferencias is not empty %}
+    
+        <div class="row-fluid margin-top-2">
+        <div class="span12">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>   
+                    <tr>
+                        <th colspan="4" style="text-align:center; vertical-align:middle; width: 50%;">Cobros</th>
+                    </tr>
+                    <tr>
+                        <th style="text-align:center; vertical-align:middle; width: 50%;">Inspector</th>
+                        <th style="text-align:center; vertical-align:middle; width: 50%;">Importe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, values in mapDiferencias %}
+                    <tr>
+                        <td style="text-align:center; vertical-align:middle; width: 50%;">
+                            {{ values['user'].fullname }}
+                        </td>
+                        <td style="text-align:center; vertical-align:middle; width: 50%;">
+                            {{ values['total']|parseImporte }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div> 
+        </div>
+    
+    {% endif %}
+    {% endif %}
+    
+    <div class="row-fluid margin-top-2">
+    <div class="span12">
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+            <tr>
+                <th colspan="3" style="text-align:center; vertical-align:middle;">Bitacora</th>
+            </tr>
+            <tr>
+                <th style="width: 20%; text-align:center; vertical-align:middle;">Fecha</th>
+                <th style="width: 20%; text-align:center; vertical-align:middle;">Usuario</th>
+                <th style="width: 60%; text-align:left; vertical-align:middle;">Descripción</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for item in entity.bitacoras %}
+                    <tr>
+                        <td style="width: 20%; text-align:center; vertical-align:middle;">{{ item.fecha | date('d/m/Y H:i:s') }}</td>
+                        <td style="width: 20%; text-align:center; vertical-align:middle;">{{ item.usuario is null ? '' : item.usuario.fullName }}</td>
+                        <td style="width: 60%; text-align:left; vertical-align:middle;">{{ item.descripcion }}</td>
+                    </tr>		
+                {% else %}
+                    <tr><td colspan="3" >No existen datos</td></tr>
+                {% endfor %}
+            </tbody>
+         </table>
+     </div>
+     </div>
+
+     <BR><BR><BR><BR><BR><BR><BR><BR><BR><BR>
+
+</div>
+    
+<script>
+    $(document).ready(function(){
+        $(".showTalonarios").click(function (e){
+            console.log("clickShowTalonarios-init");
+            e.preventDefault();
+            e.stopPropagation();
+            var icon = $(this).find("i.icon-eye-open");
+            var show = icon.length > 0;
+            if(show){
+                $($(this).attr("data-target")).removeClass("hidden");
+                icon.removeClass("icon-eye-open").addClass("icon-eye-close");
+            }else{
+                $($(this).attr("data-target")).addClass("hidden");
+                $(this).find("i.icon-eye-close").removeClass("icon-eye-close").addClass("icon-eye-open");
+            }
+        }); 
+    }); 
+</script>

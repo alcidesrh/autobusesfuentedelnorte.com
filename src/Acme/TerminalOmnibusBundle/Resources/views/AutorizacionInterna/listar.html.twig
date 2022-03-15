@@ -1,0 +1,74 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Autorizaciones Internas
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            frondendAutorizacionInterna.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal" id="filtersForm">
+        <div id="accordionFilters" class="accordion" >
+        <div class="accordion-group">
+        <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionFilters" href="#collapseFilters">
+        Filtrar resultados
+        </a>
+        </div>    
+        <div id="collapseFilters" class="accordion-body collapse">
+        <div class="accordion-inner">
+            
+         <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="identificador">Id:</label>
+            <div class="controls">
+                <input type="text" id="identificador" name="identificador" placeholder="Filtrar por identificador" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5" >
+           <div class="control-group"> 
+                <label class="control-label" for="fechaCreacion">Fecha Creación:</label>
+           <div class="controls">
+                <input type="text" id="fechaCreacion" name="fechaCreacion"  placeholder="Filtrar por fecha de creación" />
+           </div>
+           </div>       
+         </div>     
+       </div>       
+       </div>    
+
+       <div class="control-group">
+       <div class="controls"> 
+            <a id="linkFilter" class="btn btn-primary" type="submit" href="#"><i class="icon-filter icon-white"></i> Filtrar</a>
+       </div>
+       </div> 
+    
+    </div>
+    </div>
+    </div>
+    </form>
+
+    {{ renderMenu('menuAutorizacionInterna') }}   
+    
+    <table id="grid" style="display:none" data-url="{{url('autorizacionInterna-listarPaginado')}}"></table>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+    
+{% endblock %}
+
+
+
+
+
+

@@ -1,0 +1,13 @@
+{% extends "::print."~format~".twig" %}
+{% block container %}
+{% for boleto in boletos %}
+{% set idEmpresa = boleto.salida.empresa.id %}
+{% if idEmpresa is sameas(1) or  idEmpresa is sameas("1") %}
+    {{ include("AcmeTerminalOmnibusBundle:Print:boletoVoucherPionera.html.twig") }}
+{% elseif idEmpresa is sameas(2) or  idEmpresa is sameas("2") %}
+    {{ include("AcmeTerminalOmnibusBundle:Print:boletoVoucherMitocha.html.twig") }}
+{% elseif idEmpresa is sameas(7) or  idEmpresa is sameas("7") %}
+    {{ include("AcmeTerminalOmnibusBundle:Print:boletoVoucherRosita.html.twig") }}	
+{% endif %}
+{% endfor %}
+{% endblock %}

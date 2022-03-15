@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.650000000000003"/>
+	<property name="ireport.x" value="148"/>
+	<property name="ireport.y" value="187"/>
+	<parameter name="DATA_EMPRESA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_ESTACION_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_NOMBRE" class="java.lang.String"/>
+	<parameter name="FECHA_DIA" class="java.lang.String"/>
+	<parameter name="DATA_FECHA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_MONEDA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[declare @usuario_id bigint
+declare @usuario_estacion_id bigint
+declare @usuario_empresas_id TABLE (id bigint)
+declare @empresa_id bigint
+declare @estacion_id bigint
+declare @moneda_id bigint
+declare @fecha_init datetime2
+declare @fecha_end datetime2
+
+declare @tableBoletos TABLE (
+idBoleto bigint,
+idReasignado bigint,
+fechaCreacion nvarchar(30),
+estacionCreacion bigint,
+fechaSalida datetime2,
+estacionOrigenRuta bigint,
+aliasRuta nvarchar(50),
+nombreRuta  nvarchar(150),
+codigoBus nvarchar(50),
+codigoPiloto nvarchar(50),
+aliasEmpresa nvarchar(50),
+moneda nvarchar(3),
+importe numeric(7,2)
+)
+
+-- PARAMETROS DE SEGURIDAD INIT
+set @usuario_id = $P{USUARIO_ID}
+SELECT @usuario_estacion_id = estacion_id FROM custom_user WHERE id = @usuario_id
+INSERT INTO @usuario_empresas_id
+SELECT cue.empresa_id FROM custom_user AS cu LEFT JOIN custom_user_empresa AS cue ON cu.id=cue.user_id
+WHERE cu.id = @usuario_id
+-- PARAMETROS DE SEGURIDAD INIT
+
+set @empresa_id = $P{DATA_EMPRESA_ID}
+set @estacion_id = $P{DATA_ESTACION_ID}
+set @moneda_id = $P{DATA_MONEDA_ID}
+set @fecha_init = CAST( $P{DATA_FECHA} + ' 00:00:00' AS datetime2(7))
+set @fecha_end = CAST( $P{DATA_FECHA} + ' 23:59:59' AS datetime2(7))
+
+---------------------------------------------------------------------------------------
+INSERT INTO @tableBoletos
+SELECT
+boleto1.id AS idBoleto,
+boleto1.reasignado_id AS idReasignado,
+FORMAT(boleto1."fecha_creacion", 'dd/MM/yyyy') AS fechaCreacion,
+estacion1."id" as estacionCreacion,
+salida1."fecha" as fechaSalida,
+estacionOrigenRuta1."id" as estacionOrigenRuta,
+ruta1."codigo" as aliasRuta,
+ruta1."nombre" as nombreRuta,
+bus."codigo" as codigoBus,
+piloto."codigo" as codigoPiloto,
+empresa1."alias" as aliasEmpresa,
+moneda1."sigla" as sigla,
+factura_generada1."importeTotal" AS importe
+FROM boleto AS boleto1
+LEFT JOIN salida AS salida1 ON salida1.id = boleto1.salida_id
+LEFT JOIN piloto piloto ON salida1.piloto_id = piloto.id
+LEFT JOIN bus bus ON salida1.bus_codigo = bus.codigo
+LEFT JOIN itineario itineario1 ON salida1.itinerario_id = itineario1.id
+LEFT JOIN ruta ruta1 ON itineario1.ruta_codigo = ruta1.codigo
+LEFT JOIN estacion estacionOrigenRuta1 ON ruta1.estacion_origen_id = estacionOrigenRuta1.id
+LEFT JOIN cliente clienteBoleto1 ON boleto1.cliente_boleto = clienteBoleto1.id
+LEFT JOIN factura_generada factura_generada1 ON boleto1.factura_generada_id = factura_generada1.id
+LEFT JOIN custom_user usuario1 ON boleto1.usuario_creacion_id = usuario1.id
+LEFT JOIN estacion estacion1 ON boleto1.estacion_creacion_id = estacion1.id
+LEFT JOIN moneda moneda1 ON boleto1.moneda_id = moneda1.id
+LEFT JOIN factura factura1 ON factura_generada1.factura_id = factura1.id
+LEFT JOIN empresa empresa1 ON salida1.empresa_id = empresa1.id
+WHERE (
+((@usuario_estacion_id is not null and @usuario_estacion_id=estacion1."id") or @usuario_estacion_id is NULL)
+and ((@estacion_id is not null and @estacion_id=estacion1."id") or @estacion_id is NULL)
+and ( empresa1."id" IN (SELECT id FROM @usuario_empresas_id) )
+and ((@empresa_id is not null and @empresa_id=empresa1."id") or @empresa_id is NULL)
+and ( @moneda_id = moneda1.id )
+and (((@fecha_init is not null and @fecha_end is not null) and
+           (boleto1."fecha_creacion" between @fecha_init and @fecha_end))
+          or (@fecha_init is NULL or @fecha_end is NULL))
+)
+
+---------------------------------------------------------------------------------------
+--  ACTUALIZACION DE REASIGNADOS
+---------------------------------------------------------------------------------------
+UPDATE tb
+SET
+tb.fechaSalida=salida.fecha,
+tb.estacionOrigenRuta=estacionOrigenRuta.id,
+tb.aliasRuta=ruta.codigo,
+tb.nombreRuta=ruta.nombre,
+tb.codigoBus=bus."codigo",
+tb.codigoPiloto=piloto."codigo"
+FROM @tableBoletos as tb
+INNER JOIN boleto AS boletoOrigen ON boletoOrigen.id=tb.idBoleto
+INNER JOIN boleto AS boletoReajuste ON boletoReajuste.id=dbo.getUltimoAjuste(tb.idBoleto)
+INNER JOIN salida AS salida ON salida.id = boletoReajuste.salida_id
+INNER JOIN itineario AS itineario ON salida.itinerario_id = itineario.id
+INNER JOIN ruta AS ruta ON itineario.ruta_codigo = ruta.codigo
+INNER JOIN estacion estacionOrigenRuta ON ruta.estacion_origen_id = estacionOrigenRuta.id
+LEFT JOIN piloto piloto ON salida.piloto_id = piloto.id
+LEFT JOIN bus bus ON salida.bus_codigo = bus.codigo
+WHERE
+boletoOrigen.estado_id=5
+---------------------------------------------------------------------------------------
+SELECT
+     tb.fechaCreacion as fechaCreacion,
+     'NO' as prepagado,
+     tb.fechaSalida AS salida_fecha,
+     FORMAT(tb.fechaSalida, 'dd/MM/yyyy') as fechaDia,
+     tb.aliasEmpresa AS aliasEmpresa,
+     estacionCreacion."nombre" AS estacion_nombre,
+     tb.moneda as moneda_sigla,
+     tb.codigoBus AS salida_bus_codigo,
+     tb.codigoPiloto AS piloto_codigo,
+     RIGHT(CONVERT(CHAR(20), tb.fechaSalida, 22), 11) AS fechaHora,
+     tb.aliasRuta AS ruta_codigo,
+     tb.nombreRuta AS ruta_nombre,
+     SUM(tb.importe) AS factura_generada_importeTotal
+FROM
+     @tableBoletos tb
+     INNER JOIN estacion estacionCreacion ON tb.estacionCreacion = estacionCreacion.id
+WHERE
+     (FORMAT(tb.fechaSalida,'dd/MM/yyyy') = tb.fechaCreacion)
+ AND (tb.estacionCreacion = tb.estacionOrigenRuta)
+GROUP BY
+     tb.fechaCreacion,
+     tb.fechaSalida,
+     FORMAT(tb.fechaSalida, 'dd/MM/yyyy'),
+     tb.aliasEmpresa,
+     estacionCreacion.nombre,
+     tb.moneda,
+     tb.codigoBus,
+     tb.codigoPiloto,
+     RIGHT(CONVERT(CHAR(20), tb.fechaSalida, 22), 11),
+     tb.aliasRuta,
+     tb.nombreRuta
+ORDER BY
+     fechaCreacion ASC,
+     prepagado ASC,
+     fechaDia ASC,
+     aliasEmpresa ASC,
+     estacion_nombre ASC,
+     moneda_sigla ASC,
+     salida_fecha ASC]]>
+	</queryString>
+	<field name="fechaCreacion" class="java.lang.String"/>
+	<field name="prepagado" class="java.lang.String"/>
+	<field name="salida_fecha" class="java.lang.String"/>
+	<field name="fechaDia" class="java.lang.String"/>
+	<field name="aliasEmpresa" class="java.lang.String"/>
+	<field name="estacion_nombre" class="java.lang.String"/>
+	<field name="moneda_sigla" class="java.lang.String"/>
+	<field name="salida_bus_codigo" class="java.lang.String"/>
+	<field name="piloto_codigo" class="java.lang.String"/>
+	<field name="fechaHora" class="java.lang.String"/>
+	<field name="ruta_codigo" class="java.lang.String"/>
+	<field name="ruta_nombre" class="java.lang.String"/>
+	<field name="factura_generada_importeTotal" class="java.math.BigDecimal"/>
+	<variable name="importeTotal" class="java.math.BigDecimal" resetType="Group" resetGroup="datos" calculation="Sum">
+		<variableExpression><![CDATA[$F{factura_generada_importeTotal}]]></variableExpression>
+	</variable>
+	<group name="datos">
+		<groupExpression><![CDATA[$F{fechaCreacion} +
+$F{aliasEmpresa} +
+$F{moneda_sigla} +
+$F{estacion_nombre}]]></groupExpression>
+		<groupHeader>
+			<band height="50">
+				<rectangle>
+					<reportElement x="1" y="1" width="569" height="46"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="13" y="4" width="85" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Estación de Venta:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="24" width="85" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Empresa:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="338" y="4" width="64" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Fecha Venta:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="338" y="24" width="64" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Moneda:]]></text>
+				</staticText>
+				<subreport>
+					<reportElement stretchType="RelativeToTallestObject" x="100" y="4" width="220" height="20"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_ID">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_EMPRESA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_EMPRESA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_NOMBRE">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_NOMBRE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="FECHA_DIA">
+						<subreportParameterExpression><![CDATA[$P{FECHA_DIA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_MONEDA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_MONEDA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_ESTACION_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_ESTACION_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_FECHA">
+						<subreportParameterExpression><![CDATA[$P{DATA_FECHA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cuadreVentaBoleto_subreport4.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport>
+					<reportElement x="100" y="24" width="220" height="20"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_ID">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_EMPRESA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_EMPRESA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_NOMBRE">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_NOMBRE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="FECHA_DIA">
+						<subreportParameterExpression><![CDATA[$P{FECHA_DIA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_MONEDA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_MONEDA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_ESTACION_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_ESTACION_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_FECHA">
+						<subreportParameterExpression><![CDATA[$P{DATA_FECHA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cuadreVentaBoleto_subreport5.jasper"]]></subreportExpression>
+				</subreport>
+				<textField>
+					<reportElement x="402" y="4" width="150" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$P{DATA_FECHA}]]></textFieldExpression>
+				</textField>
+				<subreport>
+					<reportElement x="402" y="24" width="150" height="20"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_ID">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_EMPRESA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_EMPRESA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_NOMBRE">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_NOMBRE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="FECHA_DIA">
+						<subreportParameterExpression><![CDATA[$P{FECHA_DIA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_ESTACION_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_ESTACION_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_MONEDA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_MONEDA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_FECHA">
+						<subreportParameterExpression><![CDATA[$P{DATA_FECHA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cuadreVentaBoleto_subreport6.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+			<band height="50">
+				<subreport>
+					<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="570" height="50"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_ID">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_EMPRESA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_EMPRESA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_NOMBRE">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_NOMBRE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="FECHA_DIA">
+						<subreportParameterExpression><![CDATA[$P{FECHA_DIA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_MONEDA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_MONEDA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_ESTACION_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_ESTACION_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_FECHA">
+						<subreportParameterExpression><![CDATA[$P{DATA_FECHA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cuadreVentaBoleto_subreport1.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+			<band height="48">
+				<staticText>
+					<reportElement x="0" y="23" width="50" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Bus]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="50" y="23" width="50" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Piloto]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="220" y="23" width="250" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Descripción]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="100" y="23" width="70" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Hora]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="470" y="23" width="100" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<text><![CDATA[Venta]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="43" width="570" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="46" width="570" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="170" y="23" width="50" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Ruta]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="170" y="2" width="250" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VENTAS DE BOLETOS POR PROPIETARIOS]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<printWhenExpression><![CDATA[$F{fechaCreacion} == null]]></printWhenExpression>
+				<textField>
+					<reportElement x="170" y="0" width="250" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[( $F{fechaCreacion} == null ? "No existen resultados" : "" )]]></textFieldExpression>
+				</textField>
+			</band>
+			<band height="29">
+				<textField isBlankWhenNull="true">
+					<reportElement x="362" y="4" width="209" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="false" isUnderline="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{moneda_sigla} == null ? "Total: 0.00" : "Total: " + $F{moneda_sigla} + " " + $V{importeTotal} )]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="1" y="2" width="570" height="1"/>
+				</line>
+			</band>
+			<band height="50">
+				<subreport>
+					<reportElement x="0" y="0" width="570" height="50"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_ID">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_EMPRESA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_EMPRESA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_NOMBRE">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_NOMBRE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="FECHA_DIA">
+						<subreportParameterExpression><![CDATA[$P{FECHA_DIA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_MONEDA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_MONEDA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_ESTACION_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_ESTACION_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_FECHA">
+						<subreportParameterExpression><![CDATA[$P{DATA_FECHA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cuadreVentaBoleto_subreport3.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+			<band height="50">
+				<subreport>
+					<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="570" height="50"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_ID">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_EMPRESA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_EMPRESA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_NOMBRE">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_NOMBRE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="FECHA_DIA">
+						<subreportParameterExpression><![CDATA[$P{FECHA_DIA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_MONEDA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_MONEDA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_ESTACION_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_ESTACION_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_FECHA">
+						<subreportParameterExpression><![CDATA[$P{DATA_FECHA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cuadreVentaBoleto_subreport2.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+			<band height="50">
+				<subreport>
+					<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="570" height="50"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_ID">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_EMPRESA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_EMPRESA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_NOMBRE">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_NOMBRE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="FECHA_DIA">
+						<subreportParameterExpression><![CDATA[$P{FECHA_DIA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_MONEDA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_MONEDA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_ESTACION_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_ESTACION_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_FECHA">
+						<subreportParameterExpression><![CDATA[$P{DATA_FECHA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cuadreVentaBoleto_subreport7.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+			<band height="50">
+				<subreport>
+					<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="570" height="50"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_ID">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_EMPRESA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_EMPRESA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="USUARIO_NOMBRE">
+						<subreportParameterExpression><![CDATA[$P{USUARIO_NOMBRE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="FECHA_DIA">
+						<subreportParameterExpression><![CDATA[$P{FECHA_DIA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_MONEDA_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_MONEDA_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_ESTACION_ID">
+						<subreportParameterExpression><![CDATA[$P{DATA_ESTACION_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="DATA_FECHA">
+						<subreportParameterExpression><![CDATA[$P{DATA_FECHA}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cuadreVentaBoleto_subreport8.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="55" splitType="Stretch">
+			<textField>
+				<reportElement x="463" y="29" width="107" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{USUARIO_NOMBRE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="208" y="28" width="180" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CUADRE TOTAL DE BOLETOS]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="463" y="8" width="107" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{FECHA_DIA}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="234" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRANSPORTE FUENTE DEL NORTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="418" y="8" width="45" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="418" y="29" width="45" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="2" width="50" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[( $F{salida_bus_codigo} != null ? $F{salida_bus_codigo} : "N/D" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="50" y="2" width="50" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[( $F{piloto_codigo} != null ? $F{piloto_codigo} : "N/D" )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="220" y="2" width="250" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ruta_nombre}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement x="100" y="2" width="70" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{fechaHora}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="470" y="2" width="100" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[( $F{moneda_sigla} == null ? "GTQ 0.00" : $F{moneda_sigla} + " " + $F{factura_generada_importeTotal} )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="170" y="2" width="50" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ruta_codigo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="24" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="27" splitType="Stretch">
+			<textField>
+				<reportElement x="434" y="2" width="98" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="531" y="2" width="35" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch"/>
+	</summary>
+</jasperReport>

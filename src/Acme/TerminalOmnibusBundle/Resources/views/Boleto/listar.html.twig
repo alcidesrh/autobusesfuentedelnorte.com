@@ -1,0 +1,210 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Boletos
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            frondendBoletos.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal" id="filtersForm">
+        <div id="accordionFilters" class="accordion" >
+        <div class="accordion-group">
+        <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionFilters" href="#collapseFilters">
+        Filtrar resultados
+        </a>
+        </div>    
+        <div id="collapseFilters" class="accordion-body collapse">
+        <div class="accordion-inner">
+            
+         <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="identificador">Id:</label>
+            <div class="controls">
+                <input type="text" id="identificador" name="identificador" placeholder="Filtrar por identificador" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5 hidden-phone">
+           <div class="control-group"> 
+                <label class="control-label" for="reasignado">Reasignado:</label>
+           <div class="controls">
+                <input id="reasignado" name="reasignado" type="text" placeholder="Filtrar por reasignado" />
+           </div>
+           </div>       
+         </div>     
+       </div> 
+       <div class="row-fluid">
+         <div class="span5">
+             <div class="control-group"> 
+                <label class="control-label" for="salida">Salida:</label>
+            <div class="controls">
+                 <input id="salida" name="salida" type="text" placeholder="Filtrar por salida" />
+            </div>
+            </div>      
+         </div>
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="tipoDocumento">Tipo Documento</label>
+            <div class="controls">
+                <input type="text" id="tipoDocumento" name="tipoDocumento" placeholder="Filtrar por tipo de documento" />
+            </div>
+            </div> 
+{#            <div class="control-group"> 
+                <label class="control-label" for="ruta">Ruta:</label>
+            <div class="controls">
+                 <input id="ruta" name="ruta" type="text" placeholder="Filtrar por ruta" />
+            </div>
+            </div>   #} 
+         </div>  
+       </div>
+       <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group"> 
+                <label class="control-label" for="rangoFecha">Rango Fecha:</label>
+            <div class="controls">
+                 <input id="rangoFecha" name="rangoFecha" type="text" placeholder="Filtrar por rango de fecha" />
+            </div>
+            </div>   
+         </div>
+         <div class="span5 hidden-phone">
+            <div class="control-group">
+                <label class="control-label" for="tipoDocumento">Estado</label>
+            <div class="controls">
+                <input type="text" id="estado" name="estado" placeholder="Filtrar por estado" />
+            </div>
+            </div>        
+         </div>  
+       </div> 
+       <div class="row-fluid hidden-phone">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="numeroAsiento">Número Asiento:</label>
+            <div class="controls">
+                <input type="text" id="numeroAsiento" name="numeroAsiento" placeholder="Filtrar por número de asiento" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5 hidden-phone">
+            <div class="control-group">
+                <label class="control-label" for="claseAsiento">Clase Asiento:</label>
+            <div class="controls">
+                <input type="text" id="claseAsiento" name="claseAsiento" placeholder="Filtrar por clase de asiento" />
+            </div>
+            </div>       
+         </div>  
+       </div>
+       <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="serieFactura">Serie Factura:</label>
+            <div class="controls">
+                <input type="text" id="serieFactura" name="serieFactura" placeholder="Filtrar por serie de factura" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="numeroFactura">Número Factura:</label>
+            <div class="controls">
+                <input type="text" id="numeroFactura" name="numeroFactura" placeholder="Filtrar por número de factura" />
+            </div>
+            </div>       
+         </div>  
+       </div>
+       <div class="row-fluid hidden-phone">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="estacionOrigen">Origen:</label>
+            <div class="controls">
+                <input type="text" id="estacionOrigen" name="estacionOrigen" placeholder="Filtrar por estación de origen" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5 hidden-phone">
+            <div class="control-group">
+                <label class="control-label" for="estacionDestino">Destino:</label>
+            <div class="controls">
+                <input type="text" id="estacionDestino" name="estacionDestino" placeholder="Filtrar por estación de destino" />
+            </div>
+            </div>       
+         </div>  
+       </div>
+       <div class="row-fluid hidden-phone">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="referenciaExterna">Referencia Externa:</label>
+            <div class="controls">
+                <input type="text" id="referenciaExterna" name="referenciaExterna" placeholder="Filtrar por referencia externa" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5 hidden-phone">
+            <div class="control-group">
+                <label class="control-label" for="autorizacionTarjeta">Autorización Tarjeta:</label>
+            <div class="controls">
+                <input type="text" id="autorizacionTarjeta" name="autorizacionTarjeta" placeholder="Filtrar por autorización tarjeta" />
+            </div>
+            </div>       
+         </div>
+       </div>
+       <div class="row-fluid hidden-phone">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="clienteDocumento">Cliente Documento:</label>
+            <div class="controls">
+                <input type="text" id="clienteDocumento" name="clienteDocumento" placeholder="Filtrar por cliente documento" data-pathListarClientesPaginando="{{ path('ajaxListarClientesPaginando') }}"/>
+            </div>
+            </div>       
+         </div>
+         <div class="span5 hidden-phone">
+            <div class="control-group">
+                <label class="control-label" for="clienteBoleto">Cliente Boleto:</label>
+            <div class="controls">
+                <input type="text" class="span12" id="clienteBoleto" name="clienteBoleto" placeholder="Filtrar por cliente boleto" data-pathListarClientesPaginando="{{ path('ajaxListarClientesPaginando') }}"/>
+            </div>
+            </div>       
+         </div>  
+       </div>
+
+       <div class="control-group">
+       <div class="controls"> 
+            <a id="linkFilter" class="btn btn-primary" type="submit" href="#"><i class="icon-filter icon-white"></i> Filtrar</a>
+       </div>
+       </div> 
+    
+    </div>
+    </div>
+    </div>
+    </div>
+    </form>
+
+    {{ renderMenu('menuBoletos') }}   
+    
+    <table id="grid" style="display:none" data-url="{{url('boletos-listarPaginado')}}"></table>
+   
+    <input type="hidden" id="pathPrintFacturaBoleto" value="{{ url('ajaxPrintFacturaBoleto') }}"></input>
+    <input type="hidden" id="pathPrintVoucherBoleto" value="{{ url('ajaxPrintVoucherBoleto') }}"></input>
+    <input type="hidden" id="pathReprintFacturaBoleto" value="{{ url('ajaxReprintFacturaBoleto') }}"></input>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+    
+{% endblock %}
+
+
+
+
+
+

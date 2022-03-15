@@ -1,0 +1,207 @@
+########################################################################################################
+#                               MultiAction - INI
+########################################################################################################
+acme_multiAction:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/MultiActionController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                               Home - INI
+########################################################################################################
+acme_home:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/HomeController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                                PrintController - INI
+########################################################################################################
+acme_print:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/PrintController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                               Boleto - INI
+########################################################################################################
+acme_boleto:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/BoletoController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                               Encomienda - INI
+########################################################################################################
+acme_encomienda:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/EncomiendaController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                               Bus - INI
+########################################################################################################
+acme_bus:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/BusController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                               Bus - INI
+########################################################################################################
+acme_piloto:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/PilotoController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                               Reservacion - INI
+########################################################################################################
+acme_reservacion:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/ReservacionController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                               Tarjeta - INI
+########################################################################################################
+acme_tarjeta:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/TarjetaController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                               CorteVentaTalonarioController - INI
+########################################################################################################
+acme_corte_venta_talonario:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/CorteVentaTalonarioController.php"
+   type:     annotation
+   prefix:  / 
+   
+########################################################################################################
+#                                Salida - INI
+########################################################################################################
+acme_salida:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/SalidaController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                                Itinerarios - INI
+########################################################################################################
+acme_itinerario:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/ItinerarioController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                                Cliente - INI
+########################################################################################################
+acme_cliente:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/ClienteController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                                Caja - INI
+########################################################################################################
+acme_caja:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/CajaController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                                AutorizacionCortesia - INI
+########################################################################################################
+acme_autorizacion_cortesia:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/AutorizacionCortesiaController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                                AutorizacionInterna - INI
+########################################################################################################
+acme_autorizacion_interna:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/AutorizacionInternaController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                                ReporteController - INI
+########################################################################################################
+acme_reporte:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/ReporteController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                                AlquilerController - INI
+########################################################################################################
+acme_alquiler:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/AlquilerController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                                MovilController - INI
+########################################################################################################
+acme_movil:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/MovilController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                                MovilWebController - INI
+########################################################################################################
+acme_movil_web:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/MovilWebController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                                Configuraciones - INI
+########################################################################################################
+acme_configuracion:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/ConfiguracionController.php"
+   type:     annotation
+   prefix:  /
+
+########################################################################################################
+#                                FacturasController - INI
+########################################################################################################
+acme_facturas:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/FacturasController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                                AgenciaController - INI
+########################################################################################################
+acme_agencias:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/AgenciaController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                                AutorizacionOperacionController - INI
+########################################################################################################
+acme_autorizacion_operaciones:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/AutorizacionOperacionController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                               STATIC - INI
+########################################################################################################
+acme_static_page:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/StaticController.php"
+   type:     annotation
+   prefix:  /
+   
+########################################################################################################
+#                                IntegrationWebSiteController - INI
+########################################################################################################
+acme_integration_website:
+   resource: "@AcmeTerminalOmnibusBundle/Controller/IntegrationWebSiteController.php"
+   type:     annotation
+   prefix:  /

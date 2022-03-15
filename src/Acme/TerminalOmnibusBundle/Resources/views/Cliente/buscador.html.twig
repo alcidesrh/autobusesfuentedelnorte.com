@@ -1,0 +1,68 @@
+<form class="form-horizontal clienteFiltersForm" id="filtersForm" name="filtersForm">
+        <div id="accordionFilters" class="accordion" >
+        <div class="accordion-group">
+        <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionFilters" href="#collapseFilters">
+        Filtrar resultados
+        </a>
+        </div>    
+        <div id="collapseFilters" class="accordion-body collapse">
+        <div class="accordion-inner">
+            
+         <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="identificador">Id:</label>
+            <div class="controls">
+                <input type="text" id="identificador" name="identificador" placeholder="Filtrar por identificador" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5" >
+           <div class="control-group"> 
+                <label class="control-label" for="nit">NIT:</label>
+           <div class="controls">
+                <input type="text" id="nit" name="nit" placeholder="Filtrar por NIT" />
+           </div>
+           </div>       
+         </div>     
+       </div>  
+       
+       <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="dpi">DPI:</label>
+            <div class="controls">
+                <input type="text" id="dpi" name="dpi" placeholder="Filtrar por DPI" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="nombre">Nombre:</label>
+            <div class="controls">
+                <input type="text" id="nombre" name="nombre" placeholder="Filtrar por nombre" />
+            </div>
+            </div>       
+         </div>  
+       </div> 
+        
+       <div class="control-group">
+       <div class="controls"> 
+            <a id="linkFilter" class="btn btn-primary" type="submit" href="#"><i class="icon-filter icon-white"></i> Filtrar</a>
+       </div>
+       </div> 
+    
+    </div>
+    </div>
+    </div>
+    </div>
+</form>
+    
+<table id="grid" name="grid" class="clienteGrid" style="display:none" data-url="{{url('cliente-listarPaginado')}}"></table>
+   
+<script>
+    $(document).ready(function(){
+        frondendClientes.funcionesAddOnload();	
+    }); 
+</script>

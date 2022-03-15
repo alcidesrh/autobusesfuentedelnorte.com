@@ -1,0 +1,42 @@
+<div class="container-fluid">
+<div class="row-fluid">
+<div class="span12">
+     <div class="row-fluid">
+         <div class="span6">
+            <label class="control-label">Identificador:</label>
+            <input class="span12" type="text" placeholder="Identificador" disabled value="{{ reservacion.id }}"/>       
+         </div>
+         <div class="span6">
+            <label class="control-label">Fecha y Hora (SALIDA):</label>
+            <input class="span12" type="text" placeholder="Fecha y Hora de Salida" disabled value="{{ reservacion.salida.fecha | date('d/m/Y h:i A') }}"/>       
+         </div>  
+     </div>    
+     <div class="row-fluid">
+         <div class="span6">
+            <label class="control-label">Clase Bus:</label>
+            <input class="span12" type="text" placeholder="Clase Bus" disabled value="{{ reservacion.asientoBus.tipoBus.clase.nombre }}"/>       
+         </div>
+         <div class="span6">
+            <label class="control-label">Clase Asiento:</label>
+            <input class="span12" type="text" placeholder="Clase Asiento" disabled value="{{ reservacion.asientoBus.clase.nombre }}"/>       
+         </div>  
+     </div> 
+     <div class="row-fluid">
+         <div class="span6">
+            <label class="control-label">Número Asiento:</label>
+            <input class="span12" type="text" placeholder="Número Asiento" disabled value="{{ reservacion.asientoBus.numero }}"/>       
+         </div>
+         <div class="span6">
+            <label class="control-label">Estado:</label>
+            <input class="span12" type="text" placeholder="Estado" disabled value="{{ reservacion.estado.nombre }}"/>       
+         </div>  
+     </div> 
+     <div class="row-fluid">
+         <div class="span12">
+            <label class="control-label">Cliente</label>
+            <input class="span12" type="text" placeholder="Cliente de la reservación" disabled value="{{ reservacion.cliente.getInfo1 }}"/>       
+         </div>
+     </div>
+</div>  
+</div>
+</div>

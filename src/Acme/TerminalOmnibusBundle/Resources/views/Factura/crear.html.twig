@@ -1,0 +1,132 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Crear Serie de Factura
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            crearSeriesFactura.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+
+<form class="form-horizontal serieFacturaForm" id="serieFacturaForm" name="serieFacturaForm" action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.estacion) }}
+    {{ form_errors(form.estacion ) }}
+    {{ form_widget(form.estacion , {'attr': {'placeholder': 'Seleccione la estación'} }) }}
+    </div>
+    </div>  
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.empresa) }}
+    {{ form_errors(form.empresa ) }}
+    {{ form_widget(form.empresa , {'attr': {'placeholder': 'Seleccione la empresa'} }) }}
+    </div>
+    </div>      
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.servicioEstacion) }}
+    {{ form_errors(form.servicioEstacion ) }}
+    {{ form_widget(form.servicioEstacion , {'attr': {'placeholder': 'Seleccione el servicio'} }) }}
+    </div>
+    </div>    
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.nombreResolucionFactura) }}
+    {{ form_errors(form.nombreResolucionFactura ) }}
+    {{ form_widget(form.nombreResolucionFactura , {'attr': {'placeholder': 'Entre el nombre'} }) }}
+    </div>
+    </div>
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.serieResolucionFactura) }}
+    {{ form_errors(form.serieResolucionFactura ) }}
+    {{ form_widget(form.serieResolucionFactura , {'attr': {'placeholder': 'Entre la serie'} }) }}
+    </div>
+    </div>
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.valorResolucionFactura) }}
+    {{ form_errors(form.valorResolucionFactura ) }}
+    {{ form_widget(form.valorResolucionFactura , {'attr': {'placeholder': 'Entre el valor de la serie'} }) }}
+    </div>
+    </div>
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.minimoResolucionFactura) }}
+    {{ form_errors(form.minimoResolucionFactura ) }}
+    {{ form_widget(form.minimoResolucionFactura , {'attr': {'placeholder': 'Entre el mínimo valor de la serie'} }) }}
+    </div>
+    </div>
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.maximoResolucionFactura) }}
+    {{ form_errors(form.maximoResolucionFactura ) }}
+    {{ form_widget(form.maximoResolucionFactura , {'attr': {'placeholder': 'Entre el máximo valor de la serie'} }) }}
+    </div>
+    </div>
+    
+    <div class="row-fluid">
+    <div class="span12">  
+        {{ form_label(form.fechaEmisionResolucionFactura) }}
+        {{ form_widget(form.fechaEmisionResolucionFactura , {'attr': {'placeholder': 'Seleccione la fecha de emisión'} }) }}
+        {{ form_errors(form.fechaEmisionResolucionFactura ) }}
+    </div>
+    </div>  
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        {{ form_label(form.fechaVencimientoResolucionFactura) }}
+        {{ form_widget(form.fechaVencimientoResolucionFactura , {'attr': {'placeholder': 'Seleccione la fecha de vencimiento'} }) }}
+        {{ form_errors(form.fechaVencimientoResolucionFactura ) }}
+    </div>
+    </div>  
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        {{ form_label(form.impresora) }}
+        {{ form_widget(form.impresora) }}
+    </div>
+    </div> 
+   
+    <div class="control-group">
+        {{ form_label(form.activo, 'Activo') }}                                    
+        {{ form_widget(form.activo) }}
+        {{ form_errors(form.activo) }}
+    </div>
+    
+    </div>  
+    
+    <input type="hidden" id="pathHomeSerieFactura" value="{{ url('facturas-home') }}"></input>
+    {{ form_rest(form) }}
+    
+</form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="aceptar" href="#" class="btn btn-primary">Aceptar</a>
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}

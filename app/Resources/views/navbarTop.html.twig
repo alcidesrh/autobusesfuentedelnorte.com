@@ -1,0 +1,59 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <button type="button" class="btn btn-navbar menutop" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="{{ path('home-default') }}">
+              <strong>FDN</strong>
+          </a>  
+          <div class="nav-collapse collapse navtop">
+            <a class="pull-right logout" href="{{ path('fos_user_security_logout') }}">
+                <img src="{{ asset('bundles/acmeterminalomnibus/images/logout.png') }}" alt="Salir"/>    
+            </a>
+            <p class="navbar-text pull-right">
+              {{ 'Bienvenido:' }}
+              <a class="linkHelpTopMenu navbar-link perfil" href="{{ url('home-perfil-usuario') }}" >
+                  <strong> {{ app.user.names ~ " " ~ app.user.surnames }} </strong>
+              </a>
+              {% if app.user.estacion is not empty  %}   
+                <span class="hidden-phone"> ( <strong id="infoEstacionUsuario"> {{ app.user.estacion }} </strong> ) </span>
+              {% endif %}
+            </p>
+            <a class="linkHelpTopMenu navbar-link btn btn-small visible-phone" data-dialog="false" href="{{ path('pages_static-case1', { 'pagina': 'page6' }) }}">Estaciones</a>
+            <a class="linkHelpTopMenu navbar-link btn btn-small visible-phone" data-dialog="false" href="{{ path('pages_static-case1', { 'pagina': 'page7' }) }}">Galerías</a>
+          </div>
+          <a class="hidden-phone">
+            <img id="impresoraState" style="height: 40px; width: 40px;" 
+                src="{{ asset('bundles/acmeterminalomnibus/images/impresora/impresora-offline.jpg') }}" 
+                alt="Impresoras disponibles."/>    
+          </a>
+          <ul class="nav hidden-phone">
+            <li><a id="consultarTarifaBoleto" href="{{ url('home-consultar-tarifa-boleto') }}">Tarifas Boletos</a></li>
+            <li><a id="consultarTarifaEncomienda" href="{{ url('home-consultar-tarifa-encomienda') }}">Tarifas Encomienda</a></li>
+            <li><a class="linkHelpTopMenu" data-dialog="false" href="{{ path('pages_static-case1', { 'pagina': 'page6' }) }}">Estaciones</a></li>
+            <li><a class="linkHelpTopMenu" data-dialog="false" href="{{ path('pages_static-case1', { 'pagina': 'page7' }) }}">Galerías</a></li>
+            <li><a class="linkHelpTopMenu" data-dialog="false" href="{{ url('home-configuracion') }}">Ayuda</a></li>
+          </ul>   
+        </div>
+      </div>
+</div>
+
+<input type="hidden" id="usernameTopMenu" value="{{ app.user.username }}"></input>
+
+<input type="hidden" id="idEstacionTopMenu" value="{{ app.user.estacion is not null ? app.user.estacion.id : '' }}"></input>
+<input type="hidden" id="nombreEstacionTopMenu" value="{{ app.user.estacion }}"></input>
+              
+<input type="hidden" id="pathLoadDatosConsultarTarifaBoletoTopMenu" value="{{ url('ajaxLoadDatosConsultarTarifaBoletoTopMenu') }}"></input>
+<input type="hidden" id="pathGetTarifaBoletoTopMenu" value="{{ url('ajaxGetTarifaBoletoTopMenu') }}"></input>
+
+<input type="hidden" id="pathLoadDatosConsultarTarifaEncomiendaTopMenu" value="{{ url('ajaxLoadDatosConsultarTarifaEncomiendaTopMenu') }}"></input>
+<input type="hidden" id="pathGetTarifaEncomiendaTopMenu" value="{{ url('ajaxGetTarifaEncomiendaTopMenu') }}"></input>
+
+<input type="hidden" id="pathCheckExpiredPassword" value="{{ url('ajaxCheckExpiredPassword') }}"></input>
+<input type="hidden" id="pathCheckNotificaciones" value="{{ url('ajaxGetNotificaciones') }}"></input>
+<input type="hidden" id="pathWorking" value="{{ url('ajaxWorking') }}"></input>
+<a id="cambiarContrasenaTopMenu" href="{{ url('home-cambiar-contrasena') }}" class="hidden"></a>
+

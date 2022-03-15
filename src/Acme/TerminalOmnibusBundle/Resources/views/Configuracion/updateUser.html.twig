@@ -1,0 +1,73 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+   Update User
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            updateuser.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+
+<form class="form-horizontal form" id="form" name="form" action="{{ path(route) }}">
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+      
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.user) }}
+    {{ form_widget(form.user) }}
+    </div>
+    </div> 
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.plainPassword) }}
+    {{ form_widget(form.plainPassword) }}
+    </div>
+    </div>
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.estacion) }}
+    {{ form_widget(form.estacion) }}
+    </div>
+    </div> 
+    <BR>   
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_widget(form.todasEstaciones) }}
+    {{ form_label(form.todasEstaciones) }}
+    </div>
+    </div>
+    <BR>
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_widget(form.desbloquear) }}
+    {{ form_label(form.desbloquear) }}
+    </div>
+    </div>
+        
+    </div>  
+
+    {{ form_rest(form) }}
+    
+</form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="aceptar" href="#" class="btn btn-primary">Aceptar</a>
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}

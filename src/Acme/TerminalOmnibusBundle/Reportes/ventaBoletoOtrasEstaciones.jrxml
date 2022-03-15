@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ventaBoletoPropietario" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.3310000000000037"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="EMPRESA_ID" class="java.lang.Integer"/>
+	<parameter name="ESTACION_ID" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="USUARIO_ID" class="java.lang.Integer"/>
+	<parameter name="USUARIO_NOMBRE" class="java.lang.String"/>
+	<parameter name="FECHA_DIA" class="java.lang.String"/>
+	<parameter name="FECHA_INICIAL" class="java.lang.String"/>
+	<parameter name="FECHA_FINAL" class="java.lang.String"/>
+	<parameter name="MONEDA_ID" class="java.lang.Integer"/>
+	<parameter name="USUARIO_DATA_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[declare @usuario_id bigint
+declare @usuario_estacion_id bigint
+declare @usuario_empresas_id TABLE (id bigint)
+declare @empresa_id bigint
+declare @estacion_id bigint
+declare @moneda_id bigint
+declare @usuario_data_id bigint
+declare @fecha_init datetime2
+declare @fecha_end datetime2
+
+declare @tableBoletos TABLE (
+idBoleto bigint,
+idReasignado bigint,
+fechaCreacion nvarchar(30),
+estacionCreacion bigint,
+fechaSalida datetime2,
+estacionOrigenRuta bigint,
+aliasRuta nvarchar(50),
+nombreRuta  nvarchar(50),
+moneda nvarchar(3),
+importe numeric(7,2)
+)
+
+-- PARAMETROS DE SEGURIDAD INIT
+set @usuario_id = $P{USUARIO_ID}
+SELECT @usuario_estacion_id = estacion_id FROM custom_user WHERE id = @usuario_id
+INSERT INTO @usuario_empresas_id
+SELECT cue.empresa_id FROM custom_user AS cu LEFT JOIN custom_user_empresa AS cue ON cu.id=cue.user_id
+WHERE cu.id = @usuario_id
+-- PARAMETROS DE SEGURIDAD INIT
+
+set @empresa_id = $P{EMPRESA_ID}
+set @estacion_id = $P{ESTACION_ID}
+set @moneda_id = $P{MONEDA_ID}
+set @fecha_init = CAST($P{FECHA_INICIAL} + ' 00:00:00' AS datetime2(7))
+set @fecha_end = CAST($P{FECHA_FINAL} + ' 23:59:59' AS datetime2(7))
+set @usuario_data_id = $P{USUARIO_DATA_ID}
+
+---------------------------------------------------------------------------------------
+INSERT INTO @tableBoletos
+SELECT
+boleto1.id AS idBoleto,
+boleto1.reasignado_id AS idReasignado,
+FORMAT(boleto1."fecha_creacion", 'dd/MM/yyyy') AS fechaCreacion,
+estacion1."id" as estacionCreacion,
+salida1."fecha" as fechaSalida,
+estacionOrigenRuta1."id" as estacionOrigenRuta,
+ruta1."codigo" as aliasRuta,
+ruta1."nombre" as nombreRuta,
+moneda1."sigla" as sigla,
+factura_generada1."importeTotal" AS importe
+FROM boleto AS boleto1
+LEFT JOIN salida AS salida1 ON salida1.id = boleto1.salida_id
+LEFT JOIN itineario itineario1 ON salida1.itinerario_id = itineario1.id
+LEFT JOIN ruta ruta1 ON itineario1.ruta_codigo = ruta1.codigo
+LEFT JOIN estacion estacionOrigenRuta1 ON ruta1.estacion_origen_id = estacionOrigenRuta1.id
+LEFT JOIN cliente clienteBoleto1 ON boleto1.cliente_boleto = clienteBoleto1.id
+LEFT JOIN factura_generada factura_generada1 ON boleto1.factura_generada_id = factura_generada1.id
+LEFT JOIN custom_user usuario1 ON boleto1.usuario_creacion_id = usuario1.id
+LEFT JOIN estacion estacion1 ON boleto1.estacion_creacion_id = estacion1.id
+LEFT JOIN moneda moneda1 ON boleto1.moneda_id = moneda1.id
+LEFT JOIN factura factura1 ON factura_generada1.factura_id = factura1.id
+LEFT JOIN empresa empresa1 ON salida1.empresa_id = empresa1.id
+WHERE (
+((@usuario_estacion_id is not null and @usuario_estacion_id=estacion1."id") or @usuario_estacion_id is NULL)
+and ( empresa1."id" IN (SELECT id FROM @usuario_empresas_id) )
+and ((@estacion_id is not null and @estacion_id=estacion1."id") or @estacion_id is NULL)
+and ((@empresa_id is not null and @empresa_id=empresa1."id") or @empresa_id is NULL)
+and ((@usuario_data_id is not null and @usuario_data_id=usuario1."id") or @usuario_data_id is NULL)
+and ((@moneda_id is not null and @moneda_id=moneda1."id") or @moneda_id is NULL)
+and (((@fecha_init is not null and @fecha_end is not null) and
+           (boleto1."fecha_creacion" between @fecha_init and @fecha_end))
+          or (@fecha_init is NULL or @fecha_end is NULL))
+)
+
+---------------------------------------------------------------------------------------
+--  ACTUALIZACION DE REASIGNADOS
+---------------------------------------------------------------------------------------
+UPDATE tb
+SET
+tb.fechaSalida=salida.fecha,
+tb.estacionOrigenRuta=estacionOrigenRuta.id,
+tb.aliasRuta=ruta.codigo,
+tb.nombreRuta=ruta.nombre
+FROM @tableBoletos as tb
+INNER JOIN boleto AS boletoOrigen ON boletoOrigen.id=tb.idBoleto
+INNER JOIN boleto AS boletoReajuste ON boletoReajuste.id=dbo.getUltimoAjuste(tb.idBoleto)
+INNER JOIN salida AS salida ON salida.id = boletoReajuste.salida_id
+INNER JOIN itineario AS itineario ON salida.itinerario_id = itineario.id
+INNER JOIN ruta AS ruta ON itineario.ruta_codigo = ruta.codigo
+INNER JOIN estacion estacionOrigenRuta ON ruta.estacion_origen_id = estacionOrigenRuta.id
+WHERE
+boletoOrigen.estado_id=5
+---------------------------------------------------------------------------------------
+
+SELECT
+     tb.fechaCreacion AS fechaCreacion,
+     empresa.alias AS aliasEmpresa,
+     estacionCreacion.nombre AS estacion_nombre,
+     moneda.sigla AS moneda_sigla,
+     usuarioCreacion.username  AS username,
+     factura.serieResolucionFactura AS serieFactura,
+     factura_generada.consecutivo as numeroFactura,
+     FORMAT(tb.fechaSalida, 'dd/MM/yyyy HH:mm:ss') as fechaSalida,
+     clienteBoleto.nombre as nombreCliente,
+     tb.nombreRuta as nombreRuta,
+     estacionOrigen.nombre AS estacionOrigen_nombre,
+     estacionDestino.nombre AS estacionDestino_nombre,
+     factura_generada.importeTotal AS importe
+FROM @tableBoletos as tb
+INNER JOIN boleto AS boletoOrigen ON boletoOrigen.id=tb.idBoleto
+INNER JOIN moneda moneda ON boletoOrigen.moneda_id = moneda.id
+INNER JOIN factura_generada factura_generada ON boletoOrigen.factura_generada_id = factura_generada.id
+INNER JOIN factura factura ON factura_generada.factura_id = factura.id
+INNER JOIN estacion estacionCreacion ON boletoOrigen.estacion_creacion_id = estacionCreacion.id
+INNER JOIN salida AS salidaOrigen ON salidaOrigen.id = boletoOrigen.salida_id
+INNER JOIN empresa empresa ON salidaOrigen.empresa_id = empresa.id
+INNER JOIN custom_user usuarioCreacion ON boletoOrigen.usuario_creacion_id = usuarioCreacion.id
+INNER JOIN cliente clienteBoleto ON boletoOrigen.cliente_boleto = clienteBoleto.id
+INNER JOIN estacion estacionOrigen ON boletoOrigen.estacion_origen_id = estacionOrigen.id
+INNER JOIN estacion estacionDestino ON boletoOrigen.estacion_destino_id = estacionDestino.id
+WHERE
+     (tb.estacionCreacion <> tb.estacionOrigenRuta)
+ORDER BY
+     fechaCreacion ASC,
+     aliasEmpresa ASC,
+     estacion_nombre ASC,
+     moneda_sigla ASC,
+     username ASC,
+     serieFactura ASC,
+     numeroFactura ASC,
+     fechaSalida ASC,
+     nombreCliente ASC,
+     nombreRuta ASC,
+     estacionOrigen_nombre ASC,
+     estacionDestino_nombre ASC,
+     importe ASC]]>
+	</queryString>
+	<field name="fechaCreacion" class="java.lang.String"/>
+	<field name="aliasEmpresa" class="java.lang.String"/>
+	<field name="estacion_nombre" class="java.lang.String"/>
+	<field name="moneda_sigla" class="java.lang.String"/>
+	<field name="username" class="java.lang.String"/>
+	<field name="serieFactura" class="java.lang.String"/>
+	<field name="numeroFactura" class="java.lang.Long"/>
+	<field name="fechaSalida" class="java.lang.String"/>
+	<field name="nombreCliente" class="java.lang.String"/>
+	<field name="nombreRuta" class="java.lang.String"/>
+	<field name="estacionOrigen_nombre" class="java.lang.String"/>
+	<field name="estacionDestino_nombre" class="java.lang.String"/>
+	<field name="importe" class="java.math.BigDecimal"/>
+	<variable name="importeTotal" class="java.math.BigDecimal" resetType="Group" resetGroup="datos" calculation="Sum">
+		<variableExpression><![CDATA[$F{importe}]]></variableExpression>
+	</variable>
+	<group name="datos">
+		<groupExpression><![CDATA[$F{fechaCreacion}+
+$F{aliasEmpresa}+
+$F{moneda_sigla}+
+$F{estacion_nombre}]]></groupExpression>
+		<groupHeader>
+			<band height="77">
+				<line>
+					<reportElement x="0" y="71" width="570" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="74" width="570" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="0" y="20" width="90" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Estación de Venta:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="337" y="0" width="50" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Empresa:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="90" y="20" width="200" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{estacion_nombre}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="0" width="90" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fecha Venta:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="90" y="0" width="200" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{fechaCreacion}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="337" y="20" width="50" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Moneda:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="387" y="20" width="170" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{moneda_sigla}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="50" width="90" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Usuario]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="470" y="50" width="100" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Importe]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="90" y="50" width="90" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Factura]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="290" y="50" width="180" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Ruta]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="180" y="50" width="110" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fecha Salida]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="387" y="0" width="170" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{aliasEmpresa}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="36">
+				<textField isBlankWhenNull="true">
+					<reportElement x="470" y="0" width="100" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="false" isUnderline="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{moneda_sigla} != null ? $F{moneda_sigla} + " " + $V{importeTotal} : "" )]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="234" y="0" width="142" height="20">
+						<printWhenExpression><![CDATA[$F{fechaCreacion}==null]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font isBold="false"/>
+					</textElement>
+					<text><![CDATA[No existen resultados...]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="69" splitType="Stretch">
+			<textField>
+				<reportElement x="465" y="33" width="107" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{USUARIO_NOMBRE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="180" y="40" width="232" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Venta de Boletos de Otras Estaciones]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="465" y="12" width="107" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{FECHA_DIA}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="234" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRANSPORTE FUENTE DEL NORTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="12" width="45" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="33" width="45" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="15" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="42" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="2" y="2" width="90" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{username}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="470" y="2" width="100" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{moneda_sigla} + " " + $F{importe}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="90" y="2" width="90" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{serieFactura} + " " + $F{numeroFactura}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="35" y="19" width="185" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreCliente}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="19" width="32" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cliente: ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="290" y="2" width="180" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreRuta}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="234" y="19" width="41" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Origen: ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="275" y="19" width="126" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estacionOrigen_nombre}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="406" y="19" width="44" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Destino: ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="450" y="19" width="100" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estacionDestino_nombre}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement x="180" y="2" width="110" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaSalida}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="39" width="570" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="18" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="24" splitType="Stretch">
+			<textField>
+				<reportElement x="434" y="2" width="98" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="531" y="2" width="35" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch"/>
+	</summary>
+</jasperReport>

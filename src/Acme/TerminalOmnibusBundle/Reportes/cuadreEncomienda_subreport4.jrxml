@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cuadreVentaBoleto_subreport7" language="groovy" pageWidth="570" pageHeight="500" whenNoDataType="AllSectionsNoDetail" columnWidth="570" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.6105100000000088"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DATA_EMPRESA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_ESTACION_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_FECHA" class="java.lang.String"/>
+	<parameter name="MONEDA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_DATA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[declare @usuario_id bigint
+declare @usuario_estacion_id bigint
+declare @usuario_empresas_id TABLE (id bigint)
+declare @empresa_id bigint
+declare @estacion_id bigint
+declare @moneda_id bigint
+declare @usuario_data_id bigint
+declare @fecha_init datetime2
+declare @fecha_end datetime2
+
+-- PARAMETROS DE SEGURIDAD INIT
+set @usuario_id = $P{USUARIO_ID}
+SELECT @usuario_estacion_id = estacion_id FROM custom_user WHERE id = @usuario_id
+INSERT INTO @usuario_empresas_id
+SELECT cue.empresa_id FROM custom_user AS cu LEFT JOIN custom_user_empresa AS cue ON cu.id=cue.user_id
+WHERE cu.id = @usuario_id
+-- PARAMETROS DE SEGURIDAD INIT
+
+set @empresa_id = $P{DATA_EMPRESA_ID}
+set @estacion_id = $P{DATA_ESTACION_ID}
+set @moneda_id = $P{MONEDA_ID}
+set @fecha_init = CAST($P{DATA_FECHA}+' 00:00:00' AS datetime2(7))
+set @fecha_end = CAST($P{DATA_FECHA}+' 23:59:59' AS datetime2(7))
+set @usuario_data_id = $P{USUARIO_DATA_ID}
+
+SELECT
+     FORMAT(factura_generada."fecha", 'yyyy/MM/dd') AS diaOperacionOrder,
+     FORMAT(factura_generada."fecha", 'dd/MM/yyyy') AS diaOperacion,
+     empresa."alias" AS aliasEmpresa,
+     estacion."nombre" AS estacion_nombre,
+     moneda."sigla" AS moneda_sigla,
+     factura_generada.id AS idFacturaGenerada,
+     factura."serieResolucionFactura" AS serieFactura,
+     factura_generada."consecutivo" as numeroFactura,
+     usuarioCreacion."username" + '-' + usuarioCreacion."names" + ' ' + usuarioCreacion."surnames" AS usuarioCreacion,
+     usuarioAnulacion."username" + '-' + usuarioAnulacion."names" + ' ' + usuarioAnulacion."surnames" AS usuarioAnulacion,
+     CAST(factura_generada."observacion" AS varchar(255)) AS detalle,
+     CAST(
+     STUFF(
+         (SELECT DISTINCT ',' + CONVERT(VARCHAR(80), enc.id)
+          FROM "dbo"."encomienda" enc
+          WHERE enc.factura_generada_id = factura_generada.id
+          FOR XML PATH ('')), 1, 1, '') AS varchar(255)) AS idsEncomienda
+FROM
+     "dbo"."factura_generada" factura_generada
+     INNER JOIN "dbo"."estacion" estacion ON factura_generada."estacion_id" = estacion."id"
+     INNER JOIN "dbo"."moneda" moneda ON factura_generada."moneda_id" = moneda."id"
+     INNER JOIN "dbo"."factura" factura ON factura_generada."factura_id" = factura."id"
+     INNER JOIN "dbo"."empresa" empresa ON factura."empresa_id" = empresa."id"
+     INNER JOIN "dbo"."custom_user" usuarioCreacion ON factura_generada."usuario_id" = usuarioCreacion."id"
+     LEFT JOIN "dbo"."custom_user" usuarioAnulacion ON factura_generada."usuario_anulacion_id" = usuarioAnulacion."id"
+     LEFT JOIN  "dbo"."encomienda" encomienda ON encomienda."factura_generada_id" = factura_generada."id"
+     LEFT JOIN "dbo"."encomienda_bitacora" bitacora ON bitacora."id" = encomienda."ultima_bitacora_id"
+     LEFT JOIN "dbo"."encomienda_estado" estadoEncomienda ON estadoEncomienda."id" = bitacora."estado_id"
+WHERE
+     factura."servicio_estacion_id" = 2
+     and (factura_generada."importeTotal" = 0 OR  estadoEncomienda."id" = 6)
+     and ((@usuario_estacion_id is not null and @usuario_estacion_id=estacion."id") or @usuario_estacion_id is NULL)
+     and ( empresa."id" IN (SELECT id FROM @usuario_empresas_id) )
+     and ((@estacion_id is not null and @estacion_id=estacion."id") or @estacion_id is NULL)
+     and ((@empresa_id is not null and @empresa_id=empresa."id") or @empresa_id is NULL)
+     and ((@moneda_id is not null and @moneda_id=moneda."id") or @moneda_id is NULL)
+     and ((@usuario_data_id is not null and @usuario_data_id=usuarioAnulacion."id") or @usuario_data_id is NULL)
+     and (((@fecha_init is not null and @fecha_end is not null) and
+           (factura_generada."fecha" between @fecha_init and @fecha_end)) or (@fecha_init is NULL or @fecha_end is NULL))
+GROUP BY
+FORMAT(factura_generada."fecha", 'yyyy/MM/dd'),
+FORMAT(factura_generada."fecha", 'dd/MM/yyyy'),
+empresa."alias",
+estacion."nombre",
+moneda."sigla",
+factura_generada.id,
+factura."serieResolucionFactura",
+factura_generada."consecutivo",
+usuarioCreacion."username" + '-' + usuarioCreacion."names" + ' ' + usuarioCreacion."surnames",
+usuarioAnulacion."username" + '-' + usuarioAnulacion."names" + ' ' + usuarioAnulacion."surnames",
+CAST(factura_generada."observacion" AS varchar(255))
+ORDER BY
+diaOperacionOrder ASC,
+aliasEmpresa ASC,
+estacion_nombre ASC,
+serieFactura ASC,
+numeroFactura ASC]]>
+	</queryString>
+	<field name="diaOperacionOrder" class="java.lang.String"/>
+	<field name="diaOperacion" class="java.lang.String"/>
+	<field name="aliasEmpresa" class="java.lang.String"/>
+	<field name="estacion_nombre" class="java.lang.String"/>
+	<field name="moneda_sigla" class="java.lang.String"/>
+	<field name="idFacturaGenerada" class="java.lang.Long"/>
+	<field name="serieFactura" class="java.lang.String"/>
+	<field name="numeroFactura" class="java.lang.Long"/>
+	<field name="usuarioCreacion" class="java.lang.String"/>
+	<field name="usuarioAnulacion" class="java.lang.String"/>
+	<field name="detalle" class="java.lang.String"/>
+	<field name="idsEncomienda" class="java.lang.String"/>
+	<group name="datos">
+		<groupHeader>
+			<band height="23">
+				<line>
+					<reportElement x="2" y="17" width="565" height="1"/>
+				</line>
+				<line>
+					<reportElement x="2" y="20" width="565" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="2" y="0" width="70" height="16"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Factura]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="182" y="0" width="100" height="16"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Creado Por]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="282" y="0" width="120" height="16"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Anulado Por]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="72" y="0" width="110" height="16"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Encomiendas]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="402" y="0" width="165" height="16"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Motivo]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="16">
+				<printWhenExpression><![CDATA[$F{diaOperacion} == null]]></printWhenExpression>
+				<textField>
+					<reportElement x="160" y="0" width="250" height="16"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{diaOperacion} == null ? "No existen resultados" : "" )]]></textFieldExpression>
+				</textField>
+			</band>
+			<band height="35">
+				<line>
+					<reportElement x="2" y="1" width="565" height="1"/>
+				</line>
+				<textField>
+					<reportElement x="2" y="2" width="131" height="16"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Cantidad: " + $V{datos_COUNT}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="23" splitType="Stretch">
+			<staticText>
+				<reportElement x="2" y="0" width="568" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FACTURAS DE ENCOMIENDAS ANULADAS]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="2" y="0" width="70" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{serieFactura} + " " + $F{numeroFactura}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="182" y="0" width="100" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{usuarioCreacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="282" y="0" width="120" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{usuarioAnulacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="72" y="0" width="110" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idsEncomienda}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="402" y="0" width="166" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{detalle}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,93 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Buses
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            frondendBuses.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal" id="filtersForm">
+        <div id="accordionFilters" class="accordion" >
+        <div class="accordion-group">
+        <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionFilters" href="#collapseFilters">
+        Filtrar resultados
+        </a>
+        </div>    
+        <div id="collapseFilters" class="accordion-body collapse">
+        <div class="accordion-inner">
+            
+        <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="codigo">Código:</label>
+            <div class="controls">
+                <input type="text" id="codigo" name="codigo" placeholder="Filtrar por código" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5" >
+           <div class="control-group"> 
+                <label class="control-label" for="placa">Placa:</label>
+           <div class="controls">
+                <input type="text" id="placa" name="placa"  placeholder="Filtrar por placa" />
+           </div>
+           </div>       
+         </div>     
+        </div>  
+        <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group"> 
+                <label class="control-label" for="estado">Estado:</label>
+            <div class="controls">
+                <input type="text" id="estado" name="estado"  placeholder="Filtrar por estado" />
+            </div>
+            </div>      
+         </div>
+         <div class="span5" >
+           <div class="control-group"> 
+                <label class="control-label" for="empresa">Empresa:</label>
+           <div class="controls">
+                <input type="text" id="empresa" name="empresa"  placeholder="Filtrar por empresa" />
+           </div>
+           </div>       
+         </div>     
+        </div>
+            
+       </div>    
+
+       <div class="control-group">
+       <div class="controls"> 
+            <a id="linkFilter" class="btn btn-primary" type="submit" href="#"><i class="icon-filter icon-white"></i> Filtrar</a>
+       </div>
+       </div> 
+    
+    </div>
+    </div>
+    </div>
+    </form>
+
+    {{ renderMenu('menuBuses') }}   
+    
+    <table id="grid" style="display:none" data-url="{{url('buses-listarPaginado')}}"></table>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+    
+{% endblock %}
+
+
+
+
+
+

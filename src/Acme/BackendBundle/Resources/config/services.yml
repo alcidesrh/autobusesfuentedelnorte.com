@@ -1,0 +1,104 @@
+parameters:
+
+
+services:
+    acme_scheduler.proxy:
+        class: Acme\BackendBundle\Scheduled\DelayedProxy
+        scope: prototype
+        calls:
+            - [setDoctrine, ["@doctrine"]]
+
+    acme_scheduler.scheduler:
+        class: Acme\BackendBundle\Scheduled\Scheduler
+        calls:
+            - [setContainer, ["@service_container"]]
+    
+    acme_job_sync:
+        class: Acme\BackendBundle\Services\JobSyncService
+        arguments: ["@service_container"]
+
+#    acme_sistema:
+#        class: Acme\BackendBundle\Services\SistemaService
+#        arguments: ["@service_container"]
+        
+#    acme_backend_barcode:
+#        class: Acme\BackendBundle\Services\BarCodeService
+#        arguments: ["@service_container"]
+
+    acme_backend_procesar_boletos:
+        class: Acme\BackendBundle\Services\ProcesarBoletosService
+        arguments: ["@service_container"]
+        
+    acme_backend_reportar_facturas:
+        class: Acme\BackendBundle\Services\ReportarFacturasService
+        arguments: ["@service_container"]
+    
+    acme_backend_tareas_diarias:
+        class: Acme\BackendBundle\Services\TareasDiariasService
+        arguments: ["@service_container"]
+    
+    acme_backend_parciales_facturados:
+        class: Acme\BackendBundle\Services\ParcialesFacturadosService
+        arguments: ["@service_container"]
+        
+    acme_backend_expired_user:
+        class: Acme\BackendBundle\Services\ExpiredUserService
+        arguments: ["@service_container"]
+        
+    acme_backend_reservacion:
+        class: Acme\BackendBundle\Services\ReservacionService
+        arguments: ["@service_container"]
+        
+    acme_backend_salida:
+        class: Acme\BackendBundle\Services\SalidasService
+        arguments: ["@service_container"]
+        
+    acme_backend_tarifa:
+        class: Acme\BackendBundle\Services\TarifasService
+        arguments: ["@service_container"]
+        
+    acme_page_load_listener:
+        class: Acme\BackendBundle\Listener\PageLoadListener
+        arguments: [@security.context, @logger]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+    
+    acme_entity_listener:
+        class: Acme\BackendBundle\Listener\EntityListener
+        arguments: ["@service_container", "@logger"]
+        tags:
+            - { name: doctrine.event_listener, event: postFlush , method: postFlush}   
+            - { name: doctrine.event_listener, event: onFlush , method: onFlush}  
+        
+    acme_backend_util:
+        class: Acme\BackendBundle\Services\UtilService
+        arguments: ["@service_container"]
+        
+    acme_backend_handler_log:
+        class: Acme\BackendBundle\Logger\LogDBHandler
+        arguments: ["@service_container"]
+        tags:
+            - { name: monolog.logger}
+     
+    acme_backend.handler.login_success_handler:
+        class:  Acme\BackendBundle\Handler\LoginSuccessHandler
+        arguments:  ["@service_container"]
+#        tags:
+#            - { name: 'monolog.logger', channel: 'app' } 
+            
+    acme_backend.handler.login_failure_handler:
+        class:  Acme\BackendBundle\Handler\LoginFailureHandler
+        arguments:  [@router, @security.context, @logger, @service_container]
+#        tags:
+#            - { name: 'monolog.logger', channel: 'app' } 
+            
+    acme_backend.handler.logout_success_handler:
+        class:  Acme\BackendBundle\Handler\LogoutSuccessHandler
+        arguments:  [@router, @security.context, @logger]
+#        tags:
+#            - { name: 'monolog.logger', channel: 'app' }
+
+    acme_backend.listener.request:
+        class: Acme\BackendBundle\Listener\RequestListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

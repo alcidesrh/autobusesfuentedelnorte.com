@@ -1,0 +1,12 @@
+{% set pluginJavaActivo = app.user.estacion is not null and app.user.estacion.tipo.id is not sameas(4) and app.user.estacion.pluginJavaActivo %}
+<input type="hidden" id="pja" name="pja" value="{{ pluginJavaActivo ? 'true' : 'false' }}">
+{% if pluginJavaActivo %}
+<input id="idPathApple" type="hidden" value="{{ asset('jar/qz-print.jar') }}">
+<input id="idPathJNLPApple" type="hidden" value="{{ asset('jar/qz-print_jnlp.jnlp') }}">
+{% javascripts '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/qz-print/deployJava.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/customQZprint.js'
+filter='yui_js'
+output='js/frontendPrint.js' %}
+<script src="{{ asset_url }}" type="text/javascript"></script>
+{% endjavascripts %}
+{% endif %}

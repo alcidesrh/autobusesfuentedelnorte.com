@@ -1,0 +1,276 @@
+<script>
+    
+    var containerDIV = document.createElement("div");
+    containerDIV.setAttribute('id', "loadingSystemDIV");
+    var image = document.createElement("img");
+    image.setAttribute('id', 'loadingSystemImage');
+    image.setAttribute('src', document.getElementById("loader2").href);
+    containerDIV.appendChild(image);
+    document.getElementsByTagName("body")[0].appendChild(containerDIV);
+    
+</script>
+
+{% javascripts '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/html5/html5.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/jquery/jquery-1.10.2.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/moment/moment.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/pnotify/pnotify.custom.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/datepicker/bootstrap-datepicker.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/locale/bootstrap-datepicker.es.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/daterangepicker/daterangepicker.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/jquery/jquery.form-3.45.0.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/bootstrap/bootstrap-2.3.2.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/jquery/jquery.dialog2.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/jquery/jquery.dialog2.helpers.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/jquery/jquery.dialog2.custom.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/flexigrid/flexigrid.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/select2/select2.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/locale/select2_locale_es.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/jquery.validate/jquery.validate.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/jquery.validate/additional-methods.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/jquery.pause/jquery.pause.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/locale/messages_es.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/print-preview/jquery.print-preview.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/jquery.printPage/jquery.printPage.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/bootstrap-slider/bootstrap-slider.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/bootstrap-switch/bootstrap-switch.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/bootstrap-timepicker/bootstrap-timepicker.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/fancybox/jquery.fancybox.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/locale/bootstrap-datetimepicker.es.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/pdfobject/pdfobject.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/scriptcam/swfobject.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/scriptcam/scriptcam.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/lib/marquee/jquery.marquee.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/core.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/frondend.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/topMenu.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/static/page.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/salidas/frondendSalidas.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/salidas/asignarSalida.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/salidas/consultarEsquema.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/salidas/consultarDetalleSalida.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/itinerarioEspecial/frondendItinerarioEspecial.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/itinerarioEspecial/crearItinerarioEspecial.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/cliente/frondendClientes.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/cliente/crearUpdateCliente.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reservacion/frondendReservacion.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reservacion/crearReservacion.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/boleto/frondendBoletos.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/boleto/emitirBoleto.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/boleto/emitirBoletoCamino.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/boleto/reasignarBoleto.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/boleto/chequearBoletosPorSalida.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/cajas/frondendCajas.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/cajas/crearCaja.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/buses/frondendBuses.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/buses/cambiarEstadoBus.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/buses/actualizarBus.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/buses/crearBus.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/pilotos/frondendPilotos.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/pilotos/crearPiloto.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/pilotos/actualizarPiloto.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/autorizacionInterna/frondendAutorizacionInterna.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/autorizacionInterna/crearAutorizacionInterna.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/autorizacionInterna/crearAutorizacionInternaMultiple.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/autorizacionCortesia/frondendAutorizacionCortesia.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/autorizacionCortesia/crearBoletoAutorizacionCortesia.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/autorizacionCortesia/crearPinAutorizacionCortesia.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/encomienda/frondendEncomiendas.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/encomienda/registrarEncomienda.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/encomienda/embarcarEncomienda.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/encomienda/entregarEncomienda.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/encomienda/procesarEncomiendaPorSalida.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/encomienda/entregaMultipleEncomiendas.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/encomienda/pendientesEntregaEncomiendas.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/encomienda/pendientesEnvioEncomiendas.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/encomienda/registrarEncomiendaEspecial.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/usuario/perfil.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/configuracion/configurarTiempo.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/configuracion/updateuser.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/factura/frondendFacturas.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/factura/crearSeriesFactura.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/factura/actualizarSeriesFactura.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/factura/consultarSeriesFactura.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/alquiler/frondendAlquiler.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/alquiler/crearAlquiler.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/alquiler/actualizarAlquiler.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/alquiler/consultarAlquiler.js'
+
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/depositoAgencia/registrarDepositoAgencia.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/depositoAgencia/frondendDepositoAgencia.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/depositoAgencia/consultarSaldoAgencia.js'
+
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/tarjetas/frondendTarjetas.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/tarjetas/conciliarTarjeta.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/salidas/asignarTarjeta.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/corteVentaTalonario/adicionarCorteVenta.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/corteVentaTalonario/actualizarCorteVenta.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/corteVentaTalonario/frondendCorteVentaTalonario.js'
+
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/autorizacionOperaciones/frondendAutorizacionOperaciones.js'
+
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/movilWeb/desembarcarMovil.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/movilWeb/embarcarMovil.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/movilWeb/listarDesembarcarMovil.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/frondendReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/cuadreInspectorReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/ventaBoletoPropietarioReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/ventaBoletoUsuarioReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/boletoAnuladoUsuarioReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/ventaBoletoPrepagadoReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/ventaBoletoPrepagadoPorBusesReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/ventaBoletoOtrasEstacionesReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/manisfiestoBoletoFull.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/manisfiestoBoletoPiloto.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/manisfiestoEncomiendaFull.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/cuadreEncomiendaReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/encomiendaPendienteEntregarReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/encomiendaAnuladaUsuarioReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleGuiaInternaEncomiendaReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleCortesiaEncomiendaReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/tarifasBoletosReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/cajaReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleCajaReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/encomiendaPropietario.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleFacturaReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleCortesiaBoletoReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/cuadreVentaBoletoReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/cuadreVentaBoletoVoucherReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleAlquilerReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/asistenciaPilotosReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detallePortalReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleAgenciaReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleAgenciaGraficoReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleDepositoAgenciaReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleGeneralReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleSalidasReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleBusesReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detallePilotosReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/estadisticaVentaTotalesReporte.js'
+ '@AcmeTerminalOmnibusBundle/Resources/public/js/app/reporte/detalleTarjetasReporte.js'
+filter='yui_js'
+output='js/frontend.js' %}
+<script src="{{ asset_url }}" type="text/javascript"></script>
+{% endjavascripts %}
+
+{#
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/html5/html5.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/jquery/jquery-1.10.2.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/moment/moment.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/datepicker/bootstrap-datepicker.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/locale/bootstrap-datepicker.es.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/daterangepicker/daterangepicker.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/jquery/jquery.form-3.45.0.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/bootstrap/bootstrap-2.3.2.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/jquery/jquery.dialog2.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/jquery/jquery.dialog2.helpers.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/jquery/jquery.dialog2.custom.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/flexigrid/flexigrid.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/select2/select2.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/locale/select2_locale_es.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/jquery.validate/jquery.validate.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/jquery.validate/additional-methods.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/locale/messages_es.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/print-preview/jquery.print-preview.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/jquery.printPage/jquery.printPage.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/bootstrap-switch/bootstrap-switch.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/simple-slider/simple-slider.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/bootstrap-timepicker/bootstrap-timepicker.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/locale/bootstrap-datetimepicker.es.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/pdfobject/pdfobject.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/core.js') }}" type="text/javascript"></script> 
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/frondend.js') }}" type="text/javascript"></script> 
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/topMenu.js') }}" type="text/javascript"></script> 
+            
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/salidas/frondendSalidas.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/salidas/asignarBus.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/itinerarioEspecial/frondendItinerarioEspecial.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/itinerarioEspecial/crearItinerarioEspecial.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/cliente/frondendClientes.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reservacion/frondendReservacion.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reservacion/crearReservacion.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/boleto/frondendBoletos.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/boleto/emitirBoleto.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/boleto/emitirBoletoCamino.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/boleto/reasignarBoleto.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/boleto/chequearBoletosPorSalida.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/cajas/frondendCajas.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/cajas/crearCaja.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/buses/frondendBuses.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/buses/cambiarPilotoBus.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/buses/cambiarEstadoBus.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/buses/actualizarBus.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/buses/crearBus.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/pilotos/frondendPilotos.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/pilotos/crearPiloto.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/pilotos/actualizarPiloto.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/autorizacionInterna/frondendAutorizacionInterna.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/autorizacionInterna/crearAutorizacionInterna.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/autorizacionCortesia/frondendAutorizacionCortesia.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/autorizacionCortesia/crearAutorizacionCortesia.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/encomienda/frondendEncomiendas.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/encomienda/registrarEncomienda.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/encomienda/embarcarEncomienda.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/encomienda/entregarEncomienda.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/usuario/perfil.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/configuracion/configurarFacturaBoleto.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/configuracion/configurarFacturaEncomienda.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/factura/frondendFacturas.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/factura/consultarSeriesFactura.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/factura/crearSeriesFactura.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/factura/actualizarSeriesFactura.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/alquiler/frondendAlquiler.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/alquiler/crearAlquiler.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/alquiler/actualizarAlquiler.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/alquiler/consultarAlquiler.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/movilWeb/desembarcarMovil.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/movilWeb/embarcarMovil.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/movilWeb/listarDesembarcarMovil.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/frondendReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/ventaBoletoPropietarioReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/ventaBoletoUsuarioReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/boletoAnuladoUsuarioReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/ventaBoletoPrepagadoReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/ventaBoletoOtrasEstacionesReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/manisfiestoBoletoFull.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/manisfiestoBoletoPiloto.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/manisfiestoEncomiendaFull.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/manisfiestoEncomiendaPiloto.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/encomiendaAnuladaUsuarioReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/tarifasBoletosReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/cajaReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/detalleCajaReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/encomiendaPropietario.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/detalleFacturaReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/detalleCortesiaBoletoReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/cuadreVentaBoletoReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/detalleAlquilerReporte.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/app/reporte/asistenciaPilotosReporte.js') }}" type="text/javascript"></script>
+
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/scriptcam/swfobject.js') }}" type="text/javascript"></script>
+<script src="{{ asset('bundles/acmeterminalomnibus/js/lib/scriptcam/scriptcam.js') }}" type="text/javascript"></script>
+#}
+
+<script>	
+    $(document).ready(function(){
+        frondend.funcionesAddOnload();	
+    }); 
+</script>

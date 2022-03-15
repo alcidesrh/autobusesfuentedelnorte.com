@@ -1,0 +1,50 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Configurar Navegador
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+{% javascripts '@AcmeTerminalOmnibusBundle/Resources/public/js/app/configuracion/configurarCustomWeb.js' 
+filter='yui_js'
+output='js/configurarCustomWeb.js' %}
+<script src="{{ asset_url }}" type="text/javascript"></script>
+{% endjavascripts %}
+<script>
+$(document).ready(function(){
+    configurarCustomWeb.funcionesAddOnload();	
+}); 
+</script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <label>Estación</label>
+        <input type="text" class="span4" id="configuracionEstacion" placeholder="Seleccione la estación"/> 
+        <a style="margin-left: 4px;" id="configuracionEstacionLink" class="btn">Guardar</a>
+        <input type="hidden" id="pathloadEstaciones" value="{{ url('ajaxListarEstaciones') }}"></input>
+    </div> 
+    </div> 
+        
+    <div class="row-fluid" style="margin-top: 5px;">
+    <div class="span12">  
+        <label>Lista de Impresoras Disponibles(jsPrintSetup)</label>
+        <textarea rows="4" class="span12" id="listaImpresoras" placeholder="No hay impresoras disponibles"></textarea> 
+    </div> 
+    </div>
+        
+    </div> 
+    
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+{% endblock %}
+
+

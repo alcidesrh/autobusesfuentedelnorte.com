@@ -1,0 +1,28 @@
+<form class="form-horizontal serieFacturaForm" id="serieFacturaForm" name="serieFacturaForm" action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        {{ form_label(form.impresora) }}
+        {{ form_widget(form.impresora) }}
+    </div>
+    </div> 
+    
+    </div>  
+    
+    <input type="hidden" id="pathHomeSerieFactura" value="{{ url('facturas-home') }}"></input>
+    {{ form_rest(form) }}
+    
+    <script>	
+        $(document).ready(function(){
+            $("#series_factura_command_impresora").select2({
+                allowClear: false
+            });
+        }); 
+    </script>
+    
+</form>

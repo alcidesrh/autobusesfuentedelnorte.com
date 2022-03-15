@@ -1,0 +1,38 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    FTP de Fuente del Norte.
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            page.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+        <BR><BR>
+        
+        <p>Se puede acceder al ftp haciendo clic <a target="_blank" href="ftp://userftp:userftp123**@201.216.189.98">aquí</a>.</p>
+        
+        <BR><BR> 
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+    </div> 
+    </div> 
+
+    </div> 
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+{% endblock %}

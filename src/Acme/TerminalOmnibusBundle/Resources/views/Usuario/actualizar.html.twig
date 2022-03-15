@@ -1,0 +1,46 @@
+{% extends "::frontend.html.twig" %}
+
+{% block containerSection %}
+
+    {{ parent() }} 
+
+    <div class="line margin-top-1"></div>
+    
+    <form action="{{ path('usuario_actualizar') }}" method="post" {{form_enctype(form) }}>
+        
+        {{ form_errors(form) }}
+        
+        <fieldset class="control-group">
+            <legend> Datos personales</legend>
+            {{ form_row(form.nombre) }}
+            {{ form_row(form.apellidos) }}
+            {{ form_row(form.fechaNacimiento) }}
+            {{ form_row(form.dni) }}
+            {{ form_row(form.direccion) }}
+        </fieldset>
+        
+        <fieldset class="control-group">
+            <legend>Datos de acceso</legend>
+            {{ form_row(form.email) }}
+            {{ form_row(form.password) }}
+            <p class="ayuda">Si quieres cambiar la contraseña, escríbela dos
+            veces. Si no quieres cambiarla, deja su valor vacío.</p>
+        </fieldset>
+        
+        <fieldset class="control-group">
+            <legend>Otros datos</legend>
+            {{ form_errors(form.permiteEmail) }}
+            {{ form_widget(form.permiteEmail) }}
+            {{ form_label(form.permiteEmail, "Me gustaría recibir el boletín de ofertas") }}
+        </fieldset>
+        
+        {{ form_rest(form) }}
+        
+        <nav class="form-actions">
+            <button class="btn btn-primary" type="submit" value="Actualizar">Actualizar</button>
+        </nav>
+        
+    </form>
+    
+{% endblock %}
+

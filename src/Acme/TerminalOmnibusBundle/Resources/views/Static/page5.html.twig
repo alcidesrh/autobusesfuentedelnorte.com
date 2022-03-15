@@ -1,0 +1,61 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Listado de conexiones
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            page.funcionesAddOnload();
+        });  
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+        <BR><BR>
+        {% set conexiones = getConexiones() %}
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Estaciones&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <th>Horario</th>
+                    <th>Precio</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in conexiones %}
+                <tr>
+                    <td style="text-align:center; vertical-align:middle;"><b>{{ item.codigo | raw }}</b></td>
+                    <td style="vertical-align:middle;"><b>{{ item.nombre | raw }}</b></td>
+                    <td style="text-align:center; vertical-align:middle;"><b>{{ item.horario | raw }}</b></td>
+                    <td style="text-align:center; vertical-align:middle;"><b>Q {{ item.precio | raw }}</b></td>
+                    <td style="vertical-align:middle;">{{ item.descripcion | raw }}</td>
+                </tr>
+                {% else %}
+                    <tr><td colspan="5" >No existen resultados</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <BR><BR> 
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+    </div> 
+    </div> 
+
+    </div> 
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+{% endblock %}

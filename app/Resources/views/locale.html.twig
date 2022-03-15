@@ -1,0 +1,16 @@
+{#
+{% set locale = app.request.locale %}
+{% if locale == 'es' %}
+    <span>{{ 'idiomas.espanol' | trans }}</span> 
+    <span>|</span> 
+    <a href="{{ path(route | fixedRouteName, { '_locale': 'en'}) }}" title="{{ 'frontend.cambiarIdiomaAIngles' | trans }}">
+        {{ 'idiomas.ingles' | trans }}
+    </a>
+{% elseif locale == 'en' %}                
+    <a href="{{ path(route | fixedRouteName, { '_locale': 'es'}) }}" title="{{ 'frontend.cambiarIdiomaAEspañol' | trans }}">
+        {{ 'idiomas.espanol' | trans }}
+    </a> 
+    <span>|</span> 
+    <span>{{ 'idiomas.ingles' | trans }}</span>
+{% endif %}
+#}

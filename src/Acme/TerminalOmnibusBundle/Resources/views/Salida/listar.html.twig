@@ -1,0 +1,149 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Salidas
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>	
+        $(document).ready(function(){
+            frondendSalidas.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal" id="filtersForm">
+        
+        <div id="accordionFilters" class="accordion" >
+        <div class="accordion-group">
+        <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionFilters" href="#collapseFilters">
+        Filtrar resultados
+        </a>
+        </div>    
+        <div id="collapseFilters" class="accordion-body collapse">
+        <div class="accordion-inner">
+            
+         <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="identificador">Id:</label>
+            <div class="controls">
+                <input type="text" id="identificador" name="identificador" placeholder="Filtrar por identificador" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5" >
+            <div class="control-group">
+                <label class="control-label" for="estado">Estado:</label>
+            <div class="controls">
+                <input type="text" id="estado" name="estado" placeholder="Filtrar por estado" />
+            </div>
+            </div> 
+         </div>     
+       </div>  
+       
+       <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="origen">Origen:</label>
+            <div class="controls">
+                <input type="text" id="origen" name="origen" placeholder="Filtrar por origen" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="destino">Destino:</label>
+            <div class="controls">
+                <input type="text" id="destino" name="destino" placeholder="Filtrar por destino" />
+            </div>
+            </div>       
+         </div>  
+       </div>   
+       <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group"> 
+                <label class="control-label" for="rangoFecha">Rango Fecha:</label>
+            <div class="controls">
+                <input id="rangoFecha" name="rangoFecha" type="text" placeholder="Filtrar por rango de fecha" />
+            </div>
+            </div>      
+         </div>
+         <div class="span5">
+         <div class="control-group"> 
+                <label class="control-label" for="tipoBus">Tipo Bus:</label>
+           <div class="controls">
+                <input type="text" id="tipoBus" name="tipoBus" placeholder="Filtrar por tipo de bus" />
+           </div>
+        </div>   
+        </div>
+       </div>    
+       <div class="row-fluid">
+         <div class="span5" >
+           <div class="control-group"> 
+                <label class="control-label" for="bus">Bus:</label>
+           <div class="controls">
+                <input type="text" id="bus" name="bus" placeholder="Filtrar por bus" />
+           </div>
+           </div>       
+         </div> 
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="piloto">Piloto:</label>
+            <div class="controls">
+                <input type="text" id="piloto" name="piloto" placeholder="Filtrar por piloto" />
+            </div>
+            </div>       
+         </div>   
+       </div> 
+       <div class="row-fluid">
+         <div class="span5" >
+           <div class="control-group"> 
+                <label class="control-label" for="empresa">Empresa:</label>
+           <div class="controls">
+                <input type="text" id="empresa" name="empresa" placeholder="Filtrar por empresa" />
+           </div>
+           </div>       
+         </div> 
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="pendiente">Pendiente:</label>
+            <div class="controls">
+                <input type="checkbox" id="pendiente" name="pendiente" checked value="1"/>
+            </div>
+            </div>     
+         </div>   
+       </div>
+            
+       <div class="control-group">
+       <div class="controls"> 
+            <a id="linkFilter" class="btn btn-primary" type="submit" href="#"><i class="icon-filter icon-white"></i> Filtrar</a>
+       </div>
+       </div> 
+    
+    </div>
+    </div>
+    </div>
+    </div>
+    </form>
+
+    {{ renderMenu('menuSalida') }}
+    
+    <table id="grid" style="display:none" data-url="{{url('salida-listarPaginado')}}"></table>
+   
+
+{% endblock %}
+
+{% block contentFooterModal %}
+    
+{% endblock %}
+
+
+
+
+
+

@@ -1,0 +1,22 @@
+<form action="{{ path(route) }}" method="post">
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+    
+    <div class="row-fluid">
+    <div class="span12">  
+         <label>
+            <strong> 
+            ¿Está seguro que desea iniciar la revisión?
+            </strong>
+         </label>
+    </div> 
+    </div>
+    
+    </div>      
+   
+    {{ form_rest(form) }}   
+    
+</form>

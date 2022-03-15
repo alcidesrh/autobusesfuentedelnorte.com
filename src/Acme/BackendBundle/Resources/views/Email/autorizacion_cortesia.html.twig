@@ -1,0 +1,127 @@
+Hola {{ object.restriccionCliente.nombre }},
+{% set body1 = 'Le enviamos este correo para informarle que ' %}
+{% if action is sameas('update') %}
+{% set body1 = body1 ~ 'se le ha actualizado la cortesía asignda.' %}
+{% else %}
+{% set body1 = body1 ~ 'se le ha concedido una cortesía.' %}
+{% endif %}
+{% if object.boleto is null %}
+{% set body1 = body1 ~ ' A partir de este momento puede presentarse a solicitar el servicio de ' ~ object.servicioEstacion.nombre| upper %}
+{% set body1 = body1 ~ ' en cualquira de nuestras oficinas.'%}
+{% set body1 = body1 ~ ' Para disponer de la cortesía es obligatorio presentarle al operador el siguiente pin o código: '%}
+{% set body1 = body1 ~ object.codigo %}
+{% set body1 = body1 ~ '.'%}
+{% else %}
+{% set body1 = body1 ~ ' Usted debe presentarse una hora antes en la estación para que le impriman el boleto. ' %}
+{% endif %}
+{{ body1|nl2br }}
+
+{% set body2x1 = '' %}
+{% set body2x2 = '' %}
+{% if object.boleto is not null %}
+{% set body2x1 = 'Identificador de Boleto:' ~ object.boleto.id| upper %}
+{% endif %}
+{% set body3 = '' %}
+{% if object.restriccionEstacionOrigen is not null %}
+{% set body3 = 'Estación Origen:' ~ object.restriccionEstacionOrigen %}
+{% endif %}
+{% set body4 = '' %}
+{% if object.restriccionEstacionDestino is not null %}
+{% set body4 = 'Estación Destino:' ~ object.restriccionEstacionDestino %}
+{% endif %}
+{% set body5 = '' %}
+{% if object.restriccionClaseAsiento is not null %}
+{% set body5 = 'Clase de Asiento:' ~ object.restriccionClaseAsiento.nombre %}
+{% endif %}
+{% set body6 = '' %}
+{% if object.restriccionFechaUso is not null %}
+{% set body6 = 'Fecha de Uso:' ~ object.restriccionFechaUso| date('d/m/Y') %}
+{% endif %}
+{% set body7 = '' %}
+{% if object.restriccionCliente is not null %}
+{% set body7 = 'Cliente:' ~ object.restriccionCliente %}
+{% endif %}
+{% set body8x1 = '' %}
+{% set body8x2 = '' %}
+{% if object.restriccionSalida is not null %}
+{% set body8x1 = 'Ruta:' ~ object.restriccionSalida.itinerario.ruta %}
+{% set body8x2 = 'Fecha y Hora:' ~ object.restriccionSalida.fecha | date('d/m/Y H:i:s') %}
+{% set body6 = '' %}
+{% endif %}
+{% set body9x1 = '' %}
+{% set body9x2 = '' %}
+{% if object.restriccionAsientoBus is not null %}
+{% set body9x1 = 'Nro. Asiento:' ~ object.restriccionAsientoBus.numero %}
+{% set body9x2 = 'Clase Asiento:' ~ object.restriccionAsientoBus.clase %}
+{% set body5 = '' %}
+{% endif %}
+{% if body2x1 is not empty or body2x2 is not empty or body3 is not empty or body4 is not empty or body5 is not empty or body6 is not empty or body7 is not empty or body8x1 is not empty or body8x2 is not empty or body9x1 is not empty or body9x2 is not empty%}
+{{ 'La cortesía tiene las siguientes características:'|nl2br }}
+{% if body2x1 is not empty %}
+{{ body2x1|nl2br }}
+{% endif %}
+{% if body2x2 is not empty %}
+{{ body2x2|nl2br }}
+{% endif %}
+{% if body3 is not empty %}
+{{ body3|nl2br }}
+{% endif %}
+{% if body4 is not empty %}
+{{ body4|nl2br }}
+{% endif %}
+{% if body5 is not empty %}
+{{ body5|nl2br }}
+{% endif %}
+{% if body6 is not empty %}
+{{ body6|nl2br }}
+{% endif %}
+{% if body7 is not empty %}
+{{ body7|nl2br }}
+{% endif %}
+{% if body8x1 is not empty %}
+{{ body8x1|nl2br }}
+{% endif %}
+{% if body8x2 is not empty %}
+{{ body8x2|nl2br }}
+{% endif %}
+{% if body9x1 is not empty %}
+{{ body9x1|nl2br }}
+{% endif %}
+{% if body9x2 is not empty %}
+{{ body9x2|nl2br }}
+{% endif %}
+{% endif %}
+
+{{ 'Oficinas disponibles' | upper }}
+{{ '-------------------------------------------------------------------------------------' }}
+{% for estacion in estaciones %}
+Nombre: {{ estacion.nombre }}
+Dirección: {{ estacion.direccion }}
+{% set telefonosStr = '' %}
+{% for telefono in estacion.listaTelefono %}
+{% if not loop.first %}
+{% set telefonosStr = telefonosStr ~ ', '  ~  telefono.telefono %}
+{% else %}
+{% set telefonosStr = telefono.telefono %}
+{% endif %}
+{% endfor %}
+{% transchoice estacion.listaTelefono|length %}
+{0} No tiene teléfono.|{1} Teléfono:|]1,Inf] Teléfonos:
+{% endtranschoice %}
+{{ telefonosStr }}
+{{ '-------------------------------------------------------------------------------------' }}
+{% else %}
+{{ 'No existen oficinas disponibles' }}
+{{ '-------------------------------------------------------------------------------------' }}
+{% endfor %}
+
+Atentamente
+{{ object.usuarioCreacion.fullName }}
+{% set nombreEmpresa =  'Transporte Fuente del Norte' %}
+{{ nombreEmpresa|nl2br }}
+
+{% set footer = 'Este mensaje ha sido enviado a ' ~ object.restriccionCliente.correo ~ ' por un sistema automático.' %}
+{% set footer = footer ~ 'Por favor no respondas a este e-mail directamente.' %}
+{% set footer = footer ~ 'Para contactar con ' ~ nombreEmpresa ~ ' puedes hacerlo a través de cualquiera de nuestras oficinas.' %}
+{{ footer }}
+  

@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporte" language="groovy" pageWidth="1607" pageHeight="28" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1607" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.1435888100000278"/>
+	<property name="ireport.x" value="2666"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="USUARIO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_NOMBRE" class="java.lang.String"/>
+	<parameter name="FECHA_DIA" class="java.lang.String"/>
+	<parameter name="SALIDA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[19830]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[declare @salida_id bigint
+declare @tableDatos TABLE (
+idSalida bigint,
+diaSalida nvarchar(20),
+horaSalida nvarchar(20),
+placaBus nvarchar(20),
+siglaPaisOrigen nvarchar(20),
+siglaPaisDestino nvarchar(20),
+codigoFrontera nvarchar(20),
+empleado bit,
+nombre1 nvarchar(100),
+nombre2 nvarchar(100),
+apellido1 nvarchar(100),
+apellido2 nvarchar(100),
+nacionalidad nvarchar(5),
+fechaNacimiento nvarchar(20),
+sexo nvarchar(1),
+codigoDocumento nvarchar(10),
+numeroDocumento nvarchar(60),
+fechaVencimiento nvarchar(20)
+)
+
+set @salida_id = CONVERT(bigint, $P{SALIDA_ID})
+
+---------------------------------------------
+-- ADICIONANDO PASAJEROS
+---------------------------------------------
+INSERT INTO @tableDatos
+SELECT
+     salida.id as idSalida,
+     FORMAT(salida.fecha, 'yyyy-MM-dd') as diaSalida,
+     LEFT(CONVERT(VARCHAR(8), salida.fecha, 108), 5) AS horaSalida,
+     bus."placa" AS placaBus,
+     paisOrigen."sigla" as siglaPaisOrigen,
+     paisDestino."sigla" as siglaPaisDestino,
+     ruta."codigoFrontera" as codigoFrontera,
+     clienteBoleto.empleado as empleado,
+     clienteBoleto.nombre1 as nombre1,
+     clienteBoleto.nombre2 as nombre2,
+     clienteBoleto.apellido1 as apellido1,
+     clienteBoleto.apellido2 as apellido2,
+     nacionalidad.sigla as nacionalidad,
+     FORMAT(clienteBoleto.fecha_nacimiento, 'yyyy-MM-dd') as fechaNacimiento,
+     sexo.sigla as sexo,
+     (case
+        when (clienteBoleto.tipo_documento_id = 1 and nacionalidad.id = 21) then '29'
+        when (clienteBoleto.tipo_documento_id = 1 and nacionalidad.id = 25) then '8'
+        when (clienteBoleto.tipo_documento_id = 1 and nacionalidad.id = 22) then '48'
+        when (clienteBoleto.tipo_documento_id = 1 and nacionalidad.id = 23) then '49'
+        when (clienteBoleto.tipo_documento_id = 1) then 'XX'
+        when (clienteBoleto.tipo_documento_id = 2) then '12'
+        when (clienteBoleto.tipo_documento_id = 3) then '36'
+        when (clienteBoleto.tipo_documento_id = 4) then '28'
+        when (clienteBoleto.tipo_documento_id = 5) then '25'
+        when (clienteBoleto.tipo_documento_id = 6) then '26'
+        when (clienteBoleto.tipo_documento_id = 7) then '30'
+        when (clienteBoleto.tipo_documento_id = 8) then '4'
+        when (clienteBoleto.tipo_documento_id = 9) then '7'
+        else 'XX'
+     end) AS codigoDocumento,
+     clienteBoleto.dpi as numeroDocumento,
+     (case
+        when (clienteBoleto.fecha_vencimiento_documento is null)
+        then '2099-01-01'
+        else FORMAT(clienteBoleto.fecha_vencimiento_documento, 'yyyy-MM-dd')
+     end) AS fechaVencimiento
+FROM
+     "dbo"."salida" salida
+     LEFT JOIN "dbo"."itineario" itineario ON salida."itinerario_id" = itineario."id"
+     LEFT JOIN "dbo"."ruta" ruta ON itineario."ruta_codigo" = ruta."codigo"
+     LEFT JOIN "dbo"."estacion" estacionOrigenRuta ON ruta."estacion_origen_id" = estacionOrigenRuta."id"
+     LEFT JOIN "dbo"."boleto" boleto ON salida."id" = boleto."salida_id"
+     LEFT JOIN "dbo"."boleto_estado" estadoBoleto ON boleto."estado_id" = estadoBoleto."id"
+     LEFT JOIN "dbo"."estacion" estacionOrigen ON boleto."estacion_origen_id" = estacionOrigen."id"
+     LEFT JOIN "dbo"."pais" paisOrigen ON estacionOrigen."pais_id" = paisOrigen."id"
+     LEFT JOIN "dbo"."estacion" estacionDestino ON boleto."estacion_destino_id" = estacionDestino."id"
+     LEFT JOIN "dbo"."pais" paisDestino ON estacionDestino."pais_id" = paisDestino."id"
+     LEFT JOIN "dbo"."bus" bus ON salida."bus_codigo" = bus."codigo"
+     LEFT JOIN "dbo"."cliente" clienteBoleto ON boleto."cliente_boleto" = clienteBoleto."id"
+     LEFT JOIN "dbo"."nacionalidad" nacionalidad ON clienteBoleto."nacionalidad_id" = nacionalidad."id"
+     LEFT JOIN "dbo"."sexo" sexo ON clienteBoleto."sexo_id" = sexo."id"
+WHERE
+     (@salida_id=salida."id")
+     and (
+     (estacionOrigen."id"=estacionOrigenRuta."id" and estadoBoleto.id IN (2, 3))
+      	or (estacionOrigen."id"<>estacionOrigenRuta."id" and estadoBoleto.id IN (1, 3))
+     )
+
+---------------------------------------------
+-- ADICIONANDO PILOTOS
+---------------------------------------------
+INSERT INTO @tableDatos
+SELECT
+     salida.id as idSalida,
+     FORMAT(salida.fecha, 'yyyy-MM-dd') as diaSalida,
+     LEFT(CONVERT(VARCHAR(8), salida.fecha, 108), 5) AS horaSalida,
+     bus."placa" AS placaBus,
+     paisOrigen."sigla" as siglaPaisOrigen,
+     paisDestino."sigla" as siglaPaisDestino,
+     ruta."codigoFrontera" as codigoFrontera,
+     1 as empleado,
+     piloto.nombre as nombre1,
+     piloto.nombre2 as nombre2,
+     piloto.apellidos as apellido1,
+     piloto.apellido2 as apellido2,
+     nacionalidad.sigla as nacionalidad,
+     FORMAT(piloto.fechaNacimiento, 'yyyy-MM-dd') as fechaNacimiento,
+     sexo.sigla as sexo,
+     (case
+        when (nacionalidad.id = 21) then '29'
+        when (nacionalidad.id = 25) then '8'
+        when (nacionalidad.id = 22) then '48'
+        when (nacionalidad.id = 23) then '49'
+        else 'XX'
+     end) AS codigoDocumento,
+     piloto.dpi as numeroDocumento,
+    '2099-01-01' AS fechaVencimiento
+FROM
+     "dbo"."piloto" piloto
+     INNER JOIN "dbo"."salida" salida ON (salida.piloto_id=piloto.id or salida.piloto_aux_id=piloto.id)
+     LEFT JOIN "dbo"."itineario" itineario ON salida."itinerario_id" = itineario."id"
+     LEFT JOIN "dbo"."ruta" ruta ON itineario."ruta_codigo" = ruta."codigo"
+     LEFT JOIN "dbo"."estacion" estacionOrigen ON ruta."estacion_origen_id" = estacionOrigen."id"
+     LEFT JOIN "dbo"."pais" paisOrigen ON estacionOrigen."pais_id" = paisOrigen."id"
+     LEFT JOIN "dbo"."estacion" estacionDestino ON ruta."estacion_destino_id" = estacionDestino."id"
+     LEFT JOIN "dbo"."pais" paisDestino ON estacionDestino."pais_id" = paisDestino."id"
+     LEFT JOIN "dbo"."bus" bus ON salida."bus_codigo" = bus."codigo"
+     LEFT JOIN "dbo"."nacionalidad" nacionalidad ON piloto."nacionalidad_id" = nacionalidad."id"
+     LEFT JOIN "dbo"."sexo" sexo ON piloto."sexo_id" = sexo."id"
+WHERE
+     @salida_id=salida."id"
+
+------------------------------------
+SELECT * FROM @tableDatos
+
+]]>
+	</queryString>
+	<field name="idSalida" class="java.lang.Long"/>
+	<field name="diaSalida" class="java.lang.String"/>
+	<field name="horaSalida" class="java.lang.String"/>
+	<field name="placaBus" class="java.lang.String"/>
+	<field name="siglaPaisOrigen" class="java.lang.String"/>
+	<field name="siglaPaisDestino" class="java.lang.String"/>
+	<field name="codigoFrontera" class="java.lang.String"/>
+	<field name="empleado" class="java.lang.Boolean"/>
+	<field name="nombre1" class="java.lang.String"/>
+	<field name="nombre2" class="java.lang.String"/>
+	<field name="apellido1" class="java.lang.String"/>
+	<field name="apellido2" class="java.lang.String"/>
+	<field name="nacionalidad" class="java.lang.String"/>
+	<field name="fechaNacimiento" class="java.lang.String"/>
+	<field name="sexo" class="java.lang.String"/>
+	<field name="codigoDocumento" class="java.lang.String"/>
+	<field name="numeroDocumento" class="java.lang.String"/>
+	<field name="fechaVencimiento" class="java.lang.String"/>
+	<group name="group01">
+		<groupExpression><![CDATA[$F{idSalida}]]></groupExpression>
+		<groupHeader>
+			<band height="14">
+				<staticText>
+					<reportElement x="0" y="0" width="90" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CODIGO_EMPRESA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="90" y="0" width="80" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PLACA_DE_BUS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="170" y="0" width="70" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PAIS_ORIGEN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="240" y="0" width="70" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[HORA_ORIGEN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="385" y="0" width="75" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[HORA_DESTINO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="460" y="0" width="95" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CODIGO_FRONTERA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="555" y="0" width="70" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FECHA_VIAJE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="310" y="0" width="75" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PAIS_DESTINO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="625" y="0" width="95" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TIPO_DE_PERSONA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="720" y="0" width="80" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NOMBRE1]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="800" y="0" width="80" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NOMBRE2]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="880" y="0" width="80" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APELLIDO1]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="960" y="0" width="80" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APELLIDO2]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1040" y="0" width="115" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CODIGO_NACIONALIDAD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1155" y="0" width="100" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FECHA_NACIMIENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1255" y="0" width="37" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SEXO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1292" y="0" width="105" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CODIGO_DOCUMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1397" y="0" width="105" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NUMERO_DOCUMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1502" y="0" width="105" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FECHA_VENCIMIENTO]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="14">
+				<printWhenExpression><![CDATA[$F{idSalida} == null]]></printWhenExpression>
+				<staticText>
+					<reportElement x="0" y="0" width="1607" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[No existen resultados]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<detail>
+		<band height="14">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="90" y="0" width="80" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{placaBus}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="170" y="0" width="70" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{siglaPaisOrigen}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="240" y="0" width="70" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{horaSalida}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="385" y="0" width="75" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["10:30"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="460" y="0" width="95" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigoFrontera}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="555" y="0" width="70" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{diaSalida}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="310" y="0" width="75" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{siglaPaisDestino}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="90" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FN"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="625" y="0" width="95" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( $F{empleado} == true ? "2" : "1" )
+]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="720" y="0" width="80" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="800" y="0" width="80" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre2}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="880" y="0" width="80" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{apellido1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="960" y="0" width="80" height="14"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{apellido2}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1040" y="0" width="115" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nacionalidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1155" y="0" width="100" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaNacimiento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1255" y="0" width="37" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sexo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1292" y="0" width="105" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigoDocumento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1397" y="0" width="105" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numeroDocumento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="1502" y="0" width="105" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaVencimiento}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,69 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Perfil de Usuario
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            perfil.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <div class="row-fluid">
+        <div class="span12">
+            <label class="control-label">Nombre de Usuario:</label>
+            <input class="input-xxlarge" type="text" placeholder="No definido" disabled value="{{ customUser.username  }}"/>       
+         </div>
+     </div>  
+    <div class="row-fluid">
+        <div class="span12">
+            <label class="control-label">Nombre Completo:</label>
+            <input class="input-xxlarge" type="text" placeholder="No definido" disabled value="{{ customUser.names ~ " " ~ customUser.surnames  }}"/>       
+         </div>
+     </div>
+     <div class="row-fluid">
+        <div class="span12">
+            <label class="control-label">Estación:</label>
+            <input class="input-xxlarge" type="text" placeholder="Acceso a todas las estaciones" disabled value="{{ customUser.estacion  }}"/>
+            {% if (customUser.estacion is not empty) and (customUser.estacionesPermitidas | length > 1) %}
+                <a style="margin-bottom: 10px;" id="cambiarEstacion" data-title="Cambiar Estación" href="{{ path('home-cambiar-estacion') }}" class="btn">Cambiar</a>
+            {% endif %}
+         </div>
+     </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <label class="control-label">Empresas:</label>
+            {% for empresa  in customUser.empresas  %}
+                <input class="input-xxlarge" type="text" placeholder="No definido" disabled value="{{ empresa  }}"/> <BR>  	
+            {% else %}
+                <input class="input-xxlarge" type="text" placeholder="No tiene asignado." disabled /> <BR>
+            {% endfor %}
+         </div>
+     </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <label class="control-label">Teléfono:</label>
+            <input class="input-xxlarge" type="text" placeholder="No definido" disabled value="{{ customUser.phone  }}"/>       
+         </div>
+     </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <label class="control-label">Correo:</label>
+            <input class="input-xxlarge" type="text" placeholder="No definido" disabled value="{{ customUser.email  }}"/>       
+         </div>
+     </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <a id="cambiarContrasena" data-title="Cambiar Contraseña" href="{{ path('home-cambiar-contrasena') }}" class="btn">Cambiar Contraseña</a>
+        </div>
+     </div>
+{% endblock %}
+
+{% block contentFooterModal %}     
+{% endblock %}

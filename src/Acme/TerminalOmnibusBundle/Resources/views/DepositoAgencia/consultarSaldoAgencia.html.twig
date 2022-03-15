@@ -1,0 +1,64 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Consultar Saldos de Agencia
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            consultarSaldoAgencia.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span4">  
+        {{ form_label(form.estacion) }}
+        {{ form_widget(form.estacion , {'attr': {'placeholder': 'Seleccione la estación' } }) }}
+        {{ form_errors(form.estacion ) }}
+    </div> 
+    <div class="span4">  
+        <label class="control-label">Estado</label>
+        <input id="estado" class="span12" type="text" placeholder="No definido" disabled value="{{ estado }}"/> 
+    </div>
+    <div class="span4">  
+        <label class="control-label">Total Depósitado</label>
+        <input id="totalDepositado" class="span12" type="text" placeholder="0.00" disabled value="{{ totalDepositado }}"/> 
+    </div>
+    </div> 
+        
+    <div class="row-fluid">
+    <div class="span4">  
+        <label class="control-label">Saldo Principal</label>
+        <input id="saldo" class="span12" type="text" placeholder="0.00" disabled value="{{ saldo }}"/> 
+    </div> 
+    <div class="span4">  
+        <label class="control-label">Bono</label>
+        <input id="bono" class="span12" type="text" placeholder="0.00" disabled value="{{ bono }}"/> 
+    </div>
+    <div class="span4">  
+        <label class="control-label">Total</label>
+        <input id="total" class="span12" type="text" placeholder="0.00" disabled value="{{ total }}"/> 
+    </div>
+    </div>     
+
+    </div> 
+    <input type="hidden" id="pathAjaxListarSaldosAgencias" value="{{ url('ajaxListarSaldosAgencias') }}"></input>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+{% endblock %}
+
+
+
+
+
+

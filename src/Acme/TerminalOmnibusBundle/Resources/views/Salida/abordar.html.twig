@@ -1,0 +1,27 @@
+<form action="{{ path(route) }}" method="post">
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+    
+    <div class="row-fluid">
+    <div class="span12">  
+         <label>
+            <strong> 
+            ¿Está seguro que desea poner la salida con identificador {{ entity.id }} en estado abordando?.
+            </strong>
+         </label>
+         <p class="text-error">
+            {{ entity.bus is not empty ? 'La salida tiene asignado el Bus: ' ~  entity.bus ~ '.' : '' }}
+            {{ entity.piloto is not empty ? 'Primer piloto: ' ~  entity.piloto ~ '.' : '' }}
+            {{ entity.pilotoAux is not empty ? 'Segundo piloto: ' ~  entity.pilotoAux ~ '.' : '' }}
+         </p>
+    </div> 
+    </div>
+    
+    </div>      
+   
+    {{ form_rest(form) }}   
+    
+</form>

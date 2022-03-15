@@ -1,0 +1,94 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Reservaciones
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            frondendReservacion.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal" id="filtersForm">
+        <div id="accordionFilters" class="accordion" >
+        <div class="accordion-group">
+        <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionFilters" href="#collapseFilters">
+        Filtrar resultados
+        </a>
+        </div>    
+        <div id="collapseFilters" class="accordion-body collapse">
+        <div class="accordion-inner">
+            
+        <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="identificador">Id:</label>
+            <div class="controls">
+                <input type="text" id="identificador" name="identificador" placeholder="Identificador de la reserva" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5" >
+           <div class="control-group"> 
+                <label class="control-label" for="cliente">Cliente:</label>
+           <div class="controls">
+               <input id="cliente" class="span12" name="cliente" type="text" placeholder="Cliente de la reserva" data-pathListarClientesPaginando="{{ path('ajaxListarClientesPaginando') }}" />
+           </div>
+           </div>       
+         </div>     
+       </div>  
+      
+       <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group"> 
+                <label class="control-label" for="rangoFecha">Rango Fecha:</label>
+            <div class="controls">
+                 <input id="rangoFecha" name="rangoFecha" type="text" placeholder="Rango de fecha" />
+            </div>
+            </div>   
+         </div>
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="numeroAsiento">Número Asiento:</label>
+            <div class="controls">
+                <input type="text" id="numeroAsiento" name="numeroAsiento" placeholder="Número de asiento" />
+            </div>
+            </div>       
+         </div>   
+       </div>  
+       
+       <div class="control-group">
+       <div class="controls"> 
+            <a id="linkFilter" class="btn btn-primary" type="submit" href="#"><i class="icon-filter icon-white"></i> Filtrar</a>
+       </div>
+       </div> 
+    
+    </div>
+    </div>
+    </div>
+    </div>
+    </form>
+
+    {{ renderMenu('menuReservacion') }}
+    
+    <table id="grid" style="display:none" data-url="{{url('reservaciones-listarPaginado')}}"></table>
+   
+
+{% endblock %}
+
+{% block contentFooterModal %}
+    
+{% endblock %}
+
+
+
+
+
+

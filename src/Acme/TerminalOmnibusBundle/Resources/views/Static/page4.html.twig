@@ -1,0 +1,89 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Tutorial para instalar el plugin de impresión de java.
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            page.funcionesAddOnload();	
+            
+            $(".linkDescargar").click(function (e){
+                e.preventDefault();
+                e.stopPropagation();
+                var item = $(this);
+                var href = item.attr('href');
+                console.debug(href);
+                core.installjsPrintSetup(href);
+            });
+        });  
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+        <BR><BR>
+        
+        <p>El plugin de impresión java permite realizar las tareas de impresión del sistema. 
+            Es obligatorio para todas las estaciones de venta.</p>
+        <p><i>Nota: En el caso de las oficinas administrativas y las agencias de turismo el plugin no es obligatorio, 
+                de no estar instalado el sistema mostrará un documento en formato pdf que puede ser descargado.</i></p>
+                
+        <br>        
+        <p>1. Se debe instalar la máquina virtual de java. Accedemos a los instaladores en el ftp en la dirección: 
+            <i><a target="_blank" href="ftp://userftp:userftp123**@201.216.189.98/Java/">java</a></i>. Luego hacer clic en el 
+            fichero <i>jre-8u25-windows-i586.rar</i> para descargarlo hacia el disco duro de la máquina y se instala.
+        </p>
+        <p>2. Se debe descargan del ftp el certificado del plugin de java en la dirección: 
+            <i><a target="_blank" href="ftp://userftp:userftp123**@201.216.189.98/Certificados/qz-free.cer">qz-free</a></i>.
+        </p>
+        <p>3. Se instala el certificado en el panel de control de java. 
+            Se abre el panel de control de Windows y se selecciona la opción java. 
+            Luego se va a la pestaña de seguridad y se selecciona las opciones <i>Gestionar Certificados</i> e <i>Importar</i>.
+        </p>
+        <div class="row-fluid">
+        <div class="span6"> 
+            <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto4/imag1.png') }}"/>
+        </div> 
+        <div class="span6"> 
+            <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto4/imag2.png') }}"/>
+        </div> 
+        </div>
+        <br><br>
+        <p>4. Se adiciona la url de la aplicación en la lista de excepciones de sitios de java. En la misma pestaña de 
+            seguridad se selecciona la opción <i>Editar lista de sitios</i>. Se adiciona la dirección que este en la barra de navegación.
+        </p>
+        <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto4/imag5.png') }}"/>
+        <br><br>
+        <p>5. Se instala el certificado en el firefox. Se busca la opcion Herramientas->Opciones->Avazado->Certificados->
+            Ver Certificados->Servidores->Importar.
+        </p>
+        <div class="row-fluid">
+        <div class="span6"> 
+            <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto4/imag3.png') }}"/>
+        </div> 
+        <div class="span6"> 
+            <img class="img-rounded" src="{{ asset('bundles/acmeterminalomnibus/images/tutoriales/tuto4/imag4.png') }}"/>
+        </div> 
+        </div>
+        <br><br>
+        <p>6. Listo!!!. Ya está configurado el plugin.</p>
+        <BR><BR> 
+        <a href="{{ path('home-configuracion') }}" class="linkHelp btn" data-dialog="false">Retroceder</a>
+    </div> 
+    </div> 
+
+    </div> 
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Itinerarios Especiales
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            frondendItinerarioEspecial.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal" id="filtersForm">
+        <div id="accordionFilters" class="accordion" >
+        <div class="accordion-group">
+        <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordionFilters" href="#collapseFilters">
+        Filtrar resultados
+        </a>
+        </div>    
+        <div id="collapseFilters" class="accordion-body collapse">
+        <div class="accordion-inner">
+            
+         <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="identificador">Id:</label>
+            <div class="controls">
+                <input type="text" id="identificador" name="identificador" placeholder="Filtrar por identificador" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5" >
+           <div class="control-group"> 
+                <label class="control-label" for="fechaEnd">Fecha Límite:</label>
+           <div class="controls">
+                <input id="fechaEnd" name="fechaEnd" type="text" placeholder="Filtrar hasta fecha" />
+           </div>
+           </div>       
+         </div>     
+       </div>  
+       
+       <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="origen">Origen:</label>
+            <div class="controls">
+                <input type="text" id="origen" name="origen" placeholder="Filtrar por origen" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="destino">Destino:</label>
+            <div class="controls">
+                <input type="text" id="destino" name="destino" placeholder="Filtrar por destino" />
+            </div>
+            </div>       
+         </div>  
+       </div>   
+       <div class="row-fluid">
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="ruta">Ruta:</label>
+            <div class="controls">
+                <input type="text" id="ruta" name="ruta" placeholder="Filtrar por ruta" />
+            </div>
+            </div>       
+         </div>
+         <div class="span5">
+         <div class="control-group"> 
+                <label class="control-label" for="tipoBus">Tipo Bus:</label>
+           <div class="controls">
+                <input type="text" id="tipoBus" name="tipoBus" placeholder="Filtrar por tipo de bus" />
+           </div>
+        </div>   
+        </div>
+       </div>    
+       <div class="row-fluid">
+         <div class="span5" >
+           <div class="control-group"> 
+                <label class="control-label" for="motivo">Motivo:</label>
+           <div class="controls">
+                <input type="text" id="motivo" name="motivo" placeholder="Filtrar por motivo" />
+           </div>
+           </div>       
+         </div> 
+         
+         <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="activo">Activo:</label>
+            <div class="controls">
+                <input type="checkbox" id="activo" name="activo" checked value="1"/>
+            </div>
+            </div>       
+         </div>   
+       </div> 
+        
+       <div class="control-group">
+       <div class="controls"> 
+            <a id="linkFilter" class="btn btn-primary" type="submit" href="#"><i class="icon-filter icon-white"></i> Filtrar</a>
+       </div>
+       </div> 
+    
+    </div>
+    </div>
+    </div>
+    </div>
+    </form>
+
+    {{ renderMenu('menuItinerarioEspecial') }}
+    
+    <table id="grid" style="display:none" data-url="{{url('itinerarioEspecial-listarPaginado')}}"></table>
+   
+
+{% endblock %}
+
+{% block contentFooterModal %}
+    
+{% endblock %}
+
+
+
+
+
+

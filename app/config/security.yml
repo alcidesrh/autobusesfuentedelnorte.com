@@ -1,0 +1,126 @@
+jms_security_extra:
+    secure_all_services: false
+    expressions: true
+
+security:
+    encoders:
+        FOS\UserBundle\Model\UserInterface: sha512
+
+    role_hierarchy:
+        ROLE_ADMIN:       [ROLE_ALLOWED_TO_SWITCH]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
+
+    providers:
+        fos_userbundle:
+            id: fos_user.user_provider.username
+
+    firewalls:
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js|appmovil|app_dev.php/js|app_dev.php/css)/
+            security: false
+
+        main:
+            pattern: ^/
+            form_login:
+                provider: fos_userbundle
+                csrf_provider: form.csrf_provider
+                success_handler: acme_backend.handler.login_success_handler
+                failure_handler: acme_backend.handler.login_failure_handler
+            logout:
+                path:   /logout
+                target: /
+                success_handler: acme_backend.handler.logout_success_handler
+            anonymous:    true
+            
+#   AQUI SOLO SE DEBEN PONER LAS REGLAS GLOBALES, YA QUE EL MENU NO TRABAJA CON ESTAS REGLAS SINO CON ANOTACIONES.
+#   AQUI SOLO VAN LAS RUTAS DE ADMINISTRACION, EL RESTO DE LAS RUTAS LA APLICACION DEBE IR POR ANOTACIONES
+    access_control:
+        - { path: ^/login$, roles: [IS_AUTHENTICATED_ANONYMOUSLY], requires_channel: https}
+        - { path: ^/movil/test/aux/*, roles: [IS_AUTHENTICATED_ANONYMOUSLY], requires_channel: https}
+        - { path: ^/internal/integrations/portal/test/*, roles: [IS_AUTHENTICATED_ANONYMOUSLY]}
+        - { path: ^/app_dev.php/admin/rol/*, roles: [ROLE_SUPER_ADMIN], requires_channel: https}
+        - { path: ^/app_dev.php/admin/user/*, roles: [ROLE_SUPER_ADMIN], requires_channel: https}        
+        - { path: ^/app_dev.php/admin/*, roles: [ROLE_SUPER_ADMIN], requires_channel: https}
+        
+        - { path: ^/admin/rol/*, roles: [ROLE_SUPER_ADMIN], requires_channel: https}
+        - { path: ^/admin/user/*, roles: [ROLE_SUPER_ADMIN], requires_channel: https}  
+        - { path: ^/admin/log/*, roles: [ROLE_SUPER_ADMIN], requires_channel: https}
+        
+        - { path: ^/admin/tarifaboleto/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_ADMIN_TARIFAS], requires_channel: https}
+        - { path: ^/admin/tarifaencomienda/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_ADMIN_TARIFAS], requires_channel: https}
+        - { path: ^/admin/tarifaencomiendaefectivo/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_ADMIN_TARIFAS], requires_channel: https}
+        - { path: ^/admin/tarifaencomiendaefectivocliente/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_ADMIN_TARIFAS], requires_channel: https}
+        - { path: ^/admin/tarifaencomiendaespeciales/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_ADMIN_TARIFAS], requires_channel: https}
+        - { path: ^/admin/tarifaencomiendaespecialescliente/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN_TARIFAS], requires_channel: https}
+        - { path: ^/admin/tarifaencomiendapaquetes/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_ADMIN_TARIFAS], requires_channel: https}
+        - { path: ^/admin/tarifaencomiendapaquetescliente/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_ADMIN_TARIFAS], requires_channel: https}
+        
+        - { path: ^/admin/galeria/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/galeriaimagen/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/notificacion/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/conexion/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/bus/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/marcabus/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/piloto/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tipobus/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/asientobus/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/autorizacioncortesia/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/autorizacioninterna/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/boleto/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/caja/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/calendariofactura/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/claseasiento/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/clasebus/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/cliente/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/nacionalidad/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/departamento/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/pais/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/correoestacion/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/diasemana/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/empresa/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/encomienda/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/encomiendabitacora/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/estacion/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/estadoasiento/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/estadoboleto/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/estadobus/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/estadocaja/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/estadoencomienda/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/estadoreservacion/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/estadosalida/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/factura/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/facturagenerada/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/grupoencomienda/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/horariociclico/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/impresora/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/impresoraoperaciones/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/itinerariosciclicos/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/itinerarioespecial/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/job/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/logcode/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/moneda/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/operacioncaja/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/reservacion/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/ruta/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/salida/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/serviciobus/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/servicioestacion/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/telefonoestacion/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tiempo/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tipocambio/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tipodocumentoboleto/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tipodocumentoencomienda/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tipoencomienda/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tipoencomiendaespecial/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tipoestacion/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tipooperacioncaja/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tipopago/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tiposenal/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        - { path: ^/admin/tipotipocambio/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN], requires_channel: https}
+        
+        - { path: ^/admin/*, roles: [ROLE_SUPER_ADMIN, ROLE_ADMIN, ROLE_ADMIN_TARIFAS], requires_channel: https}
+        - { path: ^/*, roles: [ROLE_USER], requires_channel: https}
+
+
+
+

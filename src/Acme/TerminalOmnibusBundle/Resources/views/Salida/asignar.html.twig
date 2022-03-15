@@ -1,0 +1,39 @@
+<form action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+    
+    <div class="row-fluid">
+    <div class="span12">  
+    {{ form_label(form.bus) }}
+    {{ form_widget(form.bus) }}
+    </div> 
+    </div> 
+    
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.piloto) }}
+    {{ form_widget(form.piloto) }}
+    </div>
+    </div>
+        
+    <div class="row-fluid"> 
+    <div class="span12">
+    {{ form_label(form.pilotoAux) }}
+    {{ form_widget(form.pilotoAux) }}
+    </div>
+    </div>
+        
+    </div>
+    
+    {{ form_rest(form) }}
+    
+    <script>	
+        $(document).ready(function(){
+            asignarSalida.funcionesAddOnload();	
+        }); 
+    </script>
+    
+</form>

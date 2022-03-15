@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ventaBoletoPropietario" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.464100000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="USUARIO_ID" class="java.lang.String"/>
+	<parameter name="USUARIO_NOMBRE" class="java.lang.String"/>
+	<parameter name="FECHA_DIA" class="java.lang.String"/>
+	<parameter name="ESTACION_NOMBRE" class="java.lang.String"/>
+	<parameter name="FECHA_LIMITE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[declare @fechaLimite datetime2(6)
+
+set @fechaLimite = CAST($P{FECHA_DIA} AS datetime2(7))
+
+SELECT
+encomiendaEspecial.id,
+encomiendaEspecial.nombre,
+CAST(encomiendaEspecial.descripcion AS varchar(255)) AS descripcion,
+FORMAT(tarifaEncomienda.fecha_creacion, 'dd/MM/yyyy')+' '+RIGHT(CONVERT(CHAR(20), tarifaEncomienda.fecha_creacion, 22), 11) as fechaCreacionStr,
+FORMAT(tarifaEncomiendaEspecial.fechaEfectividad, 'dd/MM/yyyy')+' '+RIGHT(CONVERT(CHAR(20), tarifaEncomiendaEspecial.fechaEfectividad, 22), 11) as fechaEfectividadStr,
+userCreacion.names + ' ' + userCreacion.surnames as usuarioCreacion,
+tarifaEncomiendaEspecial.tarifaValor as precio
+FROM
+     "dbo".encomienda_especiales_tipo encomiendaEspecial
+     LEFT JOIN "dbo"."tarifas_encomienda_especiales" tarifaEncomiendaEspecial on tarifaEncomiendaEspecial.tipo_encomienda_especial_id = encomiendaEspecial.id
+     LEFT JOIN "dbo"."tarifas_encomienda" tarifaEncomienda on tarifaEncomienda.id = tarifaEncomiendaEspecial.id
+     LEFT JOIN "dbo"."custom_user" userCreacion on userCreacion.id = tarifaEncomienda.usuario_creacion
+WHERE
+     encomiendaEspecial.activo = 1
+     AND (
+     (tarifaEncomiendaEspecial.id is null ) OR (
+	tarifaEncomiendaEspecial.id is not null
+          and tarifaEncomiendaEspecial.fechaEfectividad <= @fechaLimite
+          and tarifaEncomiendaEspecial.id = (
+            SELECT TOP 1 tarifaEncomiendaEspecial_max.id FROM tarifas_encomienda_especiales tarifaEncomiendaEspecial_max
+            WHERE
+            tarifaEncomiendaEspecial_max.fechaEfectividad <= @fechaLimite
+            AND tarifaEncomiendaEspecial_max.tipo_encomienda_especial_id = encomiendaEspecial.id
+            ORDER BY
+            tarifaEncomiendaEspecial_max.fechaEfectividad DESC
+          )
+     ))
+ORDER BY
+encomiendaEspecial.nombre asc]]>
+	</queryString>
+	<field name="id" class="java.lang.Long"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<field name="fechaCreacionStr" class="java.lang.String"/>
+	<field name="fechaEfectividadStr" class="java.lang.String"/>
+	<field name="usuarioCreacion" class="java.lang.String"/>
+	<field name="precio" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="48" splitType="Stretch">
+			<textField>
+				<reportElement x="465" y="21" width="107" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{USUARIO_NOMBRE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="167" y="21" width="253" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tarifas de Encomiendas Especiales]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="465" y="0" width="107" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{FECHA_DIA}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="234" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRANSPORTE FUENTE DEL NORTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="0" width="45" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="21" width="45" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="23" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="17" width="572" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="20" width="572" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="0" width="193" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Encomienda]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="193" y="0" width="105" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Creado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="298" y="0" width="105" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Efectividad]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="403" y="0" width="100" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Usuario Creación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="503" y="0" width="70" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Precio]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="193" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre} + ( $F{descripcion} == null ? "" : " / " + $F{descripcion} )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="193" y="0" width="105" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaCreacionStr}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="298" y="0" width="105" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaEfectividadStr}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="503" y="0" width="70" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( $F{precio} == null ? "Sin Precio" : "GTQ " + $F{precio} )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="403" y="0" width="100" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{usuarioCreacion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="18" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="24" splitType="Stretch">
+			<textField>
+				<reportElement x="434" y="2" width="98" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="531" y="2" width="35" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch"/>
+	</summary>
+</jasperReport>

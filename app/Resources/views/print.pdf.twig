@@ -1,0 +1,37 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="{{ app.request.scheme ~'://' ~ app.request.httpHost ~ asset('css/frontendBase.css') }}">
+
+</head>
+<body>
+{% block hidden %}
+    <input type="hidden" id="mensajeServidor" name="mensajeServidor" value="{{ mensajeServidor }}"/>
+    <input type="hidden" id="autoPrint" name="autoPrint" value="{{ (impresora.autoPrint is not null and impresora.autoPrint) ? 'true' : 'false' }}" />	
+    <input type="hidden" id="paperSizeData" name="paperSizeData" value="{{ impresora.idTamanoPagina }}">
+    <input type="hidden" id="impresora" name="impresora" value="{{ impresora.path }}">
+    <input type="hidden" id="silentPrint" name="silentPrint" value="{{ silentPrint }}">
+    <input type="hidden" id="pluginJava" name="pluginJava" value="{{ (app.user is not empty and app.user.estacion is not null and app.user.estacion.tipo.id is not sameas(4) and app.user.estacion.pluginJavaActivo) ? 'true' : 'false' }}">
+    {% if data is defined  %}
+        <input type="hidden" value="{{ data }}" id="data" name="data" />	
+    {% endif %}
+    {% if info is defined  %}
+        <input type="hidden" value="{{ info }}" id="info" name="info" />	
+    {% endif %}
+    {% block tamanoimpresion %}
+        <input type="hidden" id="idtamanoimpresion" name="idtamanoimpresion"  value="1" />
+    {% endblock %}
+    {% set numCopiesAux = 1 %}
+    {% if numCopies is defined %}
+        {% set numCopiesAux = numCopies %}		
+    {% endif %}
+    <input type="hidden" id="numCopies" name="numCopies" value="{{ numCopiesAux }}">
+{% endblock %}
+<div id="container" name="container">   
+{% block container %}{% endblock %}
+</div>
+</body>
+</html>

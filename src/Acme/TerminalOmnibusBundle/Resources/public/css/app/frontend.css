@@ -1,0 +1,454 @@
+/*******************************************************************************/
+/*****                              CUSTOM NEW                              *****/
+/*******************************************************************************/
+/*@import url('https://fonts.googleapis.com/css?family=Open+Sans');*/
+
+body {
+padding-top: 60px;
+padding-bottom: 40px;
+/*overflow-y: hidden;*/
+}
+
+.sidebar-nav {
+padding: 9px 0;
+}
+
+.hero-unit {
+padding: 40px;
+}
+
+@media (max-width: 979px) {
+.navbar-fixed-top {
+margin-top: -60px;
+}
+
+.nav-collapse.collapse{
+    padding: 4px;
+}
+
+.menuLateral{
+    margin-top : 8px;
+}
+
+.nav-collapse .nav > li > a, .nav-collapse .dropdown-menu a{
+    color : #08c;
+    font-weight : normal;
+    padding : 3px 15px;
+}
+
+div.navtop:not(.in) > *{ 
+display: none;
+}
+
+}
+
+@media (max-width: 980px) {
+ /* Enable use of floated navbar text */
+.navbar-text.pull-right {
+float: none;
+padding-left: 5px;
+padding-right: 5px;
+}
+}
+
+.logout{
+    margin: 0 10px 0 15px;
+    line-height:40px;
+    text-align: center;
+}
+
+header{
+  padding: 10px;
+  margin-bottom: 14px;
+  font-size: 16px;
+  font-weight: 200;
+  line-height: 30px;
+  color: inherit;
+  background-color: #eeeeee;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+#waitDiv, #loadingSystemDIV{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+	z-index:2147483646;
+	/* Fallback for web browsers that doesn't support RGBa */
+    background: rgb(255, 255, 255);
+	/* RGBa with 0.6 opacity */
+	background: rgba(255, 255, 255, 0.6);
+	/* For IE 5.5 - 7*/
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+	/* For IE 8*/
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+}
+
+#loaderGif, #loadingSystemImage{
+    position:fixed;
+    background-repeat: no-repeat;
+    top:50%;
+    left: 50%;
+    margin-top: -25px;
+    margin-left: -25px;
+    z-index:2147483647;
+}
+
+/* ESTILOS DE LOS GRID */
+.datagrid-header-row td{
+    vertical-align:middle;
+}
+
+#toolbar{
+    padding:5px;
+    height:auto;
+    display:block;
+    float:left;
+    position:relative;
+    width:100%;
+}
+
+#toolbarButton{
+    margin-top:10px;
+    display:block;
+    float:left;
+    width:100%;
+}
+
+#toolbarButton>.easyui-linkbutton{
+    /*float: right;*/
+}
+
+#toolbarFilters{
+    display:block;
+    float:left;
+    padding:5px;
+    width: 40%;
+}
+
+/*#content{
+    background-color:#F5F5F5;
+    border:1px solid #E3E3E3;
+    border-radius:4px;
+    box-shadow:0 1px 1px rgba(0, 0, 0, 0.05) inset;
+    min-height:400px;
+}*/
+#contentBodyModal{
+    min-height:200px;
+    max-height:none;
+}
+
+#contentModal{
+    left:auto;
+    margin:0 auto;
+    position:relative;
+    right:auto;
+    top:auto;
+    width:100%;
+    z-index:1;
+    display:block;
+}
+
+.menuLateral{
+    box-shadow:0 3px 7px rgba(0, 0, 0, 0.3);
+}
+
+.pcontrol>input{
+    height:15px;
+    top:-10px !important;
+    width:30px;
+}
+
+.pGroup>select{
+    height:28px;
+    margin:0;
+    width:60px;
+}
+div.pGroup{
+    height:28px;
+}
+.pDiv2{
+    padding:3px;
+}
+
+.btnseparator{
+    margin-top:5px !important;
+}
+
+.pButton{
+    padding:13% 0;
+}
+.pcontrol, .pPageStat{
+    height:28px;
+    line-height:26px;
+    vertical-align:middle;
+}
+
+.pReload{
+    padding:25% 0;
+}
+
+.select2-container{
+    margin-left:0px !important;
+}
+
+input[type='checkbox'] {
+    margin-top: 0px !important;
+}
+
+/*Los label se muestran despues del checkbox*/
+input + label{ 
+    display:inline-block !important;
+}
+
+.dialogFullScreen{
+    margin:0;
+    top:0;
+    bottom: 0;
+    border-radius:0px;
+    left:0px;
+    right: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.dialogBody{
+   padding:0px;
+}
+
+.dialogBodyFullScreen{
+   height:560px;
+   max-height:560px;
+}
+
+.dialogFooterFullScreen{
+   bottom:0;
+   display:block;
+   position:absolute;
+   right:0px;
+   width:100%;    
+}
+
+.horizontal .control-label{
+    float: left;
+    padding-top: 5px;
+    text-align: right;
+    width: 120px;
+}
+
+.horizontal .controls{
+    margin-left:140px;
+}
+
+.clienteActions{
+    display:inline-block;
+    margin-left:4px;
+}
+
+/* Mapa del BUS  */
+.iconosMapaBus{
+    display:none !important;
+}
+
+.item {
+    position: absolute !important;
+}
+
+.item2 {
+    position: relative !important;
+}
+
+.showInfo {
+    display:inline-block !important;
+    position:absolute;
+    right:1px;
+    top:0px;
+}
+
+.item .detalle,
+.item2 .detalle {
+    display:inline-block !important;
+    position:absolute;
+    bottom: 7px;
+    left: 0px;
+}
+
+.asiento figcaption {
+    color: #000000;
+    font-size: 30px;
+    line-height: 50px;
+    position: relative;
+    text-align: center;
+    top: -50px;
+}
+
+figure{
+    height:40px;
+    width:40px;
+    display:inline-block !important;
+    margin: 5px;
+}
+
+.lista {
+    display:block !important;
+    /*margin-top: 10px;*/
+    border: 1px solid #E3E3E3;
+    border-radius:3px 3px 3px 3px;
+    background-color:#F5F5F5;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+    width: 252px;  /* Se prevee los 2 pixeles del borde */
+    
+/*    height: 1002px;  //20 filas */
+    height: 852px; /* 17 filas */
+    
+    clear:both;
+    content:"";
+    line-height:0;
+    position:relative;
+}
+
+ul.nivel{
+    margin-bottom: 0px!important;
+    border-bottom: none!important;
+}
+
+.tabbable{
+    margin-top: 15px!important;
+}
+
+.reservado, .cortesia, .vendido{
+    border:1px solid #FF0000;
+}
+
+.libre{
+    border:1px solid #9ACD32;
+}
+
+.asiento{
+    border-radius:5px;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.32);
+}
+
+.asientoClaseBFull img,
+.asientoClaseAFull img{
+    max-width:500px;
+    max-height:500px;
+}
+
+#clienteBoletoTable, #clienteReservacionTable{
+    margin-top: 10px;
+}
+
+.nroAsientoTH{
+    width: 20%;
+}
+
+.selected{
+    border:3px solid #000000;
+}
+
+
+.margin-top-1{
+    margin-top:5px;
+}
+
+.margin-top-2{
+    margin-top:10px;
+}
+
+@media (max-width: 480px) {
+    
+.modal{
+margin: 0;
+}
+
+}
+
+.encomiendaActions{
+    margin-bottom:4px;
+}
+
+
+table.scroll {
+    width: 525px;
+    border-spacing: 0;
+    border: 2px solid black;
+}
+table.scroll tbody,
+table.scroll thead tr { display: block; }
+table.scroll tbody {
+    height: 100px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+table.scroll tbody td,
+table.scroll thead th {
+    width: 150px;
+    border-right: 1px solid black;
+}
+table.scroll thead th:last-child {
+    width: 156px;
+}
+table tbody td:last-child, table thead th:last-child {
+    border-right: none !important;
+}
+
+.center {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.marquee {
+  width: 100%;
+  overflow: hidden;
+}
+
+applet { position: absolute; visibility:hidden }
+
+/*
+.notificacionText {
+    white-space : nowrap;
+    display : inline;
+    
+    -webkit-animation-name: cintaInformativa;
+    -webkit-animation-direction: left;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-duration: 50s;
+    
+    -moz-animation-name: cintaInformativa;
+    -moz-animation-direction: left;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-duration: 50s;
+}
+
+@-webkit-keyframes cintaInformativa
+{
+    from
+    {
+        margin-left: 100%;
+    }
+    to
+    {
+         margin-left: -100%;
+    }
+}
+@-moz-keyframes cintaInformativa
+{
+    from
+    {
+        margin-left: 100%;
+    }
+    to
+    {
+         margin-left: -100%;
+    }
+}*/
+
+
+#tarjeta_command_tipo > label{
+    margin-left: 3px;
+    margin-right: 10px;
+}

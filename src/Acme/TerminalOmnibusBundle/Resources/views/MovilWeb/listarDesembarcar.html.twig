@@ -1,0 +1,51 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Listar Encomiendas pendiendes por desembarcar 
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            listarDesembarcarMovil.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+
+<form class="form-horizontal movilWebForm" id="movilWebForm" name="movilWebForm">
+      
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+   
+    <div class="row-fluid">     
+    <div class="span12">  
+        {{ form_label(form.salida) }}
+        {{ form_errors(form.salida) }}
+        {{ form_widget(form.salida) }}
+    </div>    
+    </div> 
+        
+    <div class="row-fluid">     
+    <div class="span12">  
+        <label class="required">Encomiendas</label>
+        <table id="encomiedasGrid" name="encomiedasGrid" class="salidaGrid" style="display:none" data-url="{{url('movilweb-listar-desembarcar-encomienda-salida-case1')}}"></table>
+    </div> 
+    </div> 
+    
+    </div>
+    {{ form_rest(form) }}
+    
+</form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}

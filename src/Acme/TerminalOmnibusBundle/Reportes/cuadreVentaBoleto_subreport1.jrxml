@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cuadreVentaBoleto_subreport1" language="groovy" pageWidth="570" pageHeight="500" whenNoDataType="AllSectionsNoDetail" columnWidth="570" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.3310000000000035"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DATA_EMPRESA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_ESTACION_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_FECHA" class="java.lang.String"/>
+	<parameter name="DATA_MONEDA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[declare @usuario_id bigint
+declare @usuario_estacion_id bigint
+declare @usuario_empresas_id TABLE (id bigint)
+declare @empresa_id bigint
+declare @estacion_id bigint
+declare @moneda_id bigint
+declare @usuario_data_id bigint
+declare @fecha_init datetime2
+declare @fecha_end datetime2
+
+-- PARAMETROS DE SEGURIDAD INIT
+set @usuario_id = $P{USUARIO_ID}
+SELECT @usuario_estacion_id = estacion_id FROM custom_user WHERE id = @usuario_id
+INSERT INTO @usuario_empresas_id
+SELECT cue.empresa_id FROM custom_user AS cu LEFT JOIN custom_user_empresa AS cue ON cu.id=cue.user_id
+WHERE cu.id = @usuario_id
+-- PARAMETROS DE SEGURIDAD INIT
+
+set @empresa_id = $P{DATA_EMPRESA_ID}
+set @estacion_id = $P{DATA_ESTACION_ID}
+set @moneda_id =$P{DATA_MONEDA_ID}
+set @fecha_init = CAST($P{DATA_FECHA} + ' 00:00:00' AS datetime2(7))
+set @fecha_end = CAST($P{DATA_FECHA} + ' 23:59:59' AS datetime2(7))
+
+SELECT
+     FORMAT(factura_generada."fecha", 'dd/MM/yyyy') AS fechaCreacion,
+     empresa."alias" AS aliasEmpresa,
+     estacion."nombre" AS estacion_nombre,
+     moneda."sigla" AS moneda_sigla,
+     usuario."username"  AS username,
+     usuario."names" + ' ' + usuario."surnames" AS fullname,
+     COUNT(factura_generada."id") as cantidadFacturas,
+     SUM(factura_generada."importeTotal") AS importeTotalFacturado,
+     SUM(boleto.precioCalculado)  AS importeTotalRecibido,
+     SUM(boleto.precioCalculado - factura_generada.importeTotal) AS importeTotalAnulado
+FROM
+     "dbo"."factura_generada" factura_generada
+     INNER JOIN "dbo"."custom_user" usuario ON factura_generada."usuario_id" = usuario."id"
+     INNER JOIN "dbo"."estacion" estacion ON factura_generada."estacion_id" = estacion."id"
+     INNER JOIN "dbo"."moneda" moneda ON factura_generada."moneda_id" = moneda."id"
+     INNER JOIN "dbo"."factura" factura ON factura_generada."factura_id" = factura."id"
+     INNER JOIN "dbo"."empresa" empresa ON factura."empresa_id" = empresa."id"
+     INNER JOIN "dbo"."boleto" boleto  ON boleto."factura_generada_id" = factura_generada."id"
+WHERE
+     factura."servicio_estacion_id" = 1
+     and ((@usuario_estacion_id is not null and @usuario_estacion_id=estacion."id") or @usuario_estacion_id is NULL)
+     and ( empresa."id" IN (SELECT id FROM @usuario_empresas_id) )
+     and ((@estacion_id is not null and @estacion_id=estacion."id") or @estacion_id is NULL)
+     and ((@empresa_id is not null and @empresa_id=empresa."id") or @empresa_id is NULL)
+     and ((@moneda_id is not null and @moneda_id=moneda."id") or @moneda_id is NULL)
+     and ((@usuario_data_id is not null and @usuario_data_id=usuario."id") or @usuario_data_id is NULL)
+     and (((@fecha_init is not null and @fecha_end is not null) and
+           (factura_generada."fecha" between @fecha_init and @fecha_end))
+          or (@fecha_init is NULL or @fecha_end is NULL))
+GROUP BY
+     FORMAT(factura_generada."fecha", 'dd/MM/yyyy'),
+     empresa."alias",
+     estacion."nombre",
+     moneda."sigla",
+     usuario."username",
+     usuario."names" + ' ' + usuario."surnames"
+ORDER BY
+     fechaCreacion ASC,
+     aliasEmpresa ASC,
+     estacion_nombre ASC,
+     moneda_sigla ASC,
+     username ASC,
+     fullname ASC,
+     cantidadFacturas ASC,
+     importeTotalRecibido ASC,
+     importeTotalFacturado ASC,
+     importeTotalAnulado ASC]]>
+	</queryString>
+	<field name="fechaCreacion" class="java.lang.String"/>
+	<field name="aliasEmpresa" class="java.lang.String"/>
+	<field name="estacion_nombre" class="java.lang.String"/>
+	<field name="moneda_sigla" class="java.lang.String"/>
+	<field name="username" class="java.lang.String"/>
+	<field name="fullname" class="java.lang.String"/>
+	<field name="cantidadFacturas" class="java.lang.Integer"/>
+	<field name="importeTotalFacturado" class="java.math.BigDecimal"/>
+	<field name="importeTotalRecibido" class="java.math.BigDecimal"/>
+	<field name="importeTotalAnulado" class="java.math.BigDecimal"/>
+	<variable name="importeTotalFacturado" class="java.math.BigDecimal" resetType="Group" resetGroup="datos" calculation="Sum">
+		<variableExpression><![CDATA[$F{importeTotalFacturado}]]></variableExpression>
+	</variable>
+	<variable name="importeTotalRecibido" class="java.math.BigDecimal" resetType="Group" resetGroup="datos" calculation="Sum">
+		<variableExpression><![CDATA[$F{importeTotalRecibido}]]></variableExpression>
+	</variable>
+	<variable name="importeTotalAnulado" class="java.math.BigDecimal" resetType="Group" resetGroup="datos" calculation="Sum">
+		<variableExpression><![CDATA[$F{importeTotalAnulado}]]></variableExpression>
+	</variable>
+	<group name="datos">
+		<groupExpression><![CDATA[$F{fechaCreacion}+
+$F{aliasEmpresa}+
+$F{estacion_nombre}+
+$F{moneda_sigla}]]></groupExpression>
+		<groupHeader>
+			<band height="29">
+				<line>
+					<reportElement x="2" y="26" width="565" height="1"/>
+				</line>
+				<line>
+					<reportElement x="2" y="23" width="565" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="475" y="2" width="90" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<text><![CDATA[Facturado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="2" width="230" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Usuario / Nombre]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="385" y="2" width="90" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<text><![CDATA[Anulado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="230" y="2" width="65" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<text><![CDATA[Nro. Facturas]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="295" y="2" width="90" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<text><![CDATA[Recibido]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<printWhenExpression><![CDATA[$F{fechaCreacion} == null]]></printWhenExpression>
+				<textField>
+					<reportElement x="170" y="0" width="250" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[( $F{fechaCreacion} == null ? "No existen resultados" : "" )]]></textFieldExpression>
+				</textField>
+			</band>
+			<band height="40">
+				<textField isBlankWhenNull="true">
+					<reportElement x="476" y="5" width="90" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="false" isUnderline="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{moneda_sigla} == null ? "0.00" : $F{moneda_sigla} + " " + $V{importeTotalFacturado} )]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="296" y="5" width="90" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="false" isUnderline="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{moneda_sigla} == null ? "0.00" : $F{moneda_sigla} + " " + $V{importeTotalRecibido} )]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="386" y="5" width="90" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="false" isUnderline="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{moneda_sigla} == null ? "0.00" : $F{moneda_sigla} + " " + $V{importeTotalAnulado} )]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="245" y="5" width="50" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<text><![CDATA[Totales:]]></text>
+				</staticText>
+				<line>
+					<reportElement x="3" y="2" width="565" height="1"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="23" splitType="Stretch">
+			<staticText>
+				<reportElement x="170" y="0" width="250" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VENTAS DE BOLETOS POR USUARIOS]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="230" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{username} + " / " + $F{fullname}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="230" y="0" width="65" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{cantidadFacturas}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="295" y="0" width="90" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{importeTotalRecibido}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="475" y="0" width="90" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{importeTotalFacturado}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="385" y="0" width="90" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{importeTotalAnulado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

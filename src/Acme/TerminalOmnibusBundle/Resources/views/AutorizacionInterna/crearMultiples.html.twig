@@ -1,0 +1,59 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Crear Autorizaciones Internas
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            crearAutorizacionInternaMultiple.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal autorizacionInternaForm" id="autorizacionInternaForm" name="autorizacionInternaForm" action="{{ path(route) }}">
+       
+        <fieldset>
+        <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+        {{ form_errors(form) }}
+        
+        <div class="row-fluid"> 
+            <div class="span12">
+                {{ form_label(form.cantidad) }}
+                {{ form_widget(form.cantidad) }}
+                {{ form_errors(form.cantidad) }}
+            </div>
+        </div>
+        
+        <div class="row-fluid"> 
+            <div class="span12">
+                {{ form_label(form.motivo) }}
+                {{ form_widget(form.motivo , {'attr': {'placeholder': 'Motivo de creación de la autorización interna.' } }) }}
+                {{ form_errors(form.motivo) }}
+            </div>
+        </div> 
+
+        
+        {{ form_rest(form) }}
+        
+        </fieldset>
+    </form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="aceptar" href="#" class="btn btn-primary">Aceptar</a>
+    <a id="cancelar" href="{{ url('autorizacionInterna-home') }}" class="btn">Cancelar</a>
+     
+{% endblock %}
+
+
+
+
+
+

@@ -1,0 +1,15 @@
+{% extends "SonataAdminBundle:CRUD:edit.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}    
+    <script src="{{ asset('bundles/acmebackend/js/tarifaEncomiendaPaquetesPeso.js') }}" type="text/javascript"></script>
+     <script>	
+	$(document).ready(function(){
+		tarifaEncomiendaPaquetesPeso.funcionesAddOnload();	
+	}); 
+    </script>
+{% endblock %}

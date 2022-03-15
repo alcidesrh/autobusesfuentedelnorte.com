@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ventaBoletoPropietario" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.3636363636363698"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="USUARIO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_NOMBRE" class="java.lang.String"/>
+	<parameter name="ALQUILER_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[8]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FECHA_DIA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[declare @usuario_id bigint
+declare @usuario_estacion_id bigint
+declare @usuario_empresas_id TABLE (id bigint)
+
+declare @alquiler_id bigint
+
+-- PARAMETROS DE SEGURIDAD INIT
+set @usuario_id = $P{USUARIO_ID}
+SELECT @usuario_estacion_id = estacion_id FROM custom_user WHERE id = @usuario_id
+INSERT INTO @usuario_empresas_id
+SELECT cue.empresa_id FROM custom_user AS cu LEFT JOIN custom_user_empresa AS cue ON cu.id=cue.user_id
+WHERE cu.id = @usuario_id
+-- PARAMETROS DE SEGURIDAD INIT
+
+set @alquiler_id = CONVERT(bigint, $P{ALQUILER_ID})
+
+---------------------------------------------------------------------------------------
+SELECT
+     alquiler.id as idAlquiler,
+     empresa."alias" AS aliasEmpresa,
+     piloto.codigo + ' - ' + piloto.nombre + ' ' + piloto.apellidos AS nombrePiloto,
+     pilotoAux.codigo + ' - ' + pilotoAux.nombre + ' ' + pilotoAux.apellidos AS nombrePilotoAux,
+     bus."codigo" AS codigoBus,
+     estado."nombre" AS estado,
+     FORMAT(alquiler."fecha_inicial", 'dd/MM/yyyy') as fechaInicial,
+     FORMAT(alquiler."fecha_final", 'dd/MM/yyyy') as fechafinal,
+     usuario."username" + '-' + usuario."names" + ' ' + usuario."surnames" AS usuarioEfectuado,
+     FORMAT(alquiler."fecha_efectuado", 'dd/MM/yyyy HH:mm') as fechaEfectuado,
+     CAST(alquiler.observacion AS varchar(512)) as descripcion
+FROM
+     "dbo"."alquiler" alquiler
+     INNER JOIN "dbo"."piloto" piloto ON alquiler."piloto_id" = piloto."id"
+     LEFT JOIN "dbo"."piloto" pilotoAux ON alquiler."piloto_aux_id" = piloto."id"
+     INNER JOIN "dbo"."bus" bus ON alquiler."bus_codigo" = bus."codigo"
+     INNER JOIN "dbo"."empresa" empresa ON alquiler."empresa_id" = empresa."id"
+     INNER JOIN "dbo"."alquiler_estado" estado ON alquiler."estado_id" = estado."id"
+     INNER JOIN "dbo"."custom_user" usuario ON  usuario.id = alquiler.usuario_efectuado_id
+WHERE
+     alquiler.id=@alquiler_id and ( empresa."id" IN (SELECT id FROM @usuario_empresas_id) )]]>
+	</queryString>
+	<field name="idAlquiler" class="java.lang.Long"/>
+	<field name="aliasEmpresa" class="java.lang.String"/>
+	<field name="nombrePiloto" class="java.lang.String"/>
+	<field name="nombrePilotoAux" class="java.lang.String"/>
+	<field name="codigoBus" class="java.lang.String"/>
+	<field name="estado" class="java.lang.String"/>
+	<field name="fechaInicial" class="java.lang.String"/>
+	<field name="fechafinal" class="java.lang.String"/>
+	<field name="usuarioEfectuado" class="java.lang.String"/>
+	<field name="fechaEfectuado" class="java.lang.String"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="63" splitType="Stretch">
+			<textField>
+				<reportElement x="465" y="12" width="107" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{FECHA_DIA}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="234" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRANSPORTE FUENTE DEL NORTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="12" width="45" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="464" y="32" width="107" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{USUARIO_NOMBRE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="211" y="32" width="192" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Manisfiesto de Alquiler de Bus]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="32" width="45" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="156" splitType="Stretch">
+			<staticText>
+				<reportElement x="11" y="11" width="82" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[IDENTIFICADOR:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="292" y="11" width="80" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[EMPRESA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="71" width="82" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[PILOTO 1:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="292" y="71" width="80" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[PILOTO 2:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="31" width="82" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[BUS:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="292" y="31" width="80" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[ESTADO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="51" width="82" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[FECHA INICIAL:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="292" y="51" width="80" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[FECHA FINAL:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="292" y="91" width="80" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[USUARIO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="91" width="82" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[FECHA SALIDA:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="96" y="11" width="190" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{idAlquiler}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="372" y="11" width="190" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{aliasEmpresa}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="96" y="71" width="190" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nombrePiloto}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="372" y="71" width="190" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[( $F{nombrePilotoAux} == null ? "N/D" : $F{nombrePilotoAux} )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="96" y="31" width="190" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{codigoBus}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="372" y="31" width="190" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="96" y="51" width="190" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{fechaInicial}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="372" y="51" width="190" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{fechafinal}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="372" y="91" width="190" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{usuarioEfectuado}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="96" y="91" width="190" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{fechaEfectuado}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="11" y="111" width="82" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[DESCRIPCIÓN:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="11" y="131" width="553" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="39" y="3" width="500" height="1"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<line>
+				<reportElement x="39" y="7" width="500" height="1"/>
+			</line>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="24" splitType="Stretch">
+			<textField>
+				<reportElement x="434" y="2" width="98" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="531" y="2" width="35" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch"/>
+	</summary>
+</jasperReport>

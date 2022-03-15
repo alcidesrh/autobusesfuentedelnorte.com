@@ -1,0 +1,39 @@
+{% set id = 'IMPRESION_BOL_' ~ boleto.id %}     
+<div id="{{ id }}" class="itemImpresionBoletoVoucherPrint" style="position:relative; height: 70mm; width: 215mm; border:0mm solid #000000;">
+
+<img style="position:absolute; top: 2mm; left: 0mm; width: 205mm;" src="{{ customRenderImg('bundles\\acmeterminalomnibus\\images\\voucher\\linea_roja.png') }}" /> 
+<img style="position:absolute; top: 3.5mm; left: 0mm; width: 195mm;" src="{{ customRenderImg('bundles\\acmeterminalomnibus\\images\\voucher\\linea_azul.png') }}" />     
+
+<label style="position:absolute; top: 4mm; right: 46mm; font-size: 10px;">{{ 'Atención al cliente:   ' ~ boleto.salida.empresa.telefonosStr }}</label>
+
+<label style="position:absolute; top: 10mm; left: 5mm; font-size: 25px; font-style: italic; font-weight: bold;">{{ boleto.salida.empresa.nombreComercial }}</label>
+
+<img style="position:absolute; top: 9mm; left: 124mm; width: 45mm; height: 20mm;" src="{{ customRenderImg('bundles\\acmeterminalomnibus\\images\\voucher\\pionera_logo.png') }}" /> 
+<img style="position:absolute; top: 32mm; left: 124mm; width: 170px; height: 115px;" src="{{ customRenderImg('bundles\\acmeterminalomnibus\\images\\voucher\\pionera_bus.jpg') }}" /> 
+
+<label style="position:absolute; top: 20mm; left: 5mm; font-size: 12px; font-style: italic;">{{ 'ID: ' ~ boleto.id ~ ', ' ~ boleto.documentoStr }}</label>
+<label style="position:absolute; top: 25mm; left: 5mm; font-size: 12px; font-style: italic;">{{ 'Fecha: ' ~ mapHorariosSalidaByBoleto[boleto.id] | date('d/m/Y h:i A') }}</label>
+<label style="position:absolute; top: 30mm; left: 5mm; font-size: 12px; font-style: italic;">{{ 'Servicio: ' ~ boleto.salida.tipoBus.clase.nombre }}</label>
+<label style="position:absolute; top: 35mm; left: 5mm; font-size: 12px; font-style: italic;">{{ 'Asiento: ' ~ (boleto.asientoBus is null ? 'N/D' : boleto.asientoBus.numero) }}</label>
+<label style="position:absolute; top: 40mm; left: 5mm; font-size: 12px; font-style: italic;">{{ 'Ruta: ' ~ boleto.salida.itinerario.ruta.nombre }}</label>
+<label style="position:absolute; top: 45mm; left: 5mm; font-size: 12px; font-style: italic;">{{ 'Origen: ' ~ boleto.estacionOrigen.info2 }}</label>
+<label style="position:absolute; top: 50mm; left: 5mm; font-size: 12px; font-style: italic;">{{ 'Destino: ' ~ boleto.estacionDestino.info2 }}</label>
+<label style="position:absolute; top: 55mm; left: 5mm; font-size: 12px; font-style: italic;">{{ 'Cliente: ' ~ boleto.clienteBoleto.nombre }}</label>
+
+<label style="position:absolute; top: 62mm; right: 46mm; font-size: 10px;">Emitido el <i>{{ boleto.fechaCreacion | date('d/m/Y h:i A') }}</i>, <i>{{ boleto.estacionCreacion.info2 }}</i>{{ boleto.usuarioCreacion is not empty ? (', Usuario: '~ boleto.usuarioCreacion.fullName) : '' }}</label>
+
+<img style="position:absolute; top: 5mm; left: 171mm;" src="{{ customRenderImg('bundles\\acmeterminalomnibus\\images\\voucher\\division.png') }}" /> 
+
+<label style="position:absolute; top: 10mm; left: 174mm; font-size: 20px; font-style: italic; font-weight: bold;">{{ 'VOUCHER' }}</label>
+<label style="position:absolute; top: 16mm; left: 174mm; font-size: 10px; font-style: italic;">{{ 'ID: ' ~ boleto.id }}</label>
+<label style="position:absolute; top: 20mm; left: 174mm; font-size: 10px; font-style: italic;">{{ 'Fecha: ' ~ mapHorariosSalidaByBoleto[boleto.id] | date('d/m/Y h:i A') }}</label>
+<label style="position:absolute; top: 24mm; left: 174mm; font-size: 10px; font-style: italic;">{{ 'Asiento: ' ~ (boleto.asientoBus is null ? 'N/D' : boleto.asientoBus.numero) }}</label>
+<label style="position:absolute; top: 28mm; left: 174mm; font-size: 10px; font-style: italic;">{{ boleto.documentoStr }}</label>
+
+{% set text = 'BOL_' ~ boleto.id %}                                             
+<div style="position:absolute; top: 35mm; left: 174mm;">{{ customQRcodeImg(text, null, 100, "100px", "100px") }}</div>
+
+<img style="position:absolute; top: 66.5mm; right: 0mm; width: 195mm;" src="{{ customRenderImg('bundles\\acmeterminalomnibus\\images\\voucher\\linea_azul.png') }}" /> 
+<img style="position:absolute; top: 68mm; right: 0mm; width: 205mm;" src="{{ customRenderImg('bundles\\acmeterminalomnibus\\images\\voucher\\linea_roja.png') }}" />     
+
+</div>

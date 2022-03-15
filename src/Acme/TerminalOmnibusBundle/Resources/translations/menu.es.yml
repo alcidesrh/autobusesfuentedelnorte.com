@@ -1,0 +1,14 @@
+menu:
+  principal:
+      inicio-name: Inicio
+      inicio-titulo: Pagina de bienvenida del sitio
+      servicios-name: Servicios
+      servicios-titulo: Servicios ofrecidos por el terapeuta
+      precios-name: Precios
+      precios-titulo: Precios de los servicios
+      consulta-name: Consulta
+      consulta-titulo: Solicitar una consulta con el terapeuta
+      quienSoy-name: Quien soy
+      quienSoy-titulo: Curriculum del terapeuta
+      contactenos-name: Contáctenos
+      contactenos-titulo: Contactar con el terapeuta

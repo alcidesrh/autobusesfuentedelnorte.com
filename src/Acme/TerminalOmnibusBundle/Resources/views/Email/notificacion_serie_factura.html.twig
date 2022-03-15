@@ -1,0 +1,18 @@
+{{ titulo }}
+{% for item in facturas %}
+-----------------------------------------------------------
+IDENTIFICADOR: {{ item.id }}
+ESTACIÓN: {{ item.estacion }}
+EMPRESA: {{ item.empresa }}
+SERVICIO: {{ item.servicioEstacion }}
+NOMBRE: {{ item.nombreResolucionFactura }}
+SERIE: {{ item.serieResolucionFactura }}	
+VALOR ACTUAL: {{ item.valorResolucionFactura }}
+VALOR MÍNIMO: {{ item.minimoResolucionFactura }}
+VALOR MÁXIMO: {{ item.maximoResolucionFactura }}
+FECHA EMISIÓN: {{ item.fechaEmisionResolucionFactura | date('d/m/Y') }}
+FECHA VENCIMIENTO: {{ item.fechaVencimientoResolucionFactura | date('d/m/Y') }}
+ACTIVO: {{ item.activo }}
+{% else %}
+No existen elementos.
+{% endfor %}

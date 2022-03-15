@@ -1,0 +1,89 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Embarcar Encomiendas
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            embarcarMovil.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+
+<form class="form-horizontal movilWebForm" id="movilWebForm" name="movilWebForm" action="{{ path(route) }}" >
+      
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+   
+    <div class="row-fluid">
+    <div class="span4">  
+        
+        <div class="row-fluid">     
+        <div class="span12">  
+            <label >Camara</label>
+            <select class="span12" id="cameraNames" size="1"></select>
+        </div>    
+        </div>
+        
+{#        <div class="row-fluid">     
+        <div class="span12">  
+             <a id="buscando" class="btn btn-block disabled btn-primary">Escanear</a>
+        </div>    
+        </div>#}
+        
+        <div class="row-fluid">     
+        <div class="span12">  
+            <label for="zoom" style="display: inline; margin-right: 15px;">Zoom</label>
+            <input type="text" class="span2" id="zoom" name="zoom" value="1"/>
+        </div>    
+        </div>
+        
+        <div class="row-fluid">     
+        <div class="span12">  
+        {{ form_label(form.salida) }}
+        {{ form_errors(form.salida) }}
+        {{ form_widget(form.salida) }}
+        </div>    
+        </div> 
+        
+        <div class="row-fluid">     
+        <div class="span12">  
+        {{ form_label(form.code) }}
+        {{ form_errors(form.code) }}
+        {{ form_widget(form.code) }}
+        </div>    
+        </div> 
+        
+     {#   <div class="row-fluid">     
+        <div class="span12">  
+        {{ form_label(form.resultado) }}
+        {{ form_errors(form.resultado) }}
+        {{ form_widget(form.resultado) }}
+        </div>    
+        </div>#}
+        
+    </div> 
+    <div class="span8">  
+        <div id="webcam"></div>
+    </div> 
+    </div> 
+    
+    </div>
+    {{ form_rest(form) }}
+    
+</form>
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}

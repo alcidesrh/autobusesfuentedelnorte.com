@@ -1,0 +1,46 @@
+<form action="{{ path(route) }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+    <div class="row-fluid">
+    <div class="span12">  
+        <label> <strong> ¿Está seguro que desea cancelar la salida? </strong> </label>
+    </div> 
+    </div> 
+    <div class="row-fluid">
+    <div class="span12">  
+    {{ form_label(form.totalBoletosChequeados) }}
+    {{ form_widget(form.totalBoletosChequeados) }}
+    </div>
+    </div>
+    <div class="row-fluid">
+    <div class="span12">  
+    {{ form_label(form.totalBoletosNOChequeados) }}
+    {{ form_widget(form.totalBoletosNOChequeados) }}
+    </div>
+    </div>
+    <div class="row-fluid">
+    <div class="span12">  
+    {{ form_label(form.totalEncomiendasEmbarcadas) }}
+    {{ form_widget(form.totalEncomiendasEmbarcadas) }}
+    </div> 
+    </div>     
+    <div class="row-fluid">
+    <div class="span12">  
+    {{ form_label(form.totalReservacionesEmitidas) }}
+    {{ form_widget(form.totalReservacionesEmitidas) }}
+    </div> 
+    </div>       
+        
+    <span class="help-block">
+        Nota: Los boletos deberán reasignarse a otra salida o cancelarse de forma manual. 
+        Las encomiendas se desenlazaran de la salida de forma automática.
+        Las reservaciones pendientes se cancelaran automáticamente.
+    </span>   
+    </div> 
+    {{ form_rest(form) }}
+
+    
+</form>

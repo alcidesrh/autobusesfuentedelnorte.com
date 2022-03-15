@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ventaBoletoPropietario" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="2.1435888100000025"/>
+	<property name="ireport.x" value="335"/>
+	<property name="ireport.y" value="121"/>
+	<parameter name="DATA_EMPRESA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_ESTACION_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[2]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USUARIO_NOMBRE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FECHA_DIA" class="java.lang.String"/>
+	<parameter name="DATA_FECHA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_MONEDA_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_USUARIO_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[declare @usuario_id bigint
+declare @usuario_estacion_id bigint
+declare @usuario_empresas_id TABLE (id bigint)
+
+declare @data_empresa_id bigint
+declare @data_estacion_id bigint
+declare @data_moneda_id bigint
+declare @data_usuario_id bigint
+
+declare @data_fecha_init datetime2
+declare @data_fecha_end datetime2
+
+-- PARAMETROS DE SEGURIDAD INIT
+set @usuario_id = $P{USUARIO_ID}
+SELECT @usuario_estacion_id = estacion_id FROM custom_user WHERE id = @usuario_id
+INSERT INTO @usuario_empresas_id
+SELECT cue.empresa_id FROM custom_user AS cu LEFT JOIN custom_user_empresa AS cue ON cu.id=cue.user_id
+WHERE cu.id = @usuario_id
+-- PARAMETROS DE SEGURIDAD INIT
+
+set @data_estacion_id = $P{DATA_ESTACION_ID}
+set @data_empresa_id = $P{DATA_EMPRESA_ID}
+set @data_moneda_id = $P{DATA_MONEDA_ID}
+set @data_usuario_id = $P{DATA_USUARIO_ID}
+set @data_fecha_init = CAST($P{DATA_FECHA} + ' 00:00:00' AS datetime2(7))
+set @data_fecha_end = CAST($P{DATA_FECHA} + ' 23:59:59' AS datetime2(7))
+
+SELECT
+     estacion."nombre" AS nombreEstacion,
+     empresa."nombre" AS nombreEmpresa,
+     usuario."username" + ' - ' + usuario."names" + ' ' + usuario."surnames" AS usuario,
+     caja."id" AS identificador,
+     moneda."sigla" AS siglaMoneda,
+     cajaEstado."nombre" AS estadoCaja,
+     FORMAT(caja."fecha_apertura", 'dd/MM/yyyy') AS fechaApertura,
+     FORMAT(caja."fecha_cierre", 'dd/MM/yyyy') AS fechaCierre,
+     cajaOperacion."id" as idOperacion,
+     cajaTipoOperacion."nombre" as tipoOperacion,
+     FORMAT(cajaOperacion."fecha", 'dd/MM/yyyy HH:mm:ss') as fechaOperacion,
+     CAST(cajaOperacion."descripcion" AS varchar(255))  AS descripcion,
+     cajaOperacion."importe" AS importe
+FROM
+     "dbo"."caja" caja
+     INNER JOIN "dbo"."caja_estado" cajaEstado ON cajaEstado."id" = caja."estado_id"
+     INNER JOIN "dbo"."moneda" moneda ON moneda."id" = caja."moneda_id"
+     INNER JOIN "dbo"."custom_user" usuario ON usuario."id" = caja."usuario_id"
+     INNER JOIN "dbo"."estacion" estacion ON  estacion."id" = caja."estacion_id"
+     INNER JOIN "dbo"."caja_operacion" cajaOperacion ON cajaOperacion."caja_id" = caja."id"
+     INNER JOIN "dbo"."caja_operacion_tipo" cajaTipoOperacion ON cajaTipoOperacion."id" = cajaOperacion."tipo_operacion_id"
+     INNER JOIN "dbo"."empresa" empresa ON empresa."id" = cajaOperacion."empresa_id"
+ WHERE
+    caja."fecha_apertura" is not null
+    and ((@usuario_estacion_id is not null and @usuario_estacion_id=estacion."id") or @usuario_estacion_id is NULL)
+    and ( empresa."id" IN (SELECT id FROM @usuario_empresas_id) )
+    and ((@data_estacion_id is not null and @data_estacion_id=estacion."id") or @data_estacion_id is NULL)
+    and ((@data_empresa_id is not null and @data_empresa_id=empresa."id") or @data_empresa_id is NULL)
+    and ((@data_moneda_id is not null and @data_moneda_id=moneda."id") or @data_moneda_id is NULL)
+    and ((@data_usuario_id is not null and @data_usuario_id=usuario."id") or @data_usuario_id is NULL)
+    and (((@data_fecha_init is not null and @data_fecha_end is not null) and
+           (caja."fecha_apertura" between @data_fecha_init and @data_fecha_end))
+           or (@data_fecha_init is NULL or @data_fecha_end is NULL))
+
+ORDER BY
+nombreEstacion,
+nombreEmpresa,
+usuario,
+identificador,
+siglaMoneda,
+estadoCaja,
+fechaApertura,
+fechaCierre]]>
+	</queryString>
+	<field name="nombreEstacion" class="java.lang.String"/>
+	<field name="nombreEmpresa" class="java.lang.String"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="identificador" class="java.lang.Long"/>
+	<field name="siglaMoneda" class="java.lang.String"/>
+	<field name="estadoCaja" class="java.lang.String"/>
+	<field name="fechaApertura" class="java.lang.String"/>
+	<field name="fechaCierre" class="java.lang.String"/>
+	<field name="idOperacion" class="java.lang.Long"/>
+	<field name="tipoOperacion" class="java.lang.String"/>
+	<field name="fechaOperacion" class="java.lang.String"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<field name="importe" class="java.math.BigDecimal"/>
+	<variable name="importeTotal" class="java.math.BigDecimal" resetType="Group" resetGroup="datos" calculation="Sum">
+		<variableExpression><![CDATA[$F{importe}]]></variableExpression>
+	</variable>
+	<group name="datos">
+		<groupExpression><![CDATA[$F{nombreEstacion}+
+$F{nombreEmpresa}+
+$F{usuario}+
+$F{identificador}+
+$F{siglaMoneda}+
+$F{estadoCaja}+
+$F{fechaApertura}+
+$F{fechaCierre}]]></groupExpression>
+		<groupHeader>
+			<band height="108">
+				<line>
+					<reportElement x="0" y="102" width="570" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="105" width="570" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="306" y="40" width="74" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Apertura:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="380" y="40" width="186" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{fechaApertura}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="2" y="20" width="65" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Empresa: ]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="67" y="20" width="203" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{nombreEmpresa}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="2" y="0" width="65" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Estación:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="67" y="0" width="203" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{nombreEstacion}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="306" y="0" width="74" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Moneda:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="380" y="0" width="186" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{siglaMoneda}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="2" y="60" width="65" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Identificador:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="306" y="20" width="74" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Estado:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="468" y="81" width="100" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Importe]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="40" width="65" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Usuario:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="67" y="60" width="203" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{identificador}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="67" y="40" width="203" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{usuario}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="380" y="20" width="186" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{estadoCaja}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="306" y="60" width="74" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Cierre:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="380" y="60" width="186" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{fechaCierre}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="81" width="60" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Operación]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="60" y="81" width="80" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fecha]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="140" y="80" width="70" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Tipo]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="210" y="80" width="255" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Descripción]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="40">
+				<textField isBlankWhenNull="true">
+					<reportElement x="466" y="5" width="100" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="false" isUnderline="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{siglaMoneda} + " " + $V{importeTotal}.negate()]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="3" width="570" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="416" y="5" width="49" height="20">
+						<printWhenExpression><![CDATA[$F{siglaMoneda} != null]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Totales:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="229" y="5" width="116" height="20">
+						<printWhenExpression><![CDATA[$F{nombreEstacion} == null]]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[No existen resultados]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="60" splitType="Stretch">
+			<textField>
+				<reportElement x="465" y="33" width="107" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{USUARIO_NOMBRE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="229" y="40" width="102" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Detalle de Caja]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="465" y="12" width="107" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{FECHA_DIA}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="234" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRANSPORTE FUENTE DEL NORTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="12" width="45" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="33" width="45" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="5" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="468" y="0" width="100" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{siglaMoneda} + " " + $F{importe}.negate()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="60" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idOperacion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="0" width="80" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaOperacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="210" y="0" width="255" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="0" width="70" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipoOperacion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="15" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="24" splitType="Stretch">
+			<textField>
+				<reportElement x="434" y="2" width="98" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="531" y="2" width="35" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch"/>
+	</summary>
+</jasperReport>

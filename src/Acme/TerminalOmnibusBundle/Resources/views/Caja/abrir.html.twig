@@ -1,0 +1,27 @@
+<form action="{{ path('cajas-abrir-case1') }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+    <div class="row-fluid">
+    <div class="span12">  
+        <label> <strong> ¿Está seguro que desea abrir la caja? </strong> </label>
+    </div> 
+    </div> 
+    <div class="row-fluid">
+    <div class="span12">  
+    {{ form_label(form.importeInicial) }}
+    <div class="input-prepend">
+    <span class="add-on">{{ caja.moneda.sigla }}</span>    
+    {{ form_widget(form.importeInicial) }}
+    </div>
+    </div>
+    </div>  
+    <span class="help-block">
+        Nota: Compruebe que el importe inicial corresponde con el total recibido para iniciar las operaciones.
+    </span>
+    </div> 
+    {{ form_rest(form) }}
+    
+</form>

@@ -1,0 +1,20 @@
+Se le informa que se ha CANCELADO una salida con las siguientes características:
+{{ 'ESTACIÓN: ' ~ salida.itinerario.ruta.estacionOrigen ~ "."}}
+{{ 'HORARIO: ' ~ salida.fecha | date('d/m/Y h:i A') }}
+{{ 'RUTA: ' ~ salida.itinerario.ruta ~ "."}}
+{{ 'SUPERVISOR: ' ~ app.user.fullName ~ "." }}
+{{ 'TELÉFONO: ' ~ ((app.user.phone is null or app.user.phone is empty) ? 'N/D' : app.user.phone) ~ "." }}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}
+{{ ' ' }}
+{{ ' ' }}
+
+
+
+
+
+                 
+                  
+              

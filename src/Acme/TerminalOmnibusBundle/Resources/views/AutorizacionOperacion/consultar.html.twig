@@ -1,0 +1,66 @@
+<div class="container-fluid">
+<div class="row-fluid">
+<div class="span12">  
+    
+    <div class="row-fluid">
+         <div class="span4">
+            <label class="control-label">Identificador:</label>
+            <input class="span12" type="text"  disabled value="{{ autorizacionOperacion.id }}"/>       
+         </div>
+        <div class="span4">
+            <label class="control-label">Boleto:</label>
+            <input class="span12" type="text" disabled value="{{ autorizacionOperacion.boleto.id }}"/>    
+         </div> 
+         <div class="span4">
+            <label class="control-label">Estado:</label>
+            <input class="span12" type="text"  disabled value="{{ autorizacionOperacion.estado.nombre }}"/>    
+         </div> 
+    </div> 
+    <div class="row-fluid">
+        <div class="span6">
+            <label class="control-label">Tipo:</label>
+            <input class="span12" type="text" disabled value="{{ autorizacionOperacion.tipo.nombre }}"/>       
+         </div>
+         <div class="span6">
+            <label class="control-label">Estación:</label>
+            <input class="span12" type="text"  disabled value="{{ autorizacionOperacion.estacion.nombre }}"/>       
+         </div>
+    </div> 
+    <div class="row-fluid">
+          <div class="span6">
+            <label class="control-label">Usuario:</label>
+            <input class="span12" type="text" disabled value="{{ autorizacionOperacion.usuarioCreacion.fullName }}"/>       
+         </div>
+         <div class="span6">
+            <label class="control-label">Fecha:</label>
+            <input class="span12" type="text" disabled value="{{ autorizacionOperacion.fechaCreacion | date('d/m/Y H:i:s') }}"/>       
+         </div> 
+     </div> 
+     <div class="row-fluid">
+        <div class="span12">
+            <label class="control-label">Motivo:</label>
+            <textarea class="span12" disabled row="2">{{ autorizacionOperacion.motivo }}</textarea>      
+         </div>
+    </div> 
+    {% if autorizacionOperacion.estado.id is not sameas(1) %}
+    <div class="row-fluid">
+          <div class="span6">
+            <label class="control-label">Autorizador:</label>
+            <input class="span12" type="text" disabled value="{{ autorizacionOperacion.usuarioActualizacion is empty ? '' : autorizacionOperacion.usuarioActualizacion.fullName }}"/>       
+         </div>
+         <div class="span6">
+            <label class="control-label">Fecha de decisión:</label>
+            <input class="span12" type="text" disabled value="{{ autorizacionOperacion.fechaActualizacion is empty ? '' : autorizacionOperacion.fechaActualizacion | date('d/m/Y H:i:s') }}"/>       
+         </div> 
+     </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <label class="control-label">Observación:</label>
+            <textarea class="span12" disabled row="2">{{ autorizacionOperacion.observacion }}</textarea>      
+         </div>
+    </div>
+    {% endif %}
+    
+</div>
+</div>  
+</div>  

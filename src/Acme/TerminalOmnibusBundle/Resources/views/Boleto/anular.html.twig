@@ -1,0 +1,33 @@
+<form action="{{ path('anularBoleto-case1') }}" method="post" {{ form_enctype(form) }}>
+    
+    <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+    {{ form_errors(form) }}
+    
+    <div class="container-fluid">
+    <div class="row-fluid">
+    <div class="span12">  
+        <label> <strong> ¿Está seguro que desea anular el boleto? </strong> </label>
+    </div> 
+    </div>  
+    <div class="row-fluid">
+    <div class="span12">  
+    {{ form_label(form.importeEntregar) }}
+    <div class="input-prepend">    
+        <span class="add-on">{{ monedaEstacion.sigla }}</span>
+        {{ form_widget(form.importeEntregar) }}
+    </div>     
+    </div>
+    </div>
+    <div class="row-fluid">
+    <div class="span12">  
+        {{ form_label(form.observacion) }}
+        {{ form_widget(form.observacion) }}
+    </div>
+    </div>
+    <span class="help-block">
+        Nota: Para proceder con la anulación el cliente debe entregar el boleto original.
+    </span>
+    </div> 
+    {{ form_rest(form) }}
+    
+</form>

@@ -1,0 +1,17 @@
+{{ 'Cortesías utilizadas el día: ' ~ fechaDia | date('d/m/Y') ~ ' en la empresa: ' ~ empresa ~ "." }}
+{{ ' ' }}
+{{ '---------  BOLETOS   -------------'}}
+{% for value in items %}
+SALIDA: {{ value.fechaViaje | date('h:i A') ~ ' - ' ~ value.ruta | upper ~ '.' }}
+AUTORIZADO: {{ value.usuarioAutorizacion | upper ~ '.' }}
+CLIENTE: {{ value.nombreCliente | upper ~ '.' }}
+MOTIVO: {{ value.motivo | upper ~ '.' }}
+{{ ' ' }}
+{% else %}
+NO SE UTILIZARON CORTESIAS.
+{% endfor %}
+{{ ' ' }}
+{{ ' ' }}
+{{ '----------------------'}}
+{{ '-- FIN DEL CORREO --'}}
+{{ '----------------------'}}

@@ -1,0 +1,217 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Crear Reservaciones
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            crearReservacion.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <form class="form-horizontal reservacionForm" id="reservacionForm" name="reservacionForm" action="{{ path('reservacion-crear-case1') }}" method="post" {{ form_enctype(form) }}>
+       
+        <input type="hidden" name="mensajeServidor" id="mensajeServidor" value="{{ mensajeServidor }}"></input>
+        {{ form_errors(form) }}
+        
+        <div class="row-fluid">
+            <div class="span8">
+                
+                    <div class="row-fluid"> 
+                        <div class="span12">
+                        <label>Cliente Base:</label>
+                        <input id="clienteBase" class="span6" type="text" placeholder="Seleccione el cliente" data-pathListarClientesPaginando="{{ path('ajaxListarClientesPaginando') }}"/>
+                        <span class="clienteActions">
+                            <a id="addClienteBase" class="btn btn-small" data-title="Adicionar Cliente" href="{{ path('cliente-crear-case1') }}"><i class="icon-plus"></i></a>
+                            <a id="updateClienteBase" class="btn btn-small" data-title="Actualizar Cliente" data-index="clienteBase" data-index-message="Debe seleccionar un cliente." href="{{ path('cliente-actualizar-case1') }}"><i class="icon-edit"></i></a>
+                            <a id="seachClienteBase" class="btn btn-small" data-title="Buscador de cliente" data-fullscreen="true" data-find="true" data-grid=".clienteGrid" href="{{ path('cliente-buscador-case1') }}"><i class="icon-search"></i></a>
+                        </span>
+                        </div>
+                    </div> 
+                
+                    <div class="row-fluid"> 
+                        <div class="span6">
+                        {{ form_label(form.fechaSalida) }}
+                        {{ form_widget(form.fechaSalida , {'attr': {'placeholder': 'Seleccione la fecha de salida' } }) }}
+                        {{ form_errors(form.fechaSalida ) }}
+                        </div>
+                        <div class="span6">
+                        {{ form_label(form.estacionOrigen) }}
+                        {{ form_widget(form.estacionOrigen , {'attr': {'placeholder': 'Seleccione la estación de origen' } }) }}
+                        {{ form_errors(form.estacionOrigen ) }}
+                        </div>
+                    </div>
+                    
+                    <div class="row-fluid"> 
+                        <div class="span12">
+                            <label class="required" >Salidas</label>
+                            <table id="salidaGrid" name="salidaGrid" class="salidaGrid" style="display:none" data-url="{{url('ajaxListarSalidasActivasReservacionPaginado')}}"></table>
+                        </div> 
+                    </div>
+                    
+                    <div id="dependenciasSelecccionSalidaGrid">
+                    <input type="hidden" id="pathGetInformacionPorSalida" value="{{ url('ajaxGetInformacionPorSalida') }}"></input>
+
+                    <div class="row-fluid">
+                    <div class="span12">
+                    <table id="clienteReservacionTable" class="table table-striped table-bordered table-hover">
+                    {#<caption>Clientes</caption>#}
+                    <thead>      
+                        <tr>
+                            <th class="nroAsientoTH" >Nro. Asiento</th>
+                            <th class="clienteReservacionTH">Cliente</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clienteReservacionBody">
+                        <tr id="clienteReservacionVacioTR">
+                            <td colspan="2"> No existen elementos.</td> 
+                        </tr>
+                    </tbody>
+                    </table>    
+                    </div>   
+                    </div> 
+                    
+                   <input class="inputCliente hidden" id="inputClienteHidden" type="text" data-pathlistarclientespaginando="{{ path('ajaxListarClientesPaginando') }}" />
+                   <span class="clienteActions hidden" id="clienteActionsHidden">
+                        <a id="addCliente" class="btn btn-small" data-title="Adicionar Cliente" href="{{ path('cliente-crear-case1') }}"><i class="icon-plus"></i></a>
+                        <a id="updateCliente" class="btn btn-small" data-title="Actualizar Cliente" data-index-message="Debe seleccionar un cliente." href="{{ path('cliente-actualizar-case1') }}"><i class="icon-edit"></i></a>
+                        <a id="seachCliente" class="btn btn-small" data-title="Buscador de cliente" data-fullscreen="true" data-find="true" data-grid=".clienteGrid" href="{{ path('cliente-buscador-case1') }}"><i class="icon-search"></i></a>
+                   </span>
+                    
+                  </div>
+            </div>     
+            
+            
+            <div class="span4" >
+                
+                <input type="hidden" id="listaAsientosHidden" value=""></input>
+                <input type="hidden" id="listaSenalesHidden" value=""></input>
+                <input type="hidden" id="listaBoletosHidden" value=""></input>
+                <input type="hidden" id="listaReservacionesHidden" value=""></input>
+                <input type="hidden" id="pathInfoAsientoSalida" value="{{ url('consultarAsientoSalida-case1') }}"></input>
+                
+                <div class="containment">
+                <div class="row-fluid">
+                <div class="span12"> 
+                    <div class="tabbable">
+                        <ul class="nav nav-tabs nivel">
+                            <li id="nav1" class="active"><a href="#tab1" data-toggle="tab">Nivel 1</a></li> 
+                            <li id="nav2" ><a href="#tab2" data-toggle="tab">Nivel 2</a></li>  
+                            <li id="pendientes"><a href="#tab3" data-toggle="tab">Pendientes</a></li> 
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab1">    
+                                <div class="lista nivel1"></div>
+                            </div>  
+                            <div class="tab-pane" id="tab2">    
+                                <div class="lista nivel2"></div>
+                            </div> 
+                            <div class="tab-pane" id="tab3">    
+                                <div class="lista pendientes"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                
+               <div class="span2 iconosMapaBus">                                            
+               <ul id="iconos">
+                    <li>
+                        <figure class="icono asiento claseA libre">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseA.png') }}" alt="Clase A, asiento libre" title="Clase A, asiento libre"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseA cortesia">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseACortesia.png') }}" alt="Clase A, asiento de cortesía" title="Clase A, asiento de cortesía"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseA reservado">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseAReservado.png') }}" alt="Clase A, asiento reservado" title="Clase A, asiento reservado"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseA vendido">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseAVendido.png') }}" alt="Clase A, asiento vendido" title="Clase A, asiento vendido"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseB libre">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseB.png') }}" alt="Clase B, asiento libre" title="Clase B, asiento libre"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseB cortesia">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseBCortesia.png') }}" alt="Clase B, asiento de cortesía" title="Clase B, asiento de cortesía"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseB reservado">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseBReservado.png') }}" alt="Clase B, asiento reservado" title="Clase B, asiento reservado"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono asiento claseB vendido">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/asientoClaseBVendido.png') }}" alt="Clase B, asiento vendido" title="Clase B, asiento vendido"/>
+                            <a class="showInfo" href="#"><i class="icon-list-alt"></i></a>
+                            <div class="detalle"></div>
+                        </figure>
+                    </li>
+                    <li>
+                        <figure class="icono senal salida">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/puerta.png') }}" alt="Puerta de entrada y salida" title="Puerta de entrada y salida"/>
+                        </figure>  
+                    </li>
+                    <li>
+                        <figure class="icono senal chofer">
+                            <img src="{{ asset('bundles/acmeterminalomnibus/images/bus/chofer.png') }}" alt="Chofer" title="Chofer"/>
+                        </figure>
+                    </li>
+                </ul>
+                </div>
+                
+                </div>
+            </div>     
+        </div>
+        
+        {{ form_rest(form) }}
+        
+    </form>
+    
+    
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+    <a id="aceptar" href="#" class="btn btn-primary">Reservar</a>
+    <a id="cancelar" href="{{ url('homeInternal-default') }}" class="btn">Cancelar</a>
+     
+{% endblock %}
+
+
+
+
+
+

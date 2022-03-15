@@ -1,0 +1,65 @@
+{% extends "::content.html.twig" %}
+
+{% block contentHeaderModal %}
+    Ayuda
+{% endblock %}
+    
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            page.funcionesAddOnload();	
+        }); 
+    </script>
+{% endblock %}
+           
+{% block contentBodyModal %}
+    
+    <div class="container-fluid">
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <p>1. Configuración del entorno de trabajo.</p>
+        <ul>
+            <li><a href="{{ path('pages_static-case1', { 'pagina': 'page1' }) }}" class="linkHelp" data-dialog="false">1 - Limpiar cache del navegador.</a></li>
+            <li><a href="{{ path('pages_static-case1', { 'pagina': 'page2' }) }}" class="linkHelp" data-dialog="false">2 - Instalar plugin de impresión jsPrintSetup.</a></li>
+            <li><a href="{{ path('pages_static-case1', { 'pagina': 'page4' }) }}" class="linkHelp" data-dialog="false">3 - Instalar plugin de impresión java.</a></li>
+            <li><a href="{{ path('pages_static-case1', { 'pagina': 'page3' }) }}" class="linkHelp" data-dialog="false">4 - ¿Cómo acceder al FTP?</a></li>
+        </ul> 
+    </div> 
+    </div> 
+    
+    <div class="row-fluid">
+    <div class="span12">  
+        <p>2. Conexiones.</p>
+        <ul>
+            <li><a href="{{ path('pages_static-case1', { 'pagina': 'page5' }) }}" class="linkHelp" data-dialog="false">1 - Listado de conexiones.</a></li>
+        </ul> 
+    </div> 
+    </div> 
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <p>3. Estaciones y paradas.</p>
+        <ul>
+            <li><a href="{{ path('pages_static-case1', { 'pagina': 'page6' }) }}" class="linkHelp" data-dialog="false">1 - Listado de estaciones y paradas.</a></li>
+        </ul> 
+    </div> 
+    </div>
+        
+    <div class="row-fluid">
+    <div class="span12">  
+        <p>4. Galerías de Fotos y Videos.</p>
+        <ul>
+            <li><a href="{{ path('pages_static-case1', { 'pagina': 'page7' }) }}" class="linkHelp" data-dialog="false">1 - Galerías.</a></li>
+        </ul> 
+    </div> 
+    </div>
+
+    </div> 
+    
+{% endblock %}
+
+{% block contentFooterModal %}
+   
+{% endblock %}
