@@ -14,7 +14,7 @@ class ExpiredUserService implements ScheduledServiceInterface{
     protected $options;
     protected $job;
     
-    public function __construct($container) { 
+    public function __construct($container) {
         $this->container = $container;
         $this->doctrine = $this->container->get('doctrine');
         $this->utilService = $this->container->get('acme_backend_util');
@@ -95,7 +95,7 @@ class ExpiredUserService implements ScheduledServiceInterface{
     public function setScheduledJob(Job $job = null) {
         $this->logger->warn("ExpiredUser Service - init");
         $this->job = $job;
-        $this->expiredUser();
+        //$this->expiredUser();
         $this->logger->warn("ExpiredUser Service - end");
     }
     

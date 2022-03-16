@@ -53,10 +53,11 @@ frondend = {
     timeCheckNotificaciones : 300000, //5 minutos
     lastTimeMove : null,		
     _init : function() {
-        
-        frondend.checkExpiredPassword(function (){
-            frondend.checkNotificaciones();
-        });
+        // Desabilitar checkExpiredPassword----------- 
+        //frondend.checkExpiredPassword(function (){
+        //    frondend.checkNotificaciones();
+        //});
+        frondend.checkNotificaciones();
         setInterval(frondend.checkNotificaciones, frondend.timeCheckNotificaciones);
         
         $("body").click(function() {
@@ -209,7 +210,6 @@ frondend = {
     },
 
     checkExpiredPassword : function(successCallback) {
-//        console.log("checkExpiredPassword.init");
         core.request({
             url : $("#pathCheckExpiredPassword").val(),
             method: "GET",
@@ -217,19 +217,14 @@ frondend = {
             async: true,
             showLoading: false,
             successCallback: function(data){
-//               console.log("checkExpiredPassword.successCallback");
-//               console.log("dias restantes: " + data.dias);
                if(data.dias <= 1){
                     alert("Su contraseña expira hoy, debe cambiarla.", function (){
-//                        console.log("entrar al popup de contraseña");
                         $("#cambiarContrasenaTopMenu").click();
                     });
                }
                else if(data.dias < 20){
                     confirm("Su contraseña expira en " + data.dias + " días. Desea cambiarla ahora?", function (confirmed){
-//                        console.debug(confirmed);
                         if(confirmed === true){
-//                            console.log("entrar al popup de contraseña");
                             $("#cambiarContrasenaTopMenu").click();
                         }
                     });
