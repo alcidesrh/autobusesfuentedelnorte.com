@@ -18,6 +18,7 @@ Apache License or the GPL License is distributed on an "AS IS" BASIS, WITHOUT WA
 CONDITIONS OF ANY KIND, either express or implied. See the Apache License and the GPL License for
 the specific language governing permissions and limitations under the Apache License and the GPL License.
 */
+var timeout;
 (function ($) {
     if(typeof $.fn.each2 == "undefined") {
         $.extend($.fn, {
@@ -738,7 +739,8 @@ the specific language governing permissions and limitations under the Apache Lic
             }
 
             installKeyUpChangeEvent(search);
-            search.on("keyup-change input paste", this.bind(this.updateResults));
+            
+            search.on("keyup-change input paste", this.bind(this.updateResultsTimeout));
             search.on("focus", function () { search.addClass("select2-focused"); });
             search.on("blur", function () { search.removeClass("select2-focused");});
 
@@ -1549,12 +1551,21 @@ the specific language governing permissions and limitations under the Apache Lic
         tokenize: function() {
 
         },
+        updateResultsTimeout: function () {
+            var $this = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                $this.updateResults();
+             }, 700)
+        },
 
         /**
          * @param initial whether or not this is the call to this method right after the dropdown has been opened
          */
         // abstract
         updateResults: function (initial) {
+            // if (typeof noSearch != "undefined" && noSearch) return;
+
             var search = this.search,
                 results = this.results,
                 opts = this.opts,
