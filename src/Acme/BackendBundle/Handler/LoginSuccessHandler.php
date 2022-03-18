@@ -32,10 +32,17 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface{
         if($user !== null && $user instanceof User){
             $userManager = $this->container->get('fos_user.user_manager');
             $em = $this->container->get("doctrine")->getManager();
-            $em->getConnection()->beginTransaction();
+            $em->getConnection()->beginTransaction();            
             try {
+                $credentialsExpireAt = new \DateTime();
+                $daysCredentialsExpire = $this->container->getParameter("days_credentials_expire");
+                if(!$daysCredentialsExpire){ $daysCredentialsExpire = 90; }
+                $credentialsExpireAt->modify("+" . $daysCredentialsExpire . " day");
+                $user->setCredentialsExpireAt($credentialsExpireAt);
+
                 $user->clearIntentosFallidos();
-                $userManager->updateUser($user);
+                $userManager->updateUser($user);               
+
                 $em->flush();
                 $em->getConnection()->commit();
              } catch (\RuntimeException $exc) {

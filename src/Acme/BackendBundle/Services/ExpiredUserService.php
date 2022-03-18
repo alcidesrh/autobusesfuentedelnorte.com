@@ -95,7 +95,7 @@ class ExpiredUserService implements ScheduledServiceInterface{
     public function setScheduledJob(Job $job = null) {
         $this->logger->warn("ExpiredUser Service - init");
         $this->job = $job;
-        //$this->expiredUser();
+        $this->expiredUser();
         $this->logger->warn("ExpiredUser Service - end");
     }
     

@@ -53,10 +53,9 @@ frondend = {
     timeCheckNotificaciones : 300000, //5 minutos
     lastTimeMove : null,		
     _init : function() {
-        // Desabilitar checkExpiredPassword----------- 
-        //frondend.checkExpiredPassword(function (){
-        //    frondend.checkNotificaciones();
-        //});
+        frondend.checkExpiredPassword(function (){
+           frondend.checkNotificaciones();
+        });
         frondend.checkNotificaciones();
         setInterval(frondend.checkNotificaciones, frondend.timeCheckNotificaciones);
         
