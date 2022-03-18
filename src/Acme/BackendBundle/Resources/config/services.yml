@@ -41,9 +41,9 @@ services:
         class: Acme\BackendBundle\Services\ParcialesFacturadosService
         arguments: ["@service_container"]
         
-   acme_backend_expired_user:
-       class: Acme\BackendBundle\Services\ExpiredUserService
-       arguments: ["@service_container"]
+    acme_backend_expired_user:
+        class: Acme\BackendBundle\Services\ExpiredUserService
+        arguments: ["@service_container"]
         
     acme_backend_reservacion:
         class: Acme\BackendBundle\Services\ReservacionService
