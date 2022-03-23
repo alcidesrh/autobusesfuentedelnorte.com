@@ -66,10 +66,10 @@ class CleanDatabaseCommand extends ContainerAwareCommand
 
         $stop = false;
         $deleted = 0;
-        $param = [
-            'AcmeTerminalOmnibusBundle' => ['Encomienda', 'Boleto', 'AutorizacionCortesia', 'Caja', ['CalendarioFacturaFecha', 'fecha'], 'FacturaGenerada', 'Reservacion', ['Salida', 'fecha']],
-            'AcmeBackendBundle' => [['LogItem', 'createdAt']]
-        ];
+        $param = array(
+            'AcmeTerminalOmnibusBundle' => array('Encomienda', 'Boleto', 'AutorizacionCortesia', 'Caja', array('CalendarioFacturaFecha', 'fecha'), 'FacturaGenerada', 'Reservacion', array('Salida', 'fecha')),
+            'AcmeBackendBundle' => array(array('LogItem', 'createdAt'))
+        );
         foreach ($param as $key => $value) {
             foreach ($value as $entity) {
                 $this->delete($entity, $key, $output);
