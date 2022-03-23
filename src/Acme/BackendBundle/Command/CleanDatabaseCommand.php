@@ -120,7 +120,7 @@ class CleanDatabaseCommand extends ContainerAwareCommand
                 $stop = false;
                 $cont = 0;
                 foreach ($items as $item) {
-                    $output->writeln([$item->getId(), is_array($target) ? $target[0] : $target, ++$cont]);
+                    $output->writeln(array($item->getId(), is_array($target) ? $target[0] : $target, ++$cont));
                     $em->remove($item);
                 }
             }
