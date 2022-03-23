@@ -176,11 +176,11 @@ class MultiActionController extends Controller
             $sNitReceptor = $termNitCliente;
             //    
             //
-            
-            if(is_numeric(substr($sNitReceptor, 0, 1))){
-                
+
+            if (is_numeric(substr($sNitReceptor, 0, 1))) {
+
                 require_once('lib/nusoap.php');
-    
+
                 $soapClient = new \nusoap_client('https://fel.eforcon.com/feldev/WSForconReceptoresFel.asmx?WSDL', 'wsdl');
                 //                *. nits
                 $soapClient->soap_defencoding = 'UTF-8';
@@ -189,17 +189,17 @@ class MultiActionController extends Controller
                 $param = array('sUsuario' => $sUsuario, 'sClave' => $sClave, 'sNitReceptor' => $sNitReceptor);
                 $paramTest = array('sUsuario' => $sUsuarioMitocha, 'sClave' => $sClaveMitocha, 'sNitReceptor' => $sNitReceptor);
                 $result = $soapClient->call('ObtenerIdReceptor', $param);
-    
+
                 $WSResultadoReceptor = $result['ObtenerIdReceptorResult']['WSResultado'];
-    
+
                 if ($WSResultadoReceptor === "true") {
-    
+
                     $cliente = $this->getDoctrine()->getRepository('AcmeTerminalOmnibusBundle:Cliente')->findOneByNit($sNitReceptor);
-    
+
                     //                        $nacionalidad = $this->getDoctrine()->getRepository('AcmeTerminalOmnibusBundle:Nacionalidad')->findOneByNombre('Guatemalteca');
                     //                        $nacionalidadCliente = $nacionalidad->getId();           
                     if ($cliente === null) {
-    
+
                         $post = new Cliente();
                         $post->setNit($result['ObtenerIdReceptorResult']['WSIdReceptor']);
                         $post->setNitCreacionCopia($result['ObtenerIdReceptorResult']['WSIdReceptor']);
@@ -208,36 +208,36 @@ class MultiActionController extends Controller
                         $post->setNacionalidad($this->getDoctrine()->getRepository('AcmeTerminalOmnibusBundle:Nacionalidad')->findOneByNombre('Guatemalteca'));
                         $post->setTipoDocumento($this->getDoctrine()->getRepository('AcmeTerminalOmnibusBundle:TipoDocumento')->findOneBySigla('DPI'));
                         $post->setUsuarioCreacion($this->getUser());
-    
+
                         //Entity Manager
                         $em = $this->getDoctrine()->getEntityManager();
-    
+
                         //Persistimos en el objeto
                         $em->persist($post);
-    
+
                         //Insertarmos en la base de datos
                         $em->flush();
                     }
                 } else {
-    
+
                     $soapClientTest = new \nusoap_client('http://pruebasfel.eforcon.com/feldev/WSForconReceptoresFel.asmx?WSDL', 'wsdl');
                     $soapClientTest->soap_defencoding = 'UTF-8';
                     $soapClientTest->decode_utf8 = false;
                     $soapClientTest->debug_flag = true;
-    
+
                     $resultTest = $soapClientTest->call('ObtenerIdReceptor', $paramTest);
-    
+
                     $WSResultadoReceptorTest = $resultTest['ObtenerIdReceptorResult']['WSResultado'];
-    
+
                     if ($WSResultadoReceptorTest === "true") {
-    
+
                         $cliente = $this->getDoctrine()->getRepository('AcmeTerminalOmnibusBundle:Cliente')->findOneByNit($sNitReceptor);
-    
+
                         //                        $nacionalidad = $this->getDoctrine()->getRepository('AcmeTerminalOmnibusBundle:Nacionalidad')->findOneByNombre('Guatemalteca');
                         //                        $nacionalidadCliente = $nacionalidad->getId();
-    
+
                         if ($cliente === null) {
-    
+
                             $post = new Cliente();
                             $post->setNit($resultTest['ObtenerIdReceptorResult']['WSIdReceptor']);
                             $post->setNitCreacionCopia($resultTest['ObtenerIdReceptorResult']['WSIdReceptor']);
@@ -246,18 +246,19 @@ class MultiActionController extends Controller
                             $post->setNacionalidad($this->getDoctrine()->getRepository('AcmeTerminalOmnibusBundle:Nacionalidad')->findOneByNombre('Guatemalteca'));
                             $post->setTipoDocumento($this->getDoctrine()->getRepository('AcmeTerminalOmnibusBundle:TipoDocumento')->findOneBySigla('DPI'));
                             $post->setUsuarioCreacion($this->getUser());
-    
+
                             //Entity Manager
                             $em = $this->getDoctrine()->getEntityManager();
-    
+
                             //Persistimos en el objeto
                             $em->persist($post);
-    
+
                             //Insertarmos en la base de datos
                             $em->flush();
                         }
                     }
-                }}
+                }
+            }
 
             $items = $this->getDoctrine()->getRepository('AcmeTerminalOmnibusBundle:Cliente')->listarClientesPaginandoNativo($pageLimit, $term, $id);
             foreach ($items as $item) {

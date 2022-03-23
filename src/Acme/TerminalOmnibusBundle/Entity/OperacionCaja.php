@@ -24,7 +24,7 @@ class OperacionCaja{
     
     /**
     * @ORM\ManyToOne(targetEntity="Caja", inversedBy="operaciones")
-    * @ORM\JoinColumn(name="caja_id", referencedColumnName="id", nullable=false)
+    * @ORM\JoinColumn(name="caja_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
     */
     protected $caja;
     
@@ -204,5 +204,3 @@ class OperacionCaja{
     }
 
 }
-
-?>
