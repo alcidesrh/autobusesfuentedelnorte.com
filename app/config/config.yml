@@ -152,8 +152,8 @@ monolog:
 #            level: debug
             
  #  Se guardan los log en db            
-        doctrine:
-            type: service
-            id: acme_backend_handler_log
-            level: info
-            channels: [app]
+        # doctrine:
+        #     type: service
+        #     id: acme_backend_handler_log
+        #     level: info
+        #     channels: [app]
