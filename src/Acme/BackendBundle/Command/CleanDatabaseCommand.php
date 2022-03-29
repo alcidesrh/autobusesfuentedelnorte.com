@@ -86,11 +86,11 @@ class CleanDatabaseCommand extends ContainerAwareCommand
             ),
             // 'AcmeBackendBundle' => array(array('LogItem', 'createdAt'))
         );
-        foreach ($param as $bundle => $value) {
-            foreach ($value as $entity) {
-                $this->delete($entity, $bundle, $output);
-            }
-        }
+        // foreach ($param as $bundle => $value) {
+        //     foreach ($value as $entity) {
+        //         $this->delete($entity, $bundle, $output);
+        //     }
+        // }
 
         $start2 = new DateTime();
         $output->writeln("-----------------------------------------------");
@@ -122,7 +122,7 @@ class CleanDatabaseCommand extends ContainerAwareCommand
         $date = new DateTime();
         $date = $date->modify('-1 year');
         $em = $this->getContainer()->get('doctrine')->getManager();
-        
+
 
         $output->writeln("-----------------------------------------------");
 
@@ -157,8 +157,7 @@ class CleanDatabaseCommand extends ContainerAwareCommand
 
         $em = $this->getContainer()->get('doctrine')->getManager();
 
-        $date = new DateTime();
-        $date = $date->modify('-1 year');
+        $start = new DateTime();
         $em = $this->getContainer()->get('doctrine')->getManager();
 
         $output->writeln("-----------------------------------------------");
@@ -166,22 +165,68 @@ class CleanDatabaseCommand extends ContainerAwareCommand
         $rsm = new ResultSetMappingBuilder($em);
         $rsm->addScalarResult('id', 'id');
 
-        $query = $em->createNativeQuery('SELECT cliente.id
-FROM cliente
-INNER JOIN boleto ON boleto.cliente_boleto = cliente.id
-WHERE boleto.fecha_creacion > :dateP
-GROUP BY cliente.id', $rsm);
-        $items = $query->setParameter('dateP', $date)->getResult();
-        $ids = array_map(function ($e) {
+        $query = 'SELECT cliente.id FROM cliente INNER JOIN boleto ON boleto.cliente_boleto = cliente.id GROUP BY cliente.id UNION SELECT cliente.id FROM cliente INNER JOIN boleto ON boleto.cliente_documento = cliente.id GROUP BY cliente.id UNION SELECT cliente.id FROM cliente INNER JOIN encomienda ON encomienda.cliente_remitente = cliente.id GROUP BY cliente.id UNION SELECT cliente.id FROM cliente INNER JOIN encomienda ON encomienda.cliente_documento = cliente.id GROUP BY cliente.id UNION SELECT cliente.id FROM cliente INNER JOIN encomienda ON encomienda.cliente_destinatario = cliente.id GROUP BY cliente.id UNION SELECT cliente.id FROM cliente INNER JOIN autorizacion_cortesia ON autorizacion_cortesia.restriccion_cliente = cliente.id GROUP BY cliente.id';
+
+//         $query = $em->createNativeQuery('SELECT cliente.id
+// FROM cliente
+// INNER JOIN boleto ON boleto.cliente_boleto = cliente.id
+// WHERE boleto.fecha_creacion > :dateP
+// GROUP BY cliente.id', $rsm);
+$query = $em->createNativeQuery($query, $rsm);
+        // $items = $query->setParameter('dateP', $date)->getResult();
+        $items = $query->getResult();
+
+        $ids = array_unique(array_map(function ($e) {
             return $e['id'];
-        }, $items);
+        }, $items));
 
-        $query = "DELETE FROM AcmeTerminalOmnibusBundle:Cliente c WHERE c.id NOT IN (" . implode(',', $ids) . ")";
+        // $rsm = new ResultSetMappingBuilder($em);
+        // $rsm->addScalarResult('Cliente', 'cliente');
 
-        $start = new DateTime();
-        $output->writeln("Eliminando clientes...");
-
-        $numDeleted = $em->createQuery($query)->execute();
+        // $numDeleted = 0;
+        // $batchSize = 1000;
+        $j = 0;
+        // $q = $em->createNativeQuery("SELECT cliente FROM Cliente cliente WHERE cliente.id NOT IN (".implode(',', array(1,2,3,4,5,6,7,8,9)).") ORDER BY id OFFSET 10 ROWS FETCH NEXT 10 ROWS ONLY", $rsm);
+        
+        while(true){
+            $q = $em->createQuery("SELECT cliente FROM AcmeTerminalOmnibusBundle:Cliente cliente")->setFirstResult($j)
+            ->setMaxResults(10000);
+            $iterableResult = $q->getResult();
+            if(empty($iterableResult)) break;
+            foreach ($iterableResult as $value) {
+                if(in_array($value->getId(), $ids))continue;
+                $em->remove($value);
+            }
+            $em->flush(); // Executes all deletions.
+            $em->clear();
+            $j += 1000;
+            $output->writeln("Clientes eliminados: $j");
+            gc_collect_cycles();
+        }
+        return;
+        // foreach ($iterableResult as $value) {
+        //     if(in_array($value->getId(), $ids)) continue;
+        //     $em->remove($value);
+        //     if (($i % $batchSize) === 0) {
+        //         $em->flush(); // Executes all deletions.
+        //         $em->clear(); // Detaches all objects from Doctrine!
+        //     }
+        //     ++$i;
+        //     $numDeleted += $batchSize;
+        //     $output->writeln("Clientes eliminados: $numDeleted");
+        // }
+        // while (($row = $iterableResult->next()) !== false) {
+        //     if(in_array($row[0]->getId(), $ids)) continue;
+        //     $em->remove($row[0]);
+        //     if (($i % $batchSize) === 0) {
+        //         $em->flush(); // Executes all deletions.
+        //         $em->clear(); // Detaches all objects from Doctrine!
+        //     }
+        //     ++$i;
+        //     $numDeleted += $batchSize;
+        //     $output->writeln("Clientes eliminados: $numDeleted");
+        // }
+        $em->flush();
 
         $interval = $start->diff(new DateTime());
         $hours   = $interval->format('%h');
