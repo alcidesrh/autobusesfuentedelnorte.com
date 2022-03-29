@@ -11,6 +11,8 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Acme\BackendBundle\Entity\Job;
 use Acme\BackendBundle\Services\UtilService;
 use DateTime;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 class CleanDatabaseCommand extends ContainerAwareCommand
 {
@@ -39,7 +41,6 @@ class CleanDatabaseCommand extends ContainerAwareCommand
          -caja
          -caja_operacion
          -calendario_factura_fecha
-         -calendario_factura_ruta
          -cliente
          -custom_log
          -encomienda
@@ -58,24 +59,54 @@ class CleanDatabaseCommand extends ContainerAwareCommand
          -tarjeta_bitacora
         */
         $start = new DateTime();
-        $deleteNumber = 1000;
         $output->writeln("Start");
         $date = new DateTime();
         $date = $date->modify('-1 year');
+
         $em = $this->getContainer()->get('doctrine')->getManager();
 
-        $stop = false;
-        $deleted = 0;
         $param = array(
-            'AcmeTerminalOmnibusBundle' => array('Encomienda', 'Boleto', 'AutorizacionCortesia', 'Caja', array('CalendarioFacturaFecha', 'fecha'), 'FacturaGenerada', 'Reservacion', array('Salida', 'fecha')),
-            'AcmeBackendBundle' => array(array('LogItem', 'createdAt'))
+            'AcmeTerminalOmnibusBundle' => array(
+                array('Salida', 'fecha'),
+                array('EncomiendaBitacora', 'fecha'),
+                'Encomienda',
+                array('VoucherAgencia', 'fecha'),
+                array('VoucherEstacion', 'fecha'),
+                // array('VoucherInternet', 'fecha'),
+                'Boleto',
+                //    'AutorizacionCortesia',
+                'AutorizacionInterna',
+                'AutorizacionOperacion',
+                array('OperacionCaja', 'fecha'),
+                'Caja',
+                array('CalendarioFacturaFecha', 'fecha'),
+                'FacturaGenerada',
+                'Talonario',
+                'Reservacion',
+            ),
+            // 'AcmeBackendBundle' => array(array('LogItem', 'createdAt'))
         );
-        foreach ($param as $key => $value) {
+        foreach ($param as $bundle => $value) {
             foreach ($value as $entity) {
-                $this->delete($entity, $key, $output);
+                $this->delete($entity, $bundle, $output);
             }
         }
 
+        $start2 = new DateTime();
+        $output->writeln("-----------------------------------------------");
+        $output->writeln("Eliminando LogItem...");
+
+        $query = "DELETE FROM AcmeBackendBundle:LogItem";
+        $numDeleted = $em->createQuery($query)->execute();
+
+        $interval = $start2->diff(new DateTime());
+        $hours   = $interval->format('%h');
+        $minutes = $interval->format('%i');
+        $seconds = $interval->format('%i');
+        $totalSeconds = $hours * 3600 + $minutes * 60 + $seconds;
+        $output->writeln("LogItem: $numDeleted registros eliminados en $totalSeconds segundos.");
+
+        $this->deleteClientes($output);
 
         $end = new DateTime();
         $interval = $start->diff($end);
@@ -88,72 +119,75 @@ class CleanDatabaseCommand extends ContainerAwareCommand
 
     public function delete($target, $bundle, $output)
     {
-
-        $deleteNumber = 1000;
-        $deleted = 0;
         $date = new DateTime();
+        $date = $date->modify('-1 year');
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        
+
+        $output->writeln("-----------------------------------------------");
+
+        $query = "DELETE FROM $bundle:%entity% e WHERE e.fechaCreacion is NULL OR e.fechaCreacion < :dateP";
+
+        if (is_array($target)) {
+            $entity = $target[0];
+            $query = str_replace('%entity%', $entity, $query);
+            $query = str_replace('fechaCreacion', $target[1], $query);
+        } else {
+            $entity = $target;
+            $query = str_replace('%entity%', $target, $query);
+        }
+
+        $q = $em->createQuery($query)->setParameter('dateP', $date);
+
+        $start = new DateTime();
+        $output->writeln("Eliminando $entity...");
+
+        $numDeleted = $q->execute();
+
+        $interval = $start->diff(new DateTime());
+        $hours   = $interval->format('%h');
+        $minutes = $interval->format('%i');
+        $seconds = $interval->format('%i');
+        $totalSeconds = $hours * 3600 + $minutes * 60 + $seconds;
+        $output->writeln("$entity: $numDeleted registros eliminados en $totalSeconds segundos.");
+    }
+
+    public function deleteClientes($output)
+    {
+
         $em = $this->getContainer()->get('doctrine')->getManager();
 
-        $stop = false;
+        $date = new DateTime();
+        $date = $date->modify('-1 year');
+        $em = $this->getContainer()->get('doctrine')->getManager();
 
-        while (!$stop) {
-            $stop = true;
-            // $targets = ['Encomienda', 'Boleto', 'AutorizacionCortesia', 'Caja', ['CalendarioFacturaFecha', 'fecha'], 'FacturaGenerada', 'Reservacion', ['Salida', 'fecha']];
-            // $targets = ['Encomienda', 'Boleto', ['Salida', 'fecha']];
-            $output->writeln("Deleted: $deleted -----------------------------------------------");
-            // foreach ($targets as $target) {
+        $output->writeln("-----------------------------------------------");
 
-            $deleted += $deleteNumber;
+        $rsm = new ResultSetMappingBuilder($em);
+        $rsm->addScalarResult('id', 'id');
 
-            $query = "SELECT e FROM $bundle:%entity% e WHERE e.fechaCreacion is NULL OR e.fechaCreacion < :dateP";
+        $query = $em->createNativeQuery('SELECT cliente.id
+FROM cliente
+INNER JOIN boleto ON boleto.cliente_boleto = cliente.id
+WHERE boleto.fecha_creacion > :dateP
+GROUP BY cliente.id', $rsm);
+        $items = $query->setParameter('dateP', $date)->getResult();
+        $ids = array_map(function ($e) {
+            return $e['id'];
+        }, $items);
 
-            if (is_array($target)) {
-                $query = str_replace('%entity%', $target[0], $query);
-                $query = str_replace('fechaCreacion', $target[1], $query);
-            } else {
-                $query = str_replace('%entity%', $target, $query);
-            }
+        $query = "DELETE FROM AcmeTerminalOmnibusBundle:Cliente c WHERE c.id NOT IN (" . implode(',', $ids) . ")";
 
-            $items = $em->createQuery($query)->setParameter('dateP', $date)->setMaxResults($deleteNumber)->getResult();
+        $start = new DateTime();
+        $output->writeln("Eliminando clientes...");
 
-            if (!empty($items)) {
-                $stop = false;
-                $cont = 0;
-                foreach ($items as $item) {
-                    $output->writeln(array($item->getId(), is_array($target) ? $target[0] : $target, ++$cont));
-                    $em->remove($item);
-                }
-            }
-            $em->flush();
-            // }
+        $numDeleted = $em->createQuery($query)->execute();
 
-            // $targets = [['LogItem', 'createdAt']];
-
-            // foreach ($targets as $target) {
-
-            //     $query = "SELECT e FROM AcmeBackendBundle:%entity% e WHERE e.fechaCreacion is NULL OR e.fechaCreacion < :dateP";
-
-            //     if (is_array($target)) {
-            //         $query = str_replace('%entity%', $target[0], $query);
-            //         $query = str_replace('fechaCreacion', $target[1], $query);
-            //     } else {
-            //         $query = str_replace('%entity%', $target, $query);
-            //     }
-
-            //     $items = $em->createQuery($query)->setParameter(
-            //         'dateP',
-            //         $date
-            //     )->setMaxResults($deleteNumber)->getResult();
-
-            //     if (!empty($items)) {
-            //         $stop = false;
-            //         foreach ($items as $item) {
-            //             $output->writeln([$item->getId(), is_array($target) ? $target[1] : $target]);
-            //             $em->remove($item);
-            //         }
-            //     }
-            //     $em->flush();
-            // }
-        }
+        $interval = $start->diff(new DateTime());
+        $hours   = $interval->format('%h');
+        $minutes = $interval->format('%i');
+        $seconds = $interval->format('%i');
+        $totalSeconds = $hours * 3600 + $minutes * 60 + $seconds;
+        $output->writeln("Cliente: $numDeleted registros eliminados en $totalSeconds segundos.");
     }
 }

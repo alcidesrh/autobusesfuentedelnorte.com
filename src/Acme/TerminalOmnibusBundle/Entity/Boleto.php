@@ -75,7 +75,7 @@ class Boleto
     protected $clienteBoleto;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Salida")
+     * @ORM\ManyToOne(targetEntity="Salida", cascade={"persist"})
      * @ORM\JoinColumn(name="salida_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")   
      */
     protected $salida;
@@ -210,25 +210,25 @@ class Boleto
 
     /**
      * @ORM\OneToOne(targetEntity="VoucherAgencia", inversedBy="boleto", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="voucher_agencia_id", referencedColumnName="id", nullable=true, unique=true)
+     * @ORM\JoinColumn(name="voucher_agencia_id", referencedColumnName="id", nullable=true, unique=true, onDelete="SET NULL")
      */
     protected $voucherAgencia;
 
     /**
      * @ORM\OneToOne(targetEntity="VoucherEstacion", inversedBy="boleto", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="voucher_estacion_id", referencedColumnName="id", nullable=true, unique=true)
+     * @ORM\JoinColumn(name="voucher_estacion_id", referencedColumnName="id", nullable=true, unique=true, onDelete="SET NULL")
      */
     protected $voucherEstacion;
 
     /**
      * @ORM\OneToOne(targetEntity="VoucherInternet", inversedBy="boleto", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="voucher_internet_id", referencedColumnName="id", nullable=true, unique=true)
+     * @ORM\JoinColumn(name="voucher_internet_id", referencedColumnName="id", nullable=true, unique=true, onDelete="SET NULL")
      */
     protected $voucherInternet;
 
     /**
      * @ORM\OneToOne(targetEntity="AutorizacionCortesia", inversedBy="boleto", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="autorizacion_cortesia_id", referencedColumnName="id", nullable=true, unique=true)
+     * @ORM\JoinColumn(name="autorizacion_cortesia_id", referencedColumnName="id", nullable=true, unique=true, onDelete="SET NULL")
      */
     protected $autorizacionCortesia;
 
@@ -309,6 +309,11 @@ class Boleto
     //              DATOS INTERNOS - END
     //------------------------------------------------------------------------------
 
+    /**
+     * @ORM\OneToMany(targetEntity="Encomienda", mappedBy="boleto", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    protected $encomiendas;
+
     function __construct()
     {
         $this->revendidoEnCamino = false;
@@ -316,6 +321,7 @@ class Boleto
         $this->utilizarDesdeEstacionOrigenSalida = true;
         $this->camino = false;
         $this->bitacoras = new ArrayCollection();
+        $this->encomiendas = new ArrayCollection();
     }
 
     public function addBitacoras(BoletoBitacora $item)

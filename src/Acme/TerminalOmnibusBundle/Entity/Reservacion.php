@@ -48,7 +48,7 @@ class Reservacion
 
     /**
      * @ORM\ManyToOne(targetEntity="Cliente")
-     * @ORM\JoinColumn(name="cliente", referencedColumnName="id", nullable=false)   
+     * @ORM\JoinColumn(name="cliente", referencedColumnName="id", nullable=false, onDelete="CASCADE")   
      */
     protected $cliente;
 

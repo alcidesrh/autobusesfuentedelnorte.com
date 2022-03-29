@@ -21,7 +21,7 @@ class SalidaBitacora {
     
     /**
     * @ORM\ManyToOne(targetEntity="Salida", inversedBy="bitacoras")
-    * @ORM\JoinColumn(name="salida_id", referencedColumnName="id", nullable=false)
+    * @ORM\JoinColumn(name="salida_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
     */
     protected $salida;
     

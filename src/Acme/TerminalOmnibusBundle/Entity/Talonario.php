@@ -21,7 +21,7 @@ class Talonario{
     
     /**
     * @ORM\ManyToOne(targetEntity="Tarjeta", inversedBy="listaTalonarios")
-    * @ORM\JoinColumn(name="tarjeta_id", referencedColumnName="id", nullable=false)
+    * @ORM\JoinColumn(name="tarjeta_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
     */
     protected $tarjeta;
     

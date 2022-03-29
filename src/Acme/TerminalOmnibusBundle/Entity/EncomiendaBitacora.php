@@ -59,13 +59,13 @@ class EncomiendaBitacora
 
     /**
      * @ORM\ManyToOne(targetEntity="Salida")
-     * @ORM\JoinColumn(name="salida_id", referencedColumnName="id", nullable=true)   
+     * @ORM\JoinColumn(name="salida_id", referencedColumnName="id", nullable=true, onDelete="SET NULL")   
      */
     protected $salida;
 
     /**
      * @ORM\ManyToOne(targetEntity="Cliente")
-     * @ORM\JoinColumn(name="cliente_id", referencedColumnName="id", nullable=true)   
+     * @ORM\JoinColumn(name="cliente_id", referencedColumnName="id", nullable=true, onDelete="CASCADE")   
      */
     protected $cliente;
 

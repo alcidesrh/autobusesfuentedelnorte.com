@@ -21,7 +21,7 @@ class CorteVentaTalonarioItem{
     
     /**
     * @ORM\ManyToOne(targetEntity="CorteVentaTalonario", inversedBy="listaItems")
-    * @ORM\JoinColumn(name="corte_venta_talonario", referencedColumnName="id", nullable=false)
+    * @ORM\JoinColumn(name="corte_venta_talonario", referencedColumnName="id", nullable=false, onDelete="CASCADE")
     */
     protected $corteVentaTalonario;
     

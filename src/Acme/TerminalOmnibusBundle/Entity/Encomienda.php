@@ -311,7 +311,7 @@ class Encomienda
 
     /**
      * @ORM\ManyToOne(targetEntity="FacturaGenerada", inversedBy="listaEncomiendas")
-     * @ORM\JoinColumn(name="factura_generada_id", referencedColumnName="id", nullable=true)   
+     * @ORM\JoinColumn(name="factura_generada_id", referencedColumnName="id", nullable=true, onDelete="SET NULL")   
      */
     protected $facturaGenerada;
 
@@ -328,7 +328,7 @@ class Encomienda
 
     /**
      * @ORM\ManyToOne(targetEntity="AutorizacionInterna")
-     * @ORM\JoinColumn(name="autorizacion_interna_id", referencedColumnName="id", nullable=true, unique=true)   
+     * @ORM\JoinColumn(name="autorizacion_interna_id", referencedColumnName="id", nullable=true, unique=true, onDelete="CASCADE")   
      */
     protected $autorizacionInterna;
 
@@ -394,13 +394,13 @@ class Encomienda
      *   min = "1",
      *   minMessage = "Debes especificar al menos {{ limit }} estado."
      * )
-     * @ORM\OneToMany(targetEntity="EncomiendaBitacora", mappedBy="encomienda")
+     * @ORM\OneToMany(targetEntity="EncomiendaBitacora", mappedBy="encomienda", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $eventos;
 
     /**
      * @ORM\ManyToOne(targetEntity="Boleto")
-     * @ORM\JoinColumn(name="boleto_id", referencedColumnName="id", nullable=true, onDelete="CASCADE")   
+     * @ORM\JoinColumn(name="boleto_id", referencedColumnName="id", nullable=true)   
      */
     protected $boleto;
 

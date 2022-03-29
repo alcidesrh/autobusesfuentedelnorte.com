@@ -413,6 +413,7 @@ if (!function_exists("java_get_base")) {
         public $cachedJavaPrototype;
         public $sendBuffer, $preparedToSendBuffer;
         public $inArgs;
+        public $cancelProxyCreationTag;
         function java_Client()
         {
             $this->RUNTIME = array();
@@ -2337,7 +2338,6 @@ if (!function_exists("java_get_base")) {
         function Java()
         {
             $client = $this->__client = __javaproxy_Client_getClient();
-            $client->cancelProxyCreationTag = 0;
             $args = func_get_args();
             $name = array_shift($args);
             if (is_array($name)) {

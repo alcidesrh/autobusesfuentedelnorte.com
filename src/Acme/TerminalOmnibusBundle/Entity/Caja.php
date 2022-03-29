@@ -79,7 +79,7 @@ class Caja{
     protected $usuario;
     
     /**
-    * @ORM\OneToMany(targetEntity="OperacionCaja", mappedBy="caja")
+    * @ORM\OneToMany(targetEntity="OperacionCaja", mappedBy="caja", cascade={"persist", "remove"}, orphanRemoval=true)
     */
     protected $operaciones;
     

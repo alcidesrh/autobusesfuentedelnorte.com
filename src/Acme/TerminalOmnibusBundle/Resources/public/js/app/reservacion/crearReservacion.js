@@ -229,7 +229,6 @@ crearReservacion = {
       $("#dependenciasSelecccionSalidaGrid").hide();
       crearReservacion.mostrarIconos();
     } else {
-      alert("dg");
       core.request({
         url: $("#pathGetInformacionPorSalida").prop("value"),
         type: "POST",

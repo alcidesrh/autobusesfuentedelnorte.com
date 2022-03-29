@@ -46,7 +46,7 @@ class CuadreVentaBoletoReportExtension extends \ReportExtension{
                     throw new RuntimeException("No se pudo conventir la fecha:" . $fechaStr);
                 }
                 // Formato requerido por sql server: AAAA-MM-DD
-                var_dump($fechaDateTime->format("Y-m-d"));
+                // var_dump($fechaDateTime->format("Y-m-d"));
                 $parameters->put('DATA_FECHA', $fechaDateTime->format("Y-m-d")); 
             }else{
                 throw new RuntimeException("m1Debe definir la fecha.");

@@ -31,7 +31,7 @@ class Tarjeta{
     /**
     * @Assert\NotNull(message = "La salida de la tarjeta no debe estar en blanco")
     * @ORM\OneToOne(targetEntity="Salida", inversedBy="tarjeta")
-    * @ORM\JoinColumn(name="salida_id", referencedColumnName="id", nullable=false)
+    * @ORM\JoinColumn(name="salida_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
     */
     protected $salida;
     

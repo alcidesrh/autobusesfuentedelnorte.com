@@ -27,7 +27,7 @@ class AutorizacionOperacion{
     
     /**
     * @ORM\ManyToOne(targetEntity="Boleto")
-    * @ORM\JoinColumn(name="boleto_id", referencedColumnName="id", nullable=false)   
+    * @ORM\JoinColumn(name="boleto_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")   
     */
     protected $boleto;
 
