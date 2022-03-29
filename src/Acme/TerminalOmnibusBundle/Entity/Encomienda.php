@@ -322,7 +322,7 @@ class Encomienda
 
     /**
      * @ORM\ManyToOne(targetEntity="AutorizacionCortesia")
-     * @ORM\JoinColumn(name="autorizacion_cortesia_id", referencedColumnName="id", nullable=true, unique=true)   
+     * @ORM\JoinColumn(name="autorizacion_cortesia_id", referencedColumnName="id", nullable=true, unique=true, onDelete="SET NULL")   
      */
     protected $autorizacionCortesia;
 
