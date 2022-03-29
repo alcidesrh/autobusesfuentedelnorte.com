@@ -112,7 +112,7 @@ class CleanDatabaseCommand extends ContainerAwareCommand
         $interval = $start->diff($end);
         $hours   = $interval->format('%h');
         $minutes = $interval->format('%i');
-        $output->writeln('Diff. in minutes is: ' . ($hours * 60 + $minutes));
+        $output->writeln('Total in minutes is: ' . ($hours * 60 + $minutes));
 
         $output->writeln("End");
     }
