@@ -189,7 +189,7 @@ class CleanDatabaseCommand extends ContainerAwareCommand
             $em->flush(); // Executes all deletions.
             $em->clear();
             $numDeleted += 10000;
-            $output->writeln("Clientes eliminados: $j");
+            $output->writeln("Clientes eliminados: $numDeleted");
             gc_collect_cycles();
         }
         return;
