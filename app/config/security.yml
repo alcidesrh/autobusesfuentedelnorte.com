@@ -28,8 +28,8 @@ security:
                 failure_handler: acme_backend.handler.login_failure_handler
             logout:
                 path:   /logout
-                target: /
-                success_handler: acme_backend.handler.logout_success_handler
+                target: /login
+                #success_handler: acme_backend.handler.logout_success_handler
             anonymous:    true
             
 #   AQUI SOLO SE DEBEN PONER LAS REGLAS GLOBALES, YA QUE EL MENU NO TRABAJA CON ESTAS REGLAS SINO CON ANOTACIONES.
