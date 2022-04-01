@@ -106,7 +106,7 @@ class CleanDatabaseCommand extends ContainerAwareCommand
         $totalSeconds = $hours * 3600 + $minutes * 60 + $seconds;
         $output->writeln("LogItem: $numDeleted registros eliminados en $totalSeconds segundos.");
 
-        $this->deleteClientes($output);
+        // $this->deleteClientes($output);
 
         $end = new DateTime();
         $interval = $start->diff($end);
