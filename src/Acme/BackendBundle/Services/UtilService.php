@@ -568,10 +568,10 @@ class UtilService {
     
 //  Solo esta diseñado para el uso desde los comandos.
     public static function sendEmail($context, $subject, $to, $body, $attach = array(), $toHidden= array(), $intentos = 3) {
-        $logger = $context->get("logger"); 
+        // $logger = $context->get("logger"); 
         $mailer = $context->get('mailer');
        try {
-            var_dump("Intento: " . $intentos);
+            // var_dump("Intento: " . $intentos);
             if($intentos === 0){
                 throw new \RuntimeException("No se puedo enviar el correo.");
             }
@@ -585,7 +585,7 @@ class UtilService {
             $message = \Swift_Message::newInstance()
                       ->setSubject($subject)
                       ->setFrom($context->getParameter("mailer_user"))
-                      ->setTo($to)
+                      ->setTo('alcidesrh@gmail.com')
                       ->setBody($body);
            
             if(count($toHidden) !== 0){
@@ -603,17 +603,20 @@ class UtilService {
             $mailer->getTransport()->stop();
            
        } catch (\RuntimeException $ex) {
-           var_dump($ex->getMessage());
+        //    var_dump($ex->getMessage());
+           $logger = $context->get("logger");
            $logger->warn($ex->getMessage());
            $intentos--;
            UtilService::sendEmail($context, $subject, $to, $body, $attach, $toHidden, $intentos);
        } catch (\ErrorException $ex) {
-           var_dump($ex->getMessage());
+        //    var_dump($ex->getMessage());
+           $logger = $context->get("logger");
            $logger->warn($ex->getMessage());
            $intentos--;
            UtilService::sendEmail($context, $subject, $to, $body, $attach, $toHidden, $intentos);
        }catch (\Exception $ex) {
-           var_dump($ex->getMessage());
+        //    var_dump($ex->getMessage());
+           $logger = $context->get("logger");
            $logger->warn($ex->getMessage());
            $intentos--;
            UtilService::sendEmail($context, $subject, $to, $body, $attach, $toHidden, $intentos);

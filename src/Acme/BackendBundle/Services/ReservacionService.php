@@ -40,7 +40,7 @@ class ReservacionService implements ScheduledServiceInterface{
     
     public function vencerReservacionesFueraTiempo($options = null){
         
-        $this->logger->warn("vencerReservacionesFueraTiempo ----- INIT -------");
+        // $this->logger->warn("vencerReservacionesFueraTiempo ----- INIT -------");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -48,51 +48,51 @@ class ReservacionService implements ScheduledServiceInterface{
         }
         
         $fechaLimiteSistema = new \DateTime();
-        $this->logger->warn("Buscando reservaciones internas a expirar.");
+        // $this->logger->warn("Buscando reservaciones internas a expirar.");
         $reservaciones = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Reservacion')->getReservacionesInternasFueraTiempo($fechaLimiteSistema, $this->diasCancelacion, $this->tiempoCancelacion);
         if(count($reservaciones) === 0){
-            $this->logger->warn("No existen reservaciones por vencer.");
+            // $this->logger->warn("No existen reservaciones por vencer.");
         }else{
-            $this->logger->warn("Existen ".  count($reservaciones)." reservaciones por vencer.");
+            // $this->logger->warn("Existen ".  count($reservaciones)." reservaciones por vencer.");
             $estadoVencida = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:EstadoReservacion')->find(EstadoReservacion::VENCIDA);
             $em = $this->doctrine->getManager();
             foreach ($reservaciones as $reservacion) {
-                $this->logger->warn("Venciendo reservacion:" . $reservacion->getId());
+                // $this->logger->warn("Venciendo reservacion:" . $reservacion->getId());
                 $reservacion->setEstado($estadoVencida);
                 $em->persist($reservacion);
             } 
         }
         
-        $this->logger->warn("Buscando reservaciones de portales web a expirar.");
+        // $this->logger->warn("Buscando reservaciones de portales web a expirar.");
         $reservaciones = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Reservacion')->getReservacionesExternasFueraTiempo($fechaLimiteSistema);
         if(count($reservaciones) === 0){
-            $this->logger->warn("No existen reservaciones por vencer.");
+            // $this->logger->warn("No existen reservaciones por vencer.");
         }else{
-            $this->logger->warn("Existen ".  count($reservaciones)." reservaciones por vencer.");
+            // $this->logger->warn("Existen ".  count($reservaciones)." reservaciones por vencer.");
             $em = $this->doctrine->getManager();
             foreach ($reservaciones as $reservacion) {
-                $this->logger->warn("Venciendo reservacion:" . $reservacion->getId());
+                // $this->logger->warn("Venciendo reservacion:" . $reservacion->getId());
                 $estadoVencida = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:EstadoReservacion')->find(EstadoReservacion::VENCIDA);
                 $reservacion->setEstado($estadoVencida);
                 $em->persist($reservacion);
             } 
         }
         
-        $this->logger->warn("vencerReservacionesFueraTiempo ----- END -------");
+        // $this->logger->warn("vencerReservacionesFueraTiempo ----- END -------");
     }
      
     public function setScheduledJob(Job $job = null) {
-        $this->logger->warn("setScheduledJob - init");
+        // $this->logger->warn("setScheduledJob - init");
         $this->job = $job;
         try {
-            $this->logger->warn("start-vencerReservacionesFueraTiempo");
+            // $this->logger->warn("start-vencerReservacionesFueraTiempo");
             $this->vencerReservacionesFueraTiempo();
-            $this->logger->warn("end-vencerReservacionesFueraTiempo");
+            // $this->logger->warn("end-vencerReservacionesFueraTiempo");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso vencerReservacionesFueraTiempo.");
             throw $ex;
         }
-        $this->logger->warn("setScheduledJob - end");
+        // $this->logger->warn("setScheduledJob - end");
     }
 
 }

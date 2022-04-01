@@ -32,8 +32,8 @@ class ExpiredUserService implements ScheduledServiceInterface{
     }
     
     public function expiredUser($options = null){
-        $this->logger->warn("expiredUser ----- INIT -------");
-        var_dump("expiredUser ----- INIT -------");
+        // $this->logger->warn("expiredUser ----- INIT -------");
+        // var_dump("expiredUser ----- INIT -------");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -41,15 +41,15 @@ class ExpiredUserService implements ScheduledServiceInterface{
         }
 
         $fechaLimiteSistema = $this->getCurrentFecha();
-        $this->logger->warn("Buscando usuarios que sus credenciales expiraron en la fecha: " . $fechaLimiteSistema->format('d-m-Y H:i:s'));
+        // $this->logger->warn("Buscando usuarios que sus credenciales expiraron en la fecha: " . $fechaLimiteSistema->format('d-m-Y H:i:s'));
         $usuarios = $this->doctrine->getRepository('AcmeBackendBundle:User')->findExpiredCredentialsUser($fechaLimiteSistema);
         if(count($usuarios) === 0){
-            $this->logger->warn("No existen usuarios para expirar por credenciales.");
+            // $this->logger->warn("No existen usuarios para expirar por credenciales.");
         }else{
             $em = $this->doctrine->getManager();
             $usuariosArray = array(); 
             foreach ($usuarios as $usuario) {
-                $this->logger->warn("Expirando usuario: " . $usuario->getId() . ", username: " . $usuario->getUsername());
+                // $this->logger->warn("Expirando usuario: " . $usuario->getId() . ", username: " . $usuario->getUsername());
                 $usuario->setCredentialsExpired(true);
                 $em->persist($usuario);
                 $usuariosArray[] = $usuario->__toString();
@@ -89,14 +89,14 @@ class ExpiredUserService implements ScheduledServiceInterface{
 //                UtilService::sendEmail($this->container, $subject, $correos, "Usuarios:\n" . implode("\n", $usuariosArray));
 //            }
         }
-        $this->logger->warn("expiredUser ----- END -------");
+        // $this->logger->warn("expiredUser ----- END -------");
     }
      
     public function setScheduledJob(Job $job = null) {
-        $this->logger->warn("ExpiredUser Service - init");
+        // $this->logger->warn("ExpiredUser Service - init");
         $this->job = $job;
         $this->expiredUser();
-        $this->logger->warn("ExpiredUser Service - end");
+        // $this->logger->warn("ExpiredUser Service - end");
     }
     
 }

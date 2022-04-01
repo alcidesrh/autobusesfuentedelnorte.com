@@ -35,7 +35,7 @@ class ReportarFacturasService implements ScheduledServiceInterface{
     }
     
     public function reportarBoletosFacturados($options = null){
-        $this->logger->warn("reportarFacturado - init");
+        // $this->logger->warn("reportarFacturado - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -54,28 +54,28 @@ class ReportarFacturasService implements ScheduledServiceInterface{
             if($empresa instanceof Empresa){
                 if($empresa->getReportarBoletoFacturado()){
                     foreach ($estaciones as $estacion) {
-                        $message = "BOLETO. CHEKING. ESTACION: " . $estacion->getIdAlias() . ", EXT (" . $estacion->getIdExternoBoleto() . ")" . ". Empresa: ". $empresa->getIdAlias().", EXT (".$empresa->getIdExterno().")";
-                        var_dump($message);
-                        $this->logger->warn($message);
+                        // $message = "BOLETO. CHEKING. ESTACION: " . $estacion->getIdAlias() . ", EXT (" . $estacion->getIdExternoBoleto() . ")" . ". Empresa: ". $empresa->getIdAlias().", EXT (".$empresa->getIdExterno().")";
+                        // var_dump($message);
+                        // $this->logger->warn($message);
                         if($estacion->getIdExternoBoleto() === null || $empresa->getIdExterno() === null){
                             continue;
                         }
                         
-                        $message = "BUSCANDO FACTURAS DE BOLETOS DEL DIA: " . $fechaDia->format("d-m-Y");
-                        $this->logger->warn($message);
-                        var_dump($message);
+                        // $message = "BUSCANDO FACTURAS DE BOLETOS DEL DIA: " . $fechaDia->format("d-m-Y");
+                        // $this->logger->warn($message);
+                        // var_dump($message);
                 
                         $boletos = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Boleto')->listarBoletosFacturado($estacion, $empresa, $fechaDia);
                         if(count($boletos) <= 0){
-                            $message = "No se encontraron facturas";
-                            $this->logger->warn($message);
-                            var_dump($message);
+                            // $message = "No se encontraron facturas";
+                            // $this->logger->warn($message);
+                            // var_dump($message);
                             continue;
                         }
                 
-                        $message = "Cantidad de Boletos: " . count($boletos) . ".";
-                        $this->logger->warn($message);
-                        var_dump($message);
+                        // $message = "Cantidad de Boletos: " . count($boletos) . ".";
+                        // $this->logger->warn($message);
+                        // var_dump($message);
                         
                         $listaDataItems = array();
                         foreach ($boletos as $boleto){
@@ -93,14 +93,14 @@ class ReportarFacturasService implements ScheduledServiceInterface{
                             );
                         }
                         
-                        $message = "Existe un total de  " . count($listaDataItems) . " facturas de boletos.";
-                        $this->logger->warn($message);
-                        var_dump($message);
+                        // $message = "Existe un total de  " . count($listaDataItems) . " facturas de boletos.";
+                        // $this->logger->warn($message);
+                        // var_dump($message);
                         $listaItemsPaginada = array_chunk($listaDataItems, $this->cantidadMaxSend);
                         foreach ($listaItemsPaginada as $listaItem) {
-                            $message = "Enviando " . count($listaItem) . " facturas de boletos.";
-                            $this->logger->warn($message);
-                            var_dump($message);
+                            // $message = "Enviando " . count($listaItem) . " facturas de boletos.";
+                            // $this->logger->warn($message);
+                            // var_dump($message);
                             $data = array(
                                 "listaItems" => json_encode($listaItem),
                                 "centroCosto" => $estacion->getIdExternoBoleto(),
@@ -121,12 +121,12 @@ class ReportarFacturasService implements ScheduledServiceInterface{
             }
         }
         
-        $this->logger->warn("reportarFacturado - end");
+        // $this->logger->warn("reportarFacturado - end");
     }
     
     public function reportarEncomiendasFacturadas($options = null){
         
-        $this->logger->warn("reportarEncomiendasFacturado - init");
+        // $this->logger->warn("reportarEncomiendasFacturado - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -145,27 +145,27 @@ class ReportarFacturasService implements ScheduledServiceInterface{
             if($empresa instanceof Empresa){
                 if($empresa->getReportarEncomiendaFacturado()){
                     foreach ($estaciones as $estacion) {
-                        $message = "ENCOMIENDA. CHEKING. ESTACION: " . $estacion->getIdAlias() . ", EXT (" . $estacion->getIdExternoEncomienda(). ")".". Empresa: ". $empresa->getIdAlias().", EXT (".$empresa->getIdExterno().")";
-                        $this->logger->warn($message);
-                        var_dump($message);
+                        // $message = "ENCOMIENDA. CHEKING. ESTACION: " . $estacion->getIdAlias() . ", EXT (" . $estacion->getIdExternoEncomienda(). ")".". Empresa: ". $empresa->getIdAlias().", EXT (".$empresa->getIdExterno().")";
+                        // $this->logger->warn($message);
+                        // var_dump($message);
                         if($estacion->getIdExternoEncomienda() === null || $empresa->getIdExterno() === null){
                             continue;
                         }
                         
-                        $message = "BUSCANDO FACTURAS DE ENCOMIENDA DEL DIA: " . $fechaDia->format("d-m-Y");
-                        $this->logger->warn($message);
-                        var_dump($message);
+                        // $message = "BUSCANDO FACTURAS DE ENCOMIENDA DEL DIA: " . $fechaDia->format("d-m-Y");
+                        // $this->logger->warn($message);
+                        // var_dump($message);
                         $encomiendas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Encomienda')->listarEncomiendasFacturadas($estacion, $empresa, $fechaDia);
                         if(count($encomiendas) <= 0){
-                            $message = "No se encontraron facturas";
-                            $this->logger->warn($message);
-                            var_dump($message);
+                            // $message = "No se encontraron facturas";
+                            // $this->logger->warn($message);
+                            // var_dump($message);
                             continue;
                         }
                         
-                        $message = "Cantidad de Encomiendas: " . count($encomiendas);
-                        $this->logger->warn($message);
-                        var_dump($message);
+                        // $message = "Cantidad de Encomiendas: " . count($encomiendas);
+                        // $this->logger->warn($message);
+                        // var_dump($message);
                         
                         $mapFacturasGeneradasByTotalImporteBase = array();
                         $mapFacturasGeneradas = array();
@@ -196,14 +196,14 @@ class ReportarFacturasService implements ScheduledServiceInterface{
                             );
                         }
                         
-                        $message = "Existe un total de  " . count($listaDataItems) . " facturas de encomiendas.";
-                        $this->logger->warn($message);
-                        var_dump($message);
+                        // $message = "Existe un total de  " . count($listaDataItems) . " facturas de encomiendas.";
+                        // $this->logger->warn($message);
+                        // var_dump($message);
                         $listaItemsPaginada = array_chunk($listaDataItems, $this->cantidadMaxSend);
                         foreach ($listaItemsPaginada as $listaItem) {
-                            $message = "Enviando " . count($listaItem) . " facturas de encomiendas.";
-                            $this->logger->warn($message);
-                            var_dump($message);
+                            // $message = "Enviando " . count($listaItem) . " facturas de encomiendas.";
+                            // $this->logger->warn($message);
+                            // var_dump($message);
                             $data = array(
                                 "listaItems" => json_encode($listaItem),
                                 "centroCosto" => $estacion->getIdExternoEncomienda(),
@@ -224,7 +224,7 @@ class ReportarFacturasService implements ScheduledServiceInterface{
             }
         }
         
-        $this->logger->warn("reportarEncomiendasFacturado - end");
+        // $this->logger->warn("reportarEncomiendasFacturado - end");
     }
      
     public function sendHttpPost($url, $data){
@@ -242,9 +242,9 @@ class ReportarFacturasService implements ScheduledServiceInterface{
                         
         try {
             $response = file_get_contents( $url, false, $context );
-            $this->logger->warn("RESPONSE-INIT");
-            $this->logger->warn($response);
-            $this->logger->warn("RESPONSE-END");
+            // $this->logger->warn("RESPONSE-INIT");
+            // $this->logger->warn($response);
+            // $this->logger->warn("RESPONSE-END");
         } catch (\Exception $exc) {
             $this->logger->warn("FAYO FILE GET CONTENTS - INTI.");
             $this->logger->error($response);
@@ -287,17 +287,17 @@ class ReportarFacturasService implements ScheduledServiceInterface{
 //        for ($index = 1; $index <= 6; $index++) {
 //            $option["fecha"] = new \DateTime("2015-03-".$index);
             try {
-                $this->logger->warn("start-reportarFacturado");
+                // $this->logger->warn("start-reportarFacturado");
                 $this->reportarBoletosFacturados($option);
-                $this->logger->warn("end-reportarFacturado");
+                // $this->logger->warn("end-reportarFacturado");
             } catch (\Exception $ex) {
                 $this->logger->warn("Ocurrio una exception en el proceso reportarFacturado.");
                 throw $ex;
             }
             try {
-                $this->logger->warn("start-reportarFacturado");
+                // $this->logger->warn("start-reportarFacturado");
                 $this->reportarEncomiendasFacturadas($option);
-                $this->logger->warn("end-reportarFacturado");
+                // $this->logger->warn("end-reportarFacturado");
             } catch (\Exception $ex) {
                 $this->logger->warn("Ocurrio una exception en el proceso reportarFacturado.");
                 throw $ex;

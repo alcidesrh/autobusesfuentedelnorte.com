@@ -249,7 +249,7 @@ class SalidasService implements ScheduledServiceInterface{
      
      //SE EJECUTA DE FORMA PERIODICA, SE SUPONE QUE NO HAY CAMBIOS SOLO GENERAR LAS NUEVAS SALIDAS CICLICAS.
      public function procesarSalidaPorItinerarioCiclicoFormaPeriodica($options = null){
-        $this->logger->warn("procesarSalidaPorItinerarioCiclicoFormaPeriodica ----- INIT -------");
+        // $this->logger->warn("procesarSalidaPorItinerarioCiclicoFormaPeriodica ----- INIT -------");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -264,16 +264,16 @@ class SalidasService implements ScheduledServiceInterface{
         $estadoProgramada = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:EstadoSalida')->find(EstadoSalida::PROGRAMADA);
         $estadoCancelada = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:EstadoSalida')->find(EstadoSalida::CANCELADA);
         $itinerarioCiclicos = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:ItinerarioCiclico')->findByActivo(true);
-        $total = count($itinerarioCiclicos);
-        $this->logger->warn("Cantidad de itinerarios ciclicos detectados: " . $total . ".");
-        var_dump("Cantidad de itinerarios ciclicos detectados: " . $total . ".");
+        // $total = count($itinerarioCiclicos);
+        // $this->logger->warn("Cantidad de itinerarios ciclicos detectados: " . $total . ".");
+        // var_dump("Cantidad de itinerarios ciclicos detectados: " . $total . ".");
         $pos = 1;
         $itemsProccessed = array();
         foreach ($itinerarioCiclicos as $itinerario) {
              $detalleLog = "ITINERARIO:".$itinerario->getId().". RUTA:".$itinerario->getRuta() . ". ";
              if($itinerario->getActivo() === true){
-                 $this->logger->warn("PROCESANDO ITEM ".$pos." de " .$total. ". ID:".$itinerario->getId().". RUTA:".$itinerario->getRuta() . ". ");
-                 var_dump("PROCESANDO ITEM ".$pos." de " .$total. ". ID:".$itinerario->getId().". RUTA:".$itinerario->getRuta() . ". ");
+                //  $this->logger->warn("PROCESANDO ITEM ".$pos." de " .$total. ". ID:".$itinerario->getId().". RUTA:".$itinerario->getRuta() . ". ");
+                //  var_dump("PROCESANDO ITEM ".$pos." de " .$total. ". ID:".$itinerario->getId().". RUTA:".$itinerario->getRuta() . ". ");
                  $fechaActualSistema = $this->getCurrentFecha();
                  $fechaActualSistema->modify('-1 day');
                  $salidas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Salida')->getSalidasByIntinerarioCiclico($itinerario->getId(), $fechaActualSistema, $fechaLimiteSistema);
@@ -285,7 +285,7 @@ class SalidasService implements ScheduledServiceInterface{
                  $fechaActualSistema->modify('next '.$diaSemana);
                  $fechaActualSistema->setTime($hour, $minute, 0);
                  while ($this->utilService->compararFechas($fechaActualSistema, $fechaLimiteSistema) <= 0) {
-                    var_dump("Verificando fecha: " . $fechaActualSistema->format('d-m-Y H:i:s'));
+                    // var_dump("Verificando fecha: " . $fechaActualSistema->format('d-m-Y H:i:s'));
                     $empresaCalendarioFacturacion = $this->getEmpresa($itinerario->getRuta(), $fechaActualSistema);
                     $keySalida = $fechaActualSistema->format('d-m-Y H:i:s');
                     if(!array_key_exists($keySalida, $mapSalidas)){
@@ -306,23 +306,23 @@ class SalidasService implements ScheduledServiceInterface{
                                 $salidaBitacora->setDescripcion("Adicionando salida de itinerario ciclico con id: " . $itinerario->getId());
                                 $salida->addBitacoras($salidaBitacora);
                                 $em->persist($salida);
-                                $this->logger->warn($detalleLog."Generando salida de fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
+                                // $this->logger->warn($detalleLog."Generando salida de fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
                                 $this->crearJobSync($salida);
                                 $itemsProccessed[] = $salida;
                                 
                             }else{
-                                $this->logger->warn($detalleLog. "No se pudo generar el itinerario cíclico para la empresa: " . $empresaCalendarioFacturacion->getAlias() . " pq la empresa no esta activa.");
+                                // $this->logger->warn($detalleLog. "No se pudo generar el itinerario cíclico para la empresa: " . $empresaCalendarioFacturacion->getAlias() . " pq la empresa no esta activa.");
                             }
                             
                         }else if($empresaCalendarioFacturacion === null){
-                            $this->logger->warn("No está definido el calendario de facturacion para la ruta: " . $itinerario->getRuta() . ", en la fecha: " . $fechaActualSistema->format('d-m-Y H:i:s'). ".");
+                            // $this->logger->warn("No está definido el calendario de facturacion para la ruta: " . $itinerario->getRuta() . ", en la fecha: " . $fechaActualSistema->format('d-m-Y H:i:s'). ".");
                         }
                         
                      }else{
-                         $this->logger->warn($detalleLog."Ya existe salida para fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
+                        //  $this->logger->warn($detalleLog."Ya existe salida para fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
                          $salida = $mapSalidas[$keySalida];
                          $cantidadBoletos = $this->doctrine->getManager()->getRepository('AcmeTerminalOmnibusBundle:Boleto')->totalBoletosBySalida($salida->getId());
-                         var_dump("Salida: ". $salida->getId(). ". Cantidad boletos: " . $cantidadBoletos);
+                        //  var_dump("Salida: ". $salida->getId(). ". Cantidad boletos: " . $cantidadBoletos);
                          if($cantidadBoletos == 0){
                              
                              if($empresaCalendarioFacturacion === null){  //Existio una empresa en el calendario pq se genero la salida, pero se quito y se dejo en blanco
@@ -335,7 +335,7 @@ class SalidasService implements ScheduledServiceInterface{
                                     $salidaBitacora->setDescripcion("CANCELACION INTERNA. Cancelando salida porque se elimino la empresa en el calendario de facturacion para la ruta: " . $itinerario->getRuta() . ", en la fecha: " . $fechaActualSistema->format('d-m-Y H:i:s'). ".");
                                     $salida->addBitacoras($salidaBitacora);
                                     $em->persist($salida);
-                                    $this->logger->warn($detalleLog."Cancelando salida de fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
+                                    // $this->logger->warn($detalleLog."Cancelando salida de fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
                                     $this->crearJobSync($salida);
                                     $itemsProccessed[] = $salida;
                                  }
@@ -344,7 +344,7 @@ class SalidasService implements ScheduledServiceInterface{
                                  
                                  if($empresaCalendarioFacturacion !== $salida->getEmpresa()){
                                      if($itinerario->getEmpresa() === null){
-                                        var_dump("CASO 2");
+                                        // var_dump("CASO 2");
                                         $salida->setEmpresa($empresaCalendarioFacturacion);
                                         $salidaBitacora = new SalidaBitacora();
                                         $salidaBitacora->setEstado($salida->getEstado());
@@ -352,13 +352,13 @@ class SalidasService implements ScheduledServiceInterface{
                                         $salidaBitacora->setDescripcion("Cambiando empresa de la salida por la empresa especificada en el calendario de facturacion para la ruta: " . $itinerario->getRuta() . ", en la fecha: " . $fechaActualSistema->format('d-m-Y H:i:s'). ".");
                                         $salida->addBitacoras($salidaBitacora);
                                         $em->persist($salida);
-                                        $this->logger->warn($detalleLog."Cambiando empresa de la salida por la empresa especificada en el calendario de facturacion de fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
+                                        // $this->logger->warn($detalleLog."Cambiando empresa de la salida por la empresa especificada en el calendario de facturacion de fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
                                         $this->crearJobSync($salida);
                                         $itemsProccessed[] = $salida;
                                         
                                      } else if($empresaCalendarioFacturacion !== $itinerario->getEmpresa()){
                                          //Este caso es el que cancela casi todas las salidas una vez que se cambio el calendario.
-                                        var_dump("CASO 3");
+                                        // var_dump("CASO 3");
                                         if($salida->getCancelacionInterna() !== true){
                                             $salida->setEstado($estadoCancelada);
                                             $salidaBitacora = new SalidaBitacora();
@@ -367,18 +367,18 @@ class SalidasService implements ScheduledServiceInterface{
                                             $salidaBitacora->setDescripcion("CANCELACION INTERNA. Cancelando salida porque no corresponde con la empresa especificada en el calendario de facturacion (".$empresaCalendarioFacturacion->getAlias().") para la ruta: " . $itinerario->getRuta() . ", en la fecha: " . $fechaActualSistema->format('d-m-Y H:i:s'). ".");
                                             $salida->addBitacoras($salidaBitacora);
                                             $em->persist($salida);
-                                            $this->logger->warn($detalleLog."Cancelando salida porque no corresponde con la empresa especificada en el calendario de facturacion (" .$empresaCalendarioFacturacion->getAlias().") de fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
+                                            // $this->logger->warn($detalleLog."Cancelando salida porque no corresponde con la empresa especificada en el calendario de facturacion (" .$empresaCalendarioFacturacion->getAlias().") de fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
                                             $this->crearJobSync($salida);
                                             $itemsProccessed[] = $salida;
                                         }
                                         
                                      }else{
-                                         var_dump("CASO 4. ----------------------- ESTE NUNCA DEBE OCURRIR ---------------------");
+                                        //  var_dump("CASO 4. ----------------------- ESTE NUNCA DEBE OCURRIR ---------------------");
                                          throw new \RuntimeException("CASO 4");
                                      }
                                      
                                  }else{
-                                     var_dump("CASO 5");
+                                    //  var_dump("CASO 5");
                                      $this->logger->warn($detalleLog."La empresa de la salida coincide con la empresa del calendario de facturacion. Todo ok.");
                                  }
                              }
@@ -386,7 +386,7 @@ class SalidasService implements ScheduledServiceInterface{
                          }else{
                              
                              if($empresaCalendarioFacturacion === null || $empresaCalendarioFacturacion !== $salida->getEmpresa()){
-                                var_dump("CASO 6");
+                                // var_dump("CASO 6");
                                 if($salida->getCancelacionInterna() !== true){
                                     $salida->setEstado($estadoCancelada);
                                     $salidaBitacora = new SalidaBitacora();
@@ -395,14 +395,14 @@ class SalidasService implements ScheduledServiceInterface{
                                     $salidaBitacora->setDescripcion("Cancelando salida porque su empresa no corresponde con la empresa del calendario de facturacion para la ruta: " . $itinerario->getRuta() . ", en la fecha: " . $fechaActualSistema->format('d-m-Y H:i:s'). ".");
                                     $salida->addBitacoras($salidaBitacora);
                                     $em->persist($salida);
-                                    $this->logger->warn($detalleLog."Cancelando salida porque su empresa no corresponde con la empresa del calendario de facturacion de fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
+                                    // $this->logger->warn($detalleLog."Cancelando salida porque su empresa no corresponde con la empresa del calendario de facturacion de fecha:" . $fechaActualSistema->format('d-m-Y H:i:s'));
                                     $this->notificandoCancelacionDeSalidaConBoletos($salida, $empresaCalendarioFacturacion, $cantidadBoletos);
                                     $this->crearJobSync($salida);
                                     $itemsProccessed[] = $salida;
                                 }
                              }else{
-                                var_dump("CASO 7");
-                                $this->logger->warn($detalleLog."La empresa de la salida coincide con la empresa del calendario de facturacion. Todo ok.");
+                                // var_dump("CASO 7");
+                                // $this->logger->warn($detalleLog."La empresa de la salida coincide con la empresa del calendario de facturacion. Todo ok.");
                              }
                          }
                          
@@ -410,7 +410,7 @@ class SalidasService implements ScheduledServiceInterface{
                          if($empresaCalendarioFacturacion === $salida->getEmpresa() && 
                                  ($itinerario->getEmpresa() === null || $empresaCalendarioFacturacion === $itinerario->getEmpresa())){
                              if($salida->getCancelacionInterna()){
-                                 var_dump("REPROGRAMANDO SALIDA.");
+                                //  var_dump("REPROGRAMANDO SALIDA.");
                                  $salida->setEstado($estadoProgramada);
                                  $salida->setCancelacionInterna(false);
                                  $salidaBitacora = new SalidaBitacora();
@@ -419,7 +419,7 @@ class SalidasService implements ScheduledServiceInterface{
                                  $salidaBitacora->setDescripcion("Reprogramando salida porque su empresa corresponde con la empresa del calendario de facturacion para la ruta: " . $itinerario->getRuta() . ", en la fecha: " . $fechaActualSistema->format('d-m-Y H:i:s'). ".");
                                  $salida->addBitacoras($salidaBitacora);
                                  $em->persist($salida);
-                                 $this->logger->warn($detalleLog."Reprogramando salida porque su empresa corresponde con la empresa del calendario de facturacion en la fecha: ." . $fechaActualSistema->format('d-m-Y H:i:s'));
+                                //  $this->logger->warn($detalleLog."Reprogramando salida porque su empresa corresponde con la empresa del calendario de facturacion en la fecha: ." . $fechaActualSistema->format('d-m-Y H:i:s'));
                                  $this->crearJobSync($salida);
                                  $itemsProccessed[] = $salida;
                              }
@@ -431,8 +431,8 @@ class SalidasService implements ScheduledServiceInterface{
                  }
                          
              }else{
-                 var_dump("CASO 10");
-                 $this->logger->warn($detalleLog." El itinerario no esta activo.");
+                //  var_dump("CASO 10");
+                //  $this->logger->warn($detalleLog." El itinerario no esta activo.");
              }
              
              if($pos % 5 == 0){
@@ -444,13 +444,13 @@ class SalidasService implements ScheduledServiceInterface{
          
          $this->persistObjects($itemsProccessed);
          
-         $this->logger->warn("procesarSalidaPorItinerarioCiclicoFormaPeriodica ----- END -------");
+        //  $this->logger->warn("procesarSalidaPorItinerarioCiclicoFormaPeriodica ----- END -------");
      }
      
      public function persistObjects($objects = array()){
         $objects = array_unique($objects);
-        $this->logger->info("Persist Objects: " . count($objects));
-        var_dump("Persist Objects: " . count($objects));
+        // $this->logger->info("Persist Objects: " . count($objects));
+        // var_dump("Persist Objects: " . count($objects));
         
         if(count($objects) === 0){
             return;
@@ -496,7 +496,7 @@ class SalidasService implements ScheduledServiceInterface{
          if($correos !== null && count($correos) !== 0){
             $now = new \DateTime();
             $now = $now->format('Y-m-d H:i:s');
-            $this->logger->warn("Enviando correo notificando cancelacion de la salida " . $salida->getId() . " con boletos.");
+            // $this->logger->warn("Enviando correo notificando cancelacion de la salida " . $salida->getId() . " con boletos.");
             $subject = "ALERT_NCSB_" . $now . ". Notificación de cancelacion de salidas con boletos."; 
             UtilService::sendEmail($this->container, $subject, $correos, $this->container->get("templating")->render('AcmeTerminalOmnibusBundle:Email:notificacion_salidas_canceladas_con_boletos.html.twig', array(
                 'salida' => $salida,
@@ -562,10 +562,10 @@ class SalidasService implements ScheduledServiceInterface{
      }
      
     public function setScheduledJob(Job $job = null) {
-        $this->logger->warn("Salidas Service - init");
+        // $this->logger->warn("Salidas Service - init");
         $this->job = $job;
         $this->procesarSalidaPorItinerarioCiclicoFormaPeriodica();
-        $this->logger->warn("Salidas Service - end");
+        // $this->logger->warn("Salidas Service - end");
     }
 
 }

@@ -44,14 +44,19 @@ class CustomRunCommand extends ContainerAwareCommand{
             $mailer->getTransport()->start();
         }
     
-        $emailsAdmin = ['alcidesrh@gmail.com'];//$contenedor->get("doctrine")->getRepository('AcmeBackendBundle:User')->findEmailSuperAdmin();
+        $emailsAdmin = $contenedor->get("doctrine")->getRepository('AcmeBackendBundle:User')->findEmailSuperAdmin();
         if(count($emailsAdmin) != 0){
             $now = new \DateTime();
             $now = $now->format('Y-m-d H:i:s');
             $subject = $now . ". Inicio una instancia nueva de ejecución de procesos."; 
             UtilService::sendEmail($contenedor, $subject, $emailsAdmin, "");
+//            $message = \Swift_Message::newInstance()
+//             ->setSubject($subject)
+//             ->setFrom($contenedor->getParameter("mailer_user"))
+//             ->setTo($emailsAdmin)
+//             ->setBody("");
+//             $mailer->send($message);
         }
-        return;
         
         /*******************************************************************************************
          *                          JOBS RUNNING
@@ -98,7 +103,13 @@ class CustomRunCommand extends ContainerAwareCommand{
                      $body .= "Nombre: " . $job->getName() . "\n";
                      $body .= "Exception: " . $job->getLastExceptionToString() . "\n";
                 }
-                // UtilService::sendEmail($contenedor, $subject, $emailsAdmin, $body);
+                UtilService::sendEmail($contenedor, $subject, $emailsAdmin, $body);
+//                $message = \Swift_Message::newInstance()
+//                 ->setSubject($subject)
+//                 ->setFrom($contenedor->getParameter("mailer_user"))
+//                 ->setTo($emailsAdmin)
+//                 ->setBody($body);
+//                 $mailer->send($message);
             }
             
         }else{
@@ -133,13 +144,33 @@ class CustomRunCommand extends ContainerAwareCommand{
             $now = $now->format('Y-m-d H:i:s');
             $subject = $now . ". Ocurrio un error en la ejecución de procesos."; 
             $body = "Error: " . $ex->getMessage() . ". \nTrace:\n" . $ex->getTraceAsString();
-            // UtilService::sendEmail($contenedor, $subject, $emailsAdmin, $body);
+            UtilService::sendEmail($contenedor, $subject, $emailsAdmin, $body);
+//            if(!$mailer->getTransport()->isStarted()){
+//                $mailer->getTransport()->start();
+//            }
+//            $message = \Swift_Message::newInstance()
+//             ->setSubject($subject)
+//             ->setFrom($contenedor->getParameter("mailer_user"))
+//             ->setTo($emailsAdmin)
+//             ->setBody($body);
+//             $mailer->send($message);
+//             $mailer->getTransport()->stop();
         } catch (\Exception $ex) {
             $now = new \DateTime();
             $now = $now->format('Y-m-d H:i:s');
             $subject = $now . ". Ocurrio un error en la ejecución de procesos."; 
             $body = "Error: " . $ex->getMessage() . ". \nTrace:\n" . $ex->getTraceAsString();
-            // UtilService::sendEmail($contenedor, $subject, $emailsAdmin, $body);
+            UtilService::sendEmail($contenedor, $subject, $emailsAdmin, $body);
+//            if(!$mailer->getTransport()->isStarted()){
+//                $mailer->getTransport()->start();
+//            }
+//            $message = \Swift_Message::newInstance()
+//             ->setSubject($subject)
+//             ->setFrom($contenedor->getParameter("mailer_user"))
+//             ->setTo($emailsAdmin)
+//             ->setBody($body);
+//             $mailer->send($message);
+//             $mailer->getTransport()->stop();
         }
         
         $logger->warn("Logger.CustomRunCommand -- end");

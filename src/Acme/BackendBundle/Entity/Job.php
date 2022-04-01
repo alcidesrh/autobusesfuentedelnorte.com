@@ -4,6 +4,7 @@ namespace Acme\BackendBundle\Entity;
 
 use Acme\BackendBundle\Scheduled\ScheduledServiceInterface;
 use Acme\BackendBundle\Scheduled\DelayedProxy;
+use DateTime;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpKernel\Exception\FlattenException;
 use Doctrine\ORM\Mapping as ORM;
@@ -84,18 +85,18 @@ class Job
     protected $repeatEvery;
 
     /**
-    * @Assert\NotBlank(message = "La cantidad de execuciones no debe estar en blanco")
-    * @Assert\Range(
-    *      min = "0",
-    *      minMessage = "La cantidad de execuciones no debe ser menor que {{ limit }}.",
-    *      invalidMessage = "La cantidad de execuciones debe ser un número válido."
-    * )   
-    * @Assert\Regex(
-    *     pattern="/^\d*$/",
-    *     message="La cantidad de execuciones solo puede contener números"
-    * )
-    * @ORM\Column(type="bigint")
-    */
+     * @Assert\NotBlank(message = "La cantidad de execuciones no debe estar en blanco")
+     * @Assert\Range(
+     *      min = "0",
+     *      minMessage = "La cantidad de execuciones no debe ser menor que {{ limit }}.",
+     *      invalidMessage = "La cantidad de execuciones debe ser un número válido."
+     * )   
+     * @Assert\Regex(
+     *     pattern="/^\d*$/",
+     *     message="La cantidad de execuciones solo puede contener números"
+     * )
+     * @ORM\Column(type="bigint")
+     */
     protected $executionCount = 0;
 
     /**
@@ -121,13 +122,13 @@ class Job
 
     public function getLastExceptionToString()
     {
-        if($this->lastException !== null){
+        if ($this->lastException !== null) {
             $items = $this->lastException->toArray();
             return $items[0]['message'] . " - " . $items[0]['class'];
         }
         return "";
     }
-    
+
     public function lock()
     {
         $this->locked = true;
@@ -238,10 +239,29 @@ class Job
      */
     public function execute(ScheduledServiceInterface $service)
     {
+        try {
+            $service->setScheduledJob($this);
+            $this->getProxy()->setService($service)->execute($service);
+        } catch (\Exception $e) {
+            $this->status = self::STATUS_FAILED;
+            $this->executionCount++;
+            $this->lastException = FlattenException::create($e);
+            throw $e;
+        }
+
+        $this->executionCount++;
+        $date = new DateTime();
+        $date->add($this->translateIntervalSpec($this->repeatEvery));
+        $this->nextExecutionDate = $date;
+        $this->status = self::STATUS_TERMINATED;
+        return true;
+
+        //El código original es el que está abajo.
+
         if (!$this->status == self::STATUS_RUNNING) {
             throw new \RuntimeException('Cannot execute a job in status other than pending');
         }
-        
+
         $now = new \DateTime('now');
         $isFuture = $this->getNextExecutionDate() > $now;
 
@@ -268,9 +288,13 @@ class Job
             $this->executionCount++;
 
             if ($this->repeatEvery) {
-                $this->nextExecutionDate = clone $this->getNextExecutionDate()->add($this->translateIntervalSpec($this->repeatEvery));
-//                $this->execute($service);
-                return true;  //Rechequiar
+                // $this->nextExecutionDate = clone $this->getNextExecutionDate()->add($this->translateIntervalSpec($this->repeatEvery));
+                //                $this->execute($service);
+                $date = new DateTime();
+                $date->add($this->translateIntervalSpec($this->repeatEvery));
+                $this->nextExecutionDate = $date;
+                // return true;  //Rechequiar
+                return false;
             } else {
                 $this->status = self::STATUS_TERMINATED;
                 $this->nextExecutionDate = null;
@@ -287,6 +311,11 @@ class Job
     public function getNextExecutionDate()
     {
         return $this->nextExecutionDate;
+    }
+
+    public function setNextExecutionDate()
+    {
+        return $this->nextExecutionDate = new \DateTime('now');
     }
 
     /**
@@ -357,13 +386,13 @@ class Job
             $this->nextExecutionDate = $this->insertionDate;
         }
     }
-    
+
     /**
      * @ORM\PreUpdate
      */
     public function preUpdate()
     {
-        if($this->status !== self::STATUS_FAILED){
+        if ($this->status !== self::STATUS_FAILED) {
             $this->lastException = null;
         }
     }
@@ -417,14 +446,14 @@ class Job
             $tag = new JobTag();
             $tag->setName($name);
         } elseif (is_array($tag) || $tag instanceof ArrayCollection) {
-            foreach($tag as $single) {
+            foreach ($tag as $single) {
                 $this->addTag($single);
             }
             return $this;
         }
 
         if ($tag instanceof JobTag) {
-            foreach($this->tags as $defined) {
+            foreach ($this->tags as $defined) {
                 if ($defined->getName() == $tag->getName()) {
                     return $this;
                 }
@@ -482,22 +511,23 @@ class Job
         }
     }
 
-    public function setStatus($status) {
+    public function setStatus($status)
+    {
         $this->status = $status;
     }
 
-    public function getLastException() {
-        if($this->lastException !== null){
+    public function getLastException()
+    {
+        if ($this->lastException !== null) {
             $items = $this->lastException->toArray();
             return json_encode($items);
-        }else{
+        } else {
             return "";
         }
-       
     }
-    
-    public function setExecutionCount($executionCount) {
+
+    public function setExecutionCount($executionCount)
+    {
         $this->executionCount = $executionCount;
     }
-   
 }

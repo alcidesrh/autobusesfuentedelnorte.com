@@ -34,7 +34,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
     }
 
     public function checkSeriesFacturas($options = null){
-        $this->logger->warn("checkSeriesFacturas - init");
+        // $this->logger->warn("checkSeriesFacturas - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -46,12 +46,12 @@ class TareasDiariasService implements ScheduledServiceInterface{
         
         $fechaLimiteSistema = $this->getCurrentFecha();
         $fechaLimiteSistema->modify("+45 day");
-        $this->logger->warn("Buscando series de factura que esten por expirar: " . $fechaLimiteSistema->format('d-m-Y H:i:s'));
+        // $this->logger->warn("Buscando series de factura que esten por expirar: " . $fechaLimiteSistema->format('d-m-Y H:i:s'));
         $facturas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Factura')->listarSeriesFacturasExpiradas($fechaLimiteSistema);
         if(count($facturas) === 0){
-            $this->logger->warn("No existen facturas próximas a expirar.");
+            // $this->logger->warn("No existen facturas próximas a expirar.");
         }else{
-            $em = $this->doctrine->getManager();
+            // $em = $this->doctrine->getManager();
             $mapEmpresas = array();
             $mapEmpresasFacturas = array();
             foreach ($facturas as $factura) {
@@ -75,7 +75,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 }
                 $correos = array_unique($correos);
                 if($correos !== null && count($correos) !== 0){
-                   $this->logger->warn("Enviando correo notificando vencimiento de series de facturas: " . implode(", ", $series) . ".");
+                //    $this->logger->warn("Enviando correo notificando vencimiento de series de facturas: " . implode(", ", $series) . ".");
                    $subject = "VCF_" . $now . ". Notificación de vencimiento de las series de facturas: " . implode(", ", $series) . "."; 
                    UtilService::sendEmail($this->container, $subject, $correos, $this->container->get("templating")->render('AcmeTerminalOmnibusBundle:Email:notificacion_serie_factura.html.twig', array(
                           'titulo' => 'Las siguientes series de facturas venceran próximamente.',
@@ -86,12 +86,12 @@ class TareasDiariasService implements ScheduledServiceInterface{
         }
         
         $cantidad = 200;
-        $this->logger->warn("Buscando series de factura que esten por agotarse.");
+        // $this->logger->warn("Buscando series de factura que esten por agotarse.");
         $facturas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Factura')->listarSeriesFacturasPorTerminar($cantidad);
         if(count($facturas) === 0){
-            $this->logger->warn("No existen facturas próximas por agotarse.");
+            // $this->logger->warn("No existen facturas próximas por agotarse.");
         }else{
-            $em = $this->doctrine->getManager();
+            // $em = $this->doctrine->getManager();
             $mapEmpresas = array();
             $mapEmpresasFacturas = array();
             foreach ($facturas as $factura) {
@@ -115,7 +115,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 }
                 $correos = array_unique($correos);
                 if($correos !== null && count($correos) !== 0){
-                   $this->logger->warn("Enviando correo notificando agotamiento de series de facturas: " . implode(", ", $series) . ".");
+                //    $this->logger->warn("Enviando correo notificando agotamiento de series de facturas: " . implode(", ", $series) . ".");
                    $subject = "ACF_" . $now . ". Notificación de agotamiento de las series de facturas: " . implode(", ", $series) . "."; 
                    UtilService::sendEmail($this->container, $subject, $correos, $this->container->get("templating")->render('AcmeTerminalOmnibusBundle:Email:notificacion_serie_factura.html.twig', array(
                           'titulo' => 'Las siguientes series de facturas se agotaran próximamente.',
@@ -125,11 +125,11 @@ class TareasDiariasService implements ScheduledServiceInterface{
             }
         }
         
-       $this->logger->warn("checkSeriesFacturas - end");
+    //    $this->logger->warn("checkSeriesFacturas - end");
     }
     
     public function sendTotalesFacturados($options = null){
-        $this->logger->warn("sendTotalesFacturados - init");
+        // $this->logger->warn("sendTotalesFacturados - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -140,7 +140,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
         $fechaDia->modify("-1 day");
         $empresas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Empresa')->findByActivo(true);
         foreach ($empresas as $empresa) {
-                $this->logger->warn("Buscando ventas totales del " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->getAlias());
+                // $this->logger->warn("Buscando ventas totales del " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->getAlias());
                 $estaciones = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Estacion')->getEstacionesEmitieronOperaciones($fechaDia, $empresa);
                 $resumenByEstacion = array();
                 $valuesBoletos = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Boleto')->listarTotalesBoletos($fechaDia, $empresa, $estaciones);
@@ -164,7 +164,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 if($correos !== null && count($correos) !== 0){
                     $now = new \DateTime();
                     $now = $now->format('Y-m-d H:i:s');
-                    $this->logger->warn("Enviando correo notificando totales del " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->getAlias() . ".");
+                    // $this->logger->warn("Enviando correo notificando totales del " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->getAlias() . ".");
                     $subject = "NVT_" . $now . ". Notificación de ventas totales del " . $fechaDia->format('d-m-Y') . " en la empresa: " . $empresa->getAlias() . "."; 
                     UtilService::sendEmail($this->container, $subject, $correos, $this->container->get("templating")->render('AcmeTerminalOmnibusBundle:Email:notificacion_parciales.html.twig', array(
                         'title' => 'Totales',
@@ -174,11 +174,11 @@ class TareasDiariasService implements ScheduledServiceInterface{
                     )));
                 }            
         }
-        $this->logger->warn("sendTotalesFacturados - end");
+        // $this->logger->warn("sendTotalesFacturados - end");
     }
     
     public function sendTotalesCortesias($options = null){
-        $this->logger->warn("sendTotalesCortesias - init");
+        // $this->logger->warn("sendTotalesCortesias - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -193,11 +193,11 @@ class TareasDiariasService implements ScheduledServiceInterface{
         
         $empresas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Empresa')->findByActivo(true);
         foreach ($empresas as $empresa) {
-            $this->logger->warn("Buscando total de cortesias el " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->getAlias());
+            // $this->logger->warn("Buscando total de cortesias el " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->getAlias());
             $items = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Boleto')->listarCortesiaPorEstacion($fechaDia, $empresa);
             $correos = $empresa->getCorreos();
             if($correos !== null && count($correos) !== 0){
-                $this->logger->warn("Enviando correo notificando de cortesias para el " . $fechaDia->format('d-m-Y') . " en la empresa " . $empresa->getAlias() . ".");
+                // $this->logger->warn("Enviando correo notificando de cortesias para el " . $fechaDia->format('d-m-Y') . " en la empresa " . $empresa->getAlias() . ".");
                 $subject = "NTC_" .$now . ". Notificación de cortesías del día: " . $fechaDia->format('d-m-Y') . " en la empresa: " . $empresa->getAlias() . "."; 
                 UtilService::sendEmail($this->container, $subject, $correos, $this->container->get("templating")->render('AcmeTerminalOmnibusBundle:Email:notificacion_cortesia.html.twig', array(
                     'empresa' => $empresa,
@@ -206,11 +206,11 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 )));
             }            
         }
-        $this->logger->warn("sendTotalesCortesias - end");
+        // $this->logger->warn("sendTotalesCortesias - end");
     }
     
     public function checkFechaVencimientoTarjetaOperaciones($options = null){
-        $this->logger->warn("checkFechaVencimientoTarjetaOperaciones - init");
+        // $this->logger->warn("checkFechaVencimientoTarjetaOperaciones - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -225,7 +225,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
         
         $empresas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Empresa')->findByActivo(true);
         foreach ($empresas as $empresa) {
-            $this->logger->warn("Buscando buses proximos a vencer su tarjeta de operaciones para la fecha: " . $fechaDia->format('d-m-Y') . ", en la empresa: " . $empresa->__toString());
+            // $this->logger->warn("Buscando buses proximos a vencer su tarjeta de operaciones para la fecha: " . $fechaDia->format('d-m-Y') . ", en la empresa: " . $empresa->__toString());
             $buses = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Bus')->listarBusesVencimientoTarjetaOperaciones($fechaDia, $empresa);
             if($buses !== null && count($buses) !== 0){
                 $correos = $empresa->getCorreos();
@@ -239,7 +239,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
 
                 if($correos !== null && count($correos) !== 0){
                     $correos = array_unique($correos);
-                    $this->logger->warn("Enviando correo notificando buses proximos a vencer su tarjeta de operaciones el " . $fechaDia->format('d-m-Y') . " en la empresa " . $empresa->__toString() . ".");
+                    // $this->logger->warn("Enviando correo notificando buses proximos a vencer su tarjeta de operaciones el " . $fechaDia->format('d-m-Y') . " en la empresa " . $empresa->__toString() . ".");
                     $subject = "VTO_" .$now . ". Notificación de próximo vencimiento de tarjeta de operaciones de buses de la empresa " . $empresa->__toString() . "."; 
                     UtilService::sendEmail($this->container, $subject, $correos, $this->container->get("templating")->render('AcmeTerminalOmnibusBundle:Email:notificacion_buses.html.twig', array(
                         'empresa' => $empresa,
@@ -249,11 +249,11 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 }  
             }
         }
-        $this->logger->warn("checkFechaVencimientoTarjetaOperaciones - end");
+        // $this->logger->warn("checkFechaVencimientoTarjetaOperaciones - end");
     }
     
     public function checkFechaVencimientoLicenciaPilotos($options = null){
-        $this->logger->warn("checkFechaVencimientoLicenciaPilotos - init");
+        // $this->logger->warn("checkFechaVencimientoLicenciaPilotos - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -268,7 +268,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
         
         $empresas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Empresa')->findByActivo(true);
         foreach ($empresas as $empresa) {
-            $this->logger->warn("Buscando pilotos proximos a vencer su licencia: " . $fechaDia->format('d-m-Y') . ", en la empresa: " . $empresa->__toString());
+            // $this->logger->warn("Buscando pilotos proximos a vencer su licencia: " . $fechaDia->format('d-m-Y') . ", en la empresa: " . $empresa->__toString());
             $pilotos = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Piloto')->listarPilotosVencimientoLicencia($fechaDia, $empresa);
             if($pilotos !== null && count($pilotos) !== 0){
                 $correos = $empresa->getCorreos();
@@ -282,7 +282,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
 
                 if($correos !== null && count($correos) !== 0){
                     $correos = array_unique($correos);
-                    $this->logger->warn("Enviando correo notificando pilotos proximos a vencer su licencia el dia " . $fechaDia->format('d-m-Y') . " en la empresa " . $empresa->__toString() . ".");
+                    // $this->logger->warn("Enviando correo notificando pilotos proximos a vencer su licencia el dia " . $fechaDia->format('d-m-Y') . " en la empresa " . $empresa->__toString() . ".");
                     $subject = "VLP_" .$now . ". Notificación de próximo vencimiento de licencias de pilotos de la empresa " . $empresa->__toString() . "."; 
                     UtilService::sendEmail($this->container, $subject, $correos, $this->container->get("templating")->render('AcmeTerminalOmnibusBundle:Email:notificacion_pilotos.html.twig', array(
                         'empresa' => $empresa,
@@ -292,11 +292,11 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 }  
             }
         }
-        $this->logger->warn("checkFechaVencimientoLicenciaPilotos - end");
+        // $this->logger->warn("checkFechaVencimientoLicenciaPilotos - end");
     }
     
     public function sendTotalesTarjetas($options = null){
-        $this->logger->warn("sendTotalesTarjetas - init");
+        // $this->logger->warn("sendTotalesTarjetas - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -311,7 +311,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
         
         $empresas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Empresa')->findByActivo(true);
         foreach ($empresas as $empresa) {
-            $this->logger->warn("Buscando boletos facturados con tarjetas " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->__toString());
+            // $this->logger->warn("Buscando boletos facturados con tarjetas " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->__toString());
             $boletos = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Boleto')->listarBoletosFacturadosConTarjeta($fechaDia, $empresa);
             
             $mapEstaciones = array();
@@ -341,7 +341,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
 //            }
             
             if($correos !== null && count($correos) !== 0){
-                $this->logger->warn("Enviando correo notificando boletos facturados con tarjetas para el " . $fechaDia->format('d-m-Y') . " en la empresa " . $empresa->__toString() . ".");
+                // $this->logger->warn("Enviando correo notificando boletos facturados con tarjetas para el " . $fechaDia->format('d-m-Y') . " en la empresa " . $empresa->__toString() . ".");
                 $subject = "NTT_" .$now . ". Notificación de los boletos facturados con tarjetas del día: " . $fechaDia->format('d-m-Y') . " en la empresa: " . $empresa->__toString() . "."; 
                 UtilService::sendEmail($this->container, $subject, $correos, $this->container->get("templating")->render('AcmeTerminalOmnibusBundle:Email:notificacion_tarjeta.html.twig', array(
                     'empresa' => $empresa,
@@ -351,11 +351,11 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 )));
             }            
         }
-        $this->logger->warn("sendTotalesTarjetas - end");
+        // $this->logger->warn("sendTotalesTarjetas - end");
     }
     
     public function checkExpiracionCredencialesPorUsuario($options = null){
-        $this->logger->warn("checkExpiracionCredencialesPorUsuario - init");
+        // $this->logger->warn("checkExpiracionCredencialesPorUsuario - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -365,7 +365,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
         $fechaFutura = $this->getCurrentFecha();
         $fechaFutura->modify("+20 day");
         
-        $this->logger->warn("Buscando usuarios que sus credenciales expiran proximamente");
+        // $this->logger->warn("Buscando usuarios que sus credenciales expiran proximamente");
         $usuariosProximosExpirar = $this->doctrine->getRepository('AcmeBackendBundle:User')->findExpiredCredentialsUser($fechaFutura);
         if(count($usuariosProximosExpirar) !== 0){
 //            $superAdmin = $this->doctrine->getRepository('AcmeBackendBundle:User')->findEmailSuperAdmin();
@@ -378,7 +378,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 }
                 $result = array_merge($correos, $superAdmin);
                 $result = array_unique($result);
-                $this->logger->warn("Enviando correo notificando proxima expiracion de contraseña.");
+                // $this->logger->warn("Enviando correo notificando proxima expiracion de contraseña.");
                 $now = new \DateTime();
                 $now = $now->format('Y-m-d H:i:s');
                 $subject = "NEC_" .$now . ". Notificación de expiración de contraseña."; 
@@ -387,7 +387,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 )));
             }   
         }
-        $this->logger->warn("checkExpiracionCredencialesPorUsuario - end");
+        // $this->logger->warn("checkExpiracionCredencialesPorUsuario - end");
     }
     
     public function checkCajasNoCerradas($options = null){
@@ -514,7 +514,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
     }
     
     public function checkReportarInventarioEncomiendas($options = null){
-        $this->logger->warn("checkReportarInventarioEncomiendas - init");
+        // $this->logger->warn("checkReportarInventarioEncomiendas - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -528,7 +528,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
         
         $empresas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Empresa')->findByActivo(true);
         foreach ($empresas as $empresa) {
-            $this->logger->warn("Buscando encomiendas penientes hasta la fecha: " . $fechaDia->format('d-m-Y') . ", en la empresa: " . $empresa->getAlias());
+            // $this->logger->warn("Buscando encomiendas penientes hasta la fecha: " . $fechaDia->format('d-m-Y') . ", en la empresa: " . $empresa->getAlias());
             $data1 = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Encomienda')->listarEncomiendaPendienteEntrega($empresa);
             $data2 = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Encomienda')->listarEncomiendaPendienteEnvio($empresa);
             $data = array();
@@ -563,11 +563,11 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 }  
             }
         }
-        $this->logger->warn("checkReportarInventarioEncomiendas - end");
+        // $this->logger->warn("checkReportarInventarioEncomiendas - end");
     }
     
     public function checkReportarBusesPilotosActivos($options = null){
-        $this->logger->warn("checkReportarBusesPilotosActivos - init");
+        // $this->logger->warn("checkReportarBusesPilotosActivos - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -576,11 +576,11 @@ class TareasDiariasService implements ScheduledServiceInterface{
         
         $now = new \DateTime();
         $now = $now->format('Y-m-d H:i:s');
-        $fechaDia = $this->getCurrentFecha();
+        // $fechaDia = $this->getCurrentFecha();
         $empresas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Empresa')->findByActivo(true);
         foreach ($empresas as $empresa) {
             try {
-                $this->logger->warn("Ejecutando reporte de buses activos en la empresa: " . $empresa->getAlias());
+                // $this->logger->warn("Ejecutando reporte de buses activos en la empresa: " . $empresa->getAlias());
                 $resultBuses = $this->generarReporte("AcmeTerminalOmnibusBundle:Reporte:reporteDetalleBusesInternal", array(
                     'nameReporte' => "BUSES",
                     'type' => "EXCEL",
@@ -589,7 +589,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
                      )
                 ));
                 
-                $this->logger->warn("Ejecutando reporte de pilotos activos en la empresa: " . $empresa->getAlias());
+                // $this->logger->warn("Ejecutando reporte de pilotos activos en la empresa: " . $empresa->getAlias());
                 $resultPilotos = $this->generarReporte("AcmeTerminalOmnibusBundle:Reporte:reporteDetallePilotosInternal", array(
                     'nameReporte' => "PILOTOS",
                     'type' => "EXCEL",
@@ -612,11 +612,11 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 $this->logger->warn("checkReportarBusesPilotosActivos - ERROR: " . $ex->getMessage());
             }
         }
-        $this->logger->warn("checkReportarBusesPilotosActivos - end");
+        // $this->logger->warn("checkReportarBusesPilotosActivos - end");
     }
     
     public function checkEstadisticas($options = null){
-        $this->logger->warn("checkEstadisticas - init");
+        // $this->logger->warn("checkEstadisticas - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -634,8 +634,8 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 $fechaFinal = clone $fechaDia;
                 $fechaFinal->modify("-1 day");
                 $rangoFecha = $fechaInicial->format('d/m/Y')." - ".$fechaFinal->format('d/m/Y');
-                var_dump($rangoFecha);
-                $this->logger->warn("Ejecutando reporte historico de ventas en la empresa: " . $empresa->getAlias());
+                // var_dump($rangoFecha);
+                // $this->logger->warn("Ejecutando reporte historico de ventas en la empresa: " . $empresa->getAlias());
                 $resultVentasTotales = $this->generarReporte("AcmeTerminalOmnibusBundle:Reporte:reporteEstadisticaVentaTotalesInternal", array(
                     'nameReporte' => "ESTADISTICA_VENTA_TOTALES",
                     'type' => "PDF",
@@ -646,7 +646,7 @@ class TareasDiariasService implements ScheduledServiceInterface{
                      )
                 ));
                 
-                $this->logger->warn("Ejecutando reporte historico de venta de agencias en la empresa: " . $empresa->getAlias());
+                // $this->logger->warn("Ejecutando reporte historico de venta de agencias en la empresa: " . $empresa->getAlias());
                 $resultVentasAgencias = $this->generarReporte("AcmeTerminalOmnibusBundle:Reporte:reporteDetalleAgenciaGraficoInternal", array(
                     'nameReporte' => "ESTADISTICA_VENTA_AGENCIA",
                     'type' => "PDF",
@@ -667,76 +667,76 @@ class TareasDiariasService implements ScheduledServiceInterface{
                 }
 
             } catch (\RuntimeException $ex) {
-                var_dump($ex->getMessage());
+                // var_dump($ex->getMessage());
                 $this->logger->warn("checkReportarBusesPilotosActivos - ERROR: " . $ex->getMessage());
             }
         }
-        $this->logger->warn("checkEstadisticas - end");
+        // $this->logger->warn("checkEstadisticas - end");
     }
     
     public function setScheduledJob(Job $job) {
-        $this->logger->warn("TareasDiariasService - init");
+        // $this->logger->warn("TareasDiariasService - init");
         
         $this->job = $job;
         
         try {
-            $this->logger->warn("start-checkSeriesFacturas");
+            // $this->logger->warn("start-checkSeriesFacturas");
             $this->checkSeriesFacturas();
-            $this->logger->warn("end-checkSeriesFacturas");
+            // $this->logger->warn("end-checkSeriesFacturas");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso checkSeriesFacturas.");
             throw $ex;
         }
         
         try {
-            $this->logger->warn("start-sendTotalesFacturados");
+            // $this->logger->warn("start-sendTotalesFacturados");
             $this->sendTotalesFacturados();
-            $this->logger->warn("end-sendTotalesFacturados");
+            // $this->logger->warn("end-sendTotalesFacturados");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso sendTotalesFacturados.");
             throw $ex;
         }
         
         try {
-            $this->logger->warn("start-sendTotalesCortesias");
+            // $this->logger->warn("start-sendTotalesCortesias");
             $this->sendTotalesCortesias();
-            $this->logger->warn("end-sendTotalesCortesias");
+            // $this->logger->warn("end-sendTotalesCortesias");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso sendTotalesFacturados.");
             throw $ex;
         }
         
         try {
-            $this->logger->warn("start-checkFechaVencimientoTarjetaOperaciones");
+            // $this->logger->warn("start-checkFechaVencimientoTarjetaOperaciones");
             $this->checkFechaVencimientoTarjetaOperaciones();
-            $this->logger->warn("end-checkFechaVencimientoTarjetaOperaciones");
+            // $this->logger->warn("end-checkFechaVencimientoTarjetaOperaciones");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso sendTotalesFacturados.");
             throw $ex;
         }
         
         try {
-            $this->logger->warn("start-checkFechaVencimientoLicenciaPilotos");
+            // $this->logger->warn("start-checkFechaVencimientoLicenciaPilotos");
             $this->checkFechaVencimientoLicenciaPilotos();
-            $this->logger->warn("end-checkFechaVencimientoLicenciaPilotos");
+            // $this->logger->warn("end-checkFechaVencimientoLicenciaPilotos");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso sendTotalesFacturados.");
             throw $ex;
         }
         
         try {
-            $this->logger->warn("start-sendTotalesTarjetas");
+            // $this->logger->warn("start-sendTotalesTarjetas");
             $this->sendTotalesTarjetas();
-            $this->logger->warn("end-sendTotalesTarjetas");
+            // $this->logger->warn("end-sendTotalesTarjetas");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso sendTotalesTarjetas.");
             throw $ex;
         }
         
         try {
-            $this->logger->warn("start-checkExpiracionCredencialesPorUsuario");
+            // $this->logger->warn("start-checkExpiracionCredencialesPorUsuario");
             $this->checkExpiracionCredencialesPorUsuario();
-            $this->logger->warn("end-checkExpiracionCredencialesPorUsuario");
+            // $this->logger->warn("end-checkExpiracionCredencialesPorUsuario");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso checkExpiracionCredencialesPorUsuario.");
             throw $ex;
@@ -761,33 +761,33 @@ class TareasDiariasService implements ScheduledServiceInterface{
 //        }
         
         try {
-            $this->logger->warn("start-checkReportarInventarioEncomiendas");
+            // $this->logger->warn("start-checkReportarInventarioEncomiendas");
             $this->checkReportarInventarioEncomiendas();
-            $this->logger->warn("end-checkReportarInventarioEncomiendas");
+            // $this->logger->warn("end-checkReportarInventarioEncomiendas");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso checkReportarInventarioEncomiendas.");
             throw $ex;
         }
         
         try {
-            $this->logger->warn("start-checkReportarBusesPilotosActivos");
+            // $this->logger->warn("start-checkReportarBusesPilotosActivos");
             $this->checkReportarBusesPilotosActivos();
-            $this->logger->warn("end-checkReportarBusesPilotosActivos");
+            // $this->logger->warn("end-checkReportarBusesPilotosActivos");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso checkReportarBusesPilotosActivos.");
             throw $ex;
         }
         
         try {
-            $this->logger->warn("start-checkEstadisticas");
+            // $this->logger->warn("start-checkEstadisticas");
             $this->checkEstadisticas();
-            $this->logger->warn("end-checkEstadisticas");
+            // $this->logger->warn("end-checkEstadisticas");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso checkEstadisticas.");
             throw $ex;
         }
         
-        $this->logger->warn("TareasDiariasService - end");
+        // $this->logger->warn("TareasDiariasService - end");
     }
     
     public function generarReporte($methodController, $optionPost){

@@ -33,7 +33,7 @@ class ParcialesFacturadosService implements ScheduledServiceInterface{
     }
     
     public function sendVentasParciales($options = null){
-        $this->logger->warn("sendVentasParciales - init");
+        // $this->logger->warn("sendVentasParciales - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -45,7 +45,7 @@ class ParcialesFacturadosService implements ScheduledServiceInterface{
         if($time >= 8 && $time <= 22){
             $empresas = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Empresa')->findByActivo(true);
             foreach ($empresas as $empresa) {
-                $this->logger->warn("Buscando ventas parciales del " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->getAlias());    
+                // $this->logger->warn("Buscando ventas parciales del " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->getAlias());    
                 $estaciones = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Estacion')->getEstacionesEmitieronOperaciones($fechaDia, $empresa);
                     
                 $resumenByEstacion = array();
@@ -70,7 +70,7 @@ class ParcialesFacturadosService implements ScheduledServiceInterface{
                 if($correos !== null && count($correos) !== 0){
                     $now = new \DateTime();
                     $now = $now->format('Y-m-d H:i:s');
-                    $this->logger->warn("Enviando correo notificando parciales del " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->getAlias() . ".");
+                    // $this->logger->warn("Enviando correo notificando parciales del " . $fechaDia->format('d-m-Y') . " para la empresa " . $empresa->getAlias() . ".");
                     $subject = "NVP_" . $now . ". Notificación parciales del " . $fechaDia->format('d-m-Y') . " hasta las " . $fechaDia->format('h:i A') . " en la empresa: " . $empresa->getAlias() . "."; 
                     UtilService::sendEmail($this->container, $subject, $correos, $this->container->get("templating")->render('AcmeTerminalOmnibusBundle:Email:notificacion_parciales.html.twig', array(
                         'title' => 'Parciales',
@@ -81,24 +81,24 @@ class ParcialesFacturadosService implements ScheduledServiceInterface{
                 }
             }
         }else{
-            $this->logger->warn("No se envia reporte de parciales porque son las " . $time . " en hora militar.");
+            // $this->logger->warn("No se envia reporte de parciales porque son las " . $time . " en hora militar.");
         }
         
-        $this->logger->warn("sendVentasParciales - end");
+        // $this->logger->warn("sendVentasParciales - end");
     }
     
     public function setScheduledJob(Job $job = null) {
-        $this->logger->warn("setScheduledJob - init");
+        // $this->logger->warn("setScheduledJob - init");
         $this->job = $job;
         try {
-            $this->logger->warn("start-sendVentasParciales");
+            // $this->logger->warn("start-sendVentasParciales");
             $this->sendVentasParciales();
-            $this->logger->warn("end-sendVentasParciales");
+            // $this->logger->warn("end-sendVentasParciales");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso sendVentasParciales.");
             throw $ex;
         }
-        $this->logger->warn("setScheduledJob - end");
+        // $this->logger->warn("setScheduledJob - end");
     }
     
 }

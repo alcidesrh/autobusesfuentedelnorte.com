@@ -1,9 +1,5 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-
-	#Redireccionar https a http
-	RewriteCond %{HTTPS} on
-	RewriteRule (.*) http://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 	
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteRule ^(.*)$ app.php [QSA,L]

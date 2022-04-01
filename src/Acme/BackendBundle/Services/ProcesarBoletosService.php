@@ -33,7 +33,7 @@ class ProcesarBoletosService implements ScheduledServiceInterface{
     }
     
     public function procesarBoletosPendientes($options = null){
-        $this->logger->warn("procesarBoletos - init");
+        // $this->logger->warn("procesarBoletos - init");
         if(isset($options)) {
             $options = array_merge($this->options, $options);
         }else{
@@ -49,9 +49,9 @@ class ProcesarBoletosService implements ScheduledServiceInterface{
         $boletos = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:Boleto')->listarBoletosPendientes($fechaEnd);
 //        var_dump("Listado: " .  count($boletos). " boletos pendientes.");
         if(count($boletos) === 0){
-            $this->logger->warn("No existen boletos pendientes.");
+            // $this->logger->warn("No existen boletos pendientes.");
         }else{
-            $this->logger->warn("Existen " .  count($boletos). " boletos pendientes.");
+            // $this->logger->warn("Existen " .  count($boletos). " boletos pendientes.");
             $em = $this->doctrine->getManager();
             $estado = $this->doctrine->getRepository('AcmeTerminalOmnibusBundle:EstadoBoleto')->find(EstadoBoleto::TRANSITO);
             foreach ($boletos as $item) {
@@ -60,7 +60,7 @@ class ProcesarBoletosService implements ScheduledServiceInterface{
                 $em->persist($item);
             }
         }
-        $this->logger->warn("procesarBoletos - end");
+        // $this->logger->warn("procesarBoletos - end");
     }
      
     public function setScheduledJob(Job $job = null) {
@@ -72,9 +72,9 @@ class ProcesarBoletosService implements ScheduledServiceInterface{
 //        $option["fecha"] = new \DateTime("2014-10-30");
         
         try {
-            $this->logger->warn("start-procesarBoletos");
+            // $this->logger->warn("start-procesarBoletos");
             $this->procesarBoletosPendientes($option);
-            $this->logger->warn("end-procesarBoletos");
+            // $this->logger->warn("end-procesarBoletos");
         } catch (\Exception $ex) {
             $this->logger->warn("Ocurrio una exception en el proceso procesarBoletos.");
             throw $ex;
