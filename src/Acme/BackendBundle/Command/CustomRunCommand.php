@@ -44,7 +44,7 @@ class CustomRunCommand extends ContainerAwareCommand{
             $mailer->getTransport()->start();
         }
     
-        $emailsAdmin = $contenedor->get("doctrine")->getRepository('AcmeBackendBundle:User')->findEmailSuperAdmin();
+        $emailsAdmin = ['alcidesrh@gmail.com'];// $contenedor->get("doctrine")->getRepository('AcmeBackendBundle:User')->findEmailSuperAdmin();
         if(count($emailsAdmin) != 0){
             $now = new \DateTime();
             $now = $now->format('Y-m-d H:i:s');
@@ -57,7 +57,7 @@ class CustomRunCommand extends ContainerAwareCommand{
 //             ->setBody("");
 //             $mailer->send($message);
         }
-        
+        return; 
         /*******************************************************************************************
          *                          JOBS RUNNING
          *******************************************************************************************/
