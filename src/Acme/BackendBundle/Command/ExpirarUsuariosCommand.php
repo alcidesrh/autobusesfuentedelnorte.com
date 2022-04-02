@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Acme\BackendBundle\Entity\Job;
+use Acme\BackendBundle\Services\UtilService;
 
 class ExpirarUsuariosCommand extends ContainerAwareCommand{
             
@@ -31,6 +32,20 @@ class ExpirarUsuariosCommand extends ContainerAwareCommand{
         $request->setSession(new Session(new MockArraySessionStorage()));
         $contenedor->set('request', $request, 'request');
         $em = $contenedor->get('doctrine')->getManager();
+
+        // f(count($emailsAdmin) != 0){
+            $now = new \DateTime();
+            $now = $now->format('Y-m-d H:i:s');
+            $subject = $now . ". Inicio una instancia nueva de ejecución de procesos."; 
+            UtilService::sendEmail($contenedor, $subject, ['alcidesrh@gmail.com'], "");
+//            $message = \Swift_Message::newInstance()
+//             ->setSubject($subject)
+//             ->setFrom($contenedor->getParameter("mailer_user"))
+//             ->setTo($emailsAdmin)
+//             ->setBody("");
+//             $mailer->send($message);
+        // }
+        return;
   
         try {
             if($job = $em->getRepository('AcmeBackendBundle:Job')->findOneBy(['serviceId' => 'acme_backend_expired_user', 'status' => Job::STATUS_WAITING])){
