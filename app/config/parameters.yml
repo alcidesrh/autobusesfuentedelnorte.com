@@ -22,9 +22,7 @@ parameters:
     mailer_transport: gmail
     mailer_host: ~
     mailer_user: "fuentedelnorteguatemala@gmail.com"
-    #"fuentedelnorte2.gt@gmail.com"
-#    mailer_password: 'jjidgulqzkxoajqc'
-    mailer_password: "comeasyouare"
+    mailer_password: "fuentedelnorteguatemala123**"
     #"system2050**"
     
     locale: es
